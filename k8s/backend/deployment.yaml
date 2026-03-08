@@ -22,6 +22,8 @@ spec:
           env:
             - name: ALLOWED_ORIGINS
               value: "https://shop.yourdomain.com"
+            - name: DATABASE_URL
+              value: "postgresql+psycopg2://skill_user:skill_pass@postgres:5432/skill_trainer"
           resources:
             requests:
               cpu: "100m"

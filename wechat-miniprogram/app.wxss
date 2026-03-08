@@ -1,0 +1,29 @@
+page {
+  background: linear-gradient(180deg, #f7fbff 0%, #eef4f9 100%);
+  color: #1f2d3d;
+  font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  box-shadow: 0 10rpx 30rpx rgba(13, 59, 102, 0.08);
+}
+
+.section-title {
+  font-size: 34rpx;
+  font-weight: 600;
+  margin-bottom: 16rpx;
+}
+
+.badge {
+  display: inline-block;
+  margin-right: 12rpx;
+  margin-bottom: 12rpx;
+  padding: 8rpx 16rpx;
+  border-radius: 999rpx;
+  background: #e7f1fb;
+  color: #0d3b66;
+  font-size: 24rpx;
+}

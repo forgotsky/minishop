@@ -1,82 +1,74 @@
-# Deployment Guide (React + FastAPI)
+# Deployment Guide (uni-app + FastAPI + Postgres)
 
-## Prerequisites
-- AWS CLI configured
-- Docker installed
-- kubectl installed
-- EKS cluster created
-- AWS Load Balancer Controller installed (if using ALB ingress)
-
-## One-command EKS Deploy
-Use script:
-
-```bash
-cd /root/codex
-./scripts/deploy.sh \
-  --aws-region <AWS_REGION> \
-  --aws-account-id <AWS_ACCOUNT_ID> \
-  --cluster-name <EKS_CLUSTER_NAME> \
-  --frontend-repo web-shop-frontend \
-  --backend-repo web-shop-backend \
-  --namespace web-shop \
-  --image-tag v1 \
-  --allowed-origins https://shop.yourdomain.com \
-  --host shop.yourdomain.com \
-  --apply-ingress
-```
-
-What it does:
-- Ensures ECR repositories exist
-- Builds and pushes frontend/backend images
-- Applies k8s service/deployment manifests
-- Sets deployment images
-- Sets backend `ALLOWED_ORIGINS`
-- Optionally applies ingress with your host
-- Waits for rollout
-
-## Manual Kubernetes Deploy
-Apply manifests:
-
-```bash
-kubectl apply -f k8s/frontend/service.yaml
-kubectl apply -f k8s/frontend/deployment.yaml
-kubectl apply -f k8s/backend/service.yaml
-kubectl apply -f k8s/backend/deployment.yaml
-kubectl apply -f k8s/gateway/ingress.yaml
-```
-
-Then set images:
-
-```bash
-kubectl set image deployment/web-shop-frontend web-shop-frontend=<FRONTEND_ECR_URI>
-kubectl set image deployment/web-shop-backend web-shop-backend=<BACKEND_ECR_URI>
-```
-
-## Deploy Separately (Frontend and Backend)
-Frontend:
-- Deploy `frontend` image to ECS/EKS or static build to S3+CloudFront
-
-Backend:
-- Deploy `backend` image to EKS/ECS
-- Set CORS env:
-  - `ALLOWED_ORIGINS=https://shop.yourdomain.com`
-
-Frontend config:
-- Set `frontend/public/config.js` with backend URL
-
-## Local Docker Test
+## 1. Docker Compose (Local)
 ```bash
 docker compose up --build
 ```
-- Frontend: `http://localhost:5173`
-- Backend: `http://localhost:8000/api/health`
 
-## Download Code Package
-Archive path:
-- `/root/codex/web-shop-app.tar.gz`
+Services:
+- Postgres: `localhost:5432`
+- Backend: `http://localhost:8000`
+- uni-app H5: `http://localhost:5174`
 
-Create/update archive:
+## 2. Build Images
+Backend:
 ```bash
-cd /root/codex
-tar --exclude='node_modules' --exclude='frontend/node_modules' --exclude='.git' -czf web-shop-app.tar.gz .
+docker build -t your-registry/skill-backend:latest ./backend
 ```
+
+uni-app (H5):
+```bash
+cd uni-app
+npm install
+npm run build:h5
+cd ..
+docker build -t your-registry/uni-frontend:latest ./uni-app
+```
+
+## 3. Push Images
+```bash
+docker push your-registry/skill-backend:latest
+docker push your-registry/uni-frontend:latest
+```
+
+## 4. Kubernetes Apply
+```bash
+kubectl apply -f k8s/postgres/pvc.yaml
+kubectl apply -f k8s/postgres/deployment.yaml
+kubectl apply -f k8s/postgres/service.yaml
+kubectl apply -f k8s/backend/service.yaml
+kubectl apply -f k8s/backend/deployment.yaml
+kubectl apply -f k8s/uni-frontend/service.yaml
+kubectl apply -f k8s/uni-frontend/deployment.yaml
+kubectl apply -f k8s/gateway/ingress.yaml
+```
+
+## 5. Configure Ingress
+Edit `k8s/gateway/ingress.yaml`:
+- `host` change to your domain
+- paths:
+  - `/api` -> backend
+  - `/uni` -> uni-frontend
+
+## 6. Environment Variables
+Backend:
+- `ALLOWED_ORIGINS`
+- `DATABASE_URL`
+
+Example:
+```
+ALLOWED_ORIGINS=https://yourdomain.com
+DATABASE_URL=postgresql+psycopg2://skill_user:skill_pass@postgres:5432/skill_trainer
+```
+
+## 7. Mini-App Deployment
+Use HBuilderX to build for each platform:
+1. Open `uni-app/` in HBuilderX
+2. Fill `manifest.json` AppID per platform
+3. 发行 -> 小程序 -> 选择平台
+4. Use platform devtools to预览/上传
+
+## 8. Production Notes
+- Prefer managed Postgres
+- Configure backups and TLS
+- Restrict CORS in production

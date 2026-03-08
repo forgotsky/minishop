@@ -1,0 +1,27 @@
+<view class="page">
+  <view class="card panel">
+    <view class="section-title">学科模板生成</view>
+    <view class="tip">输入学科名，自动生成Top3技能与L1-L6进阶。</view>
+    <input class="subject-input" value="{{subjectInput}}" bindinput="onInput" placeholder="例如：英语 / 数学 / 语文" />
+    <button class="btn" bindtap="generateTemplate">生成模板</button>
+  </view>
+
+  <view class="card panel" wx:if="{{generated}}">
+    <view class="section-title">{{generated.categoryName}}</view>
+    <view class="tip">阶段：{{generated.stage}}</view>
+
+    <block wx:for="{{generated.topSkills}}" wx:key="skillId" wx:for-item="skill">
+      <view class="skill-box">
+        <view class="skill-name">{{skill.skillName}}</view>
+        <view class="skill-summary">{{skill.summary}}</view>
+        <view class="level-row">
+          <block wx:for="{{skill.levels}}" wx:key="level" wx:for-item="level">
+            <view class="badge">{{level.level}}</view>
+          </block>
+        </view>
+      </view>
+    </block>
+
+    <button class="btn use" bindtap="useTemplate">加入分类并使用</button>
+  </view>
+</view>

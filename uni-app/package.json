@@ -1,0 +1,24 @@
+{
+  "name": "skill-trainer-uni-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev:h5": "uniapp-cli-vite",
+    "build:h5": "uniapp-cli-vite build",
+    "lint": "echo 'no lint configured'"
+  },
+  "dependencies": {
+    "vue": "2.7.16"
+  },
+  "devDependencies": {
+    "@dcloudio/uni-app": "^2.0.2-4020620250102001",
+    "@dcloudio/uni-app-plus": "^2.0.2-4020620250102001",
+    "@dcloudio/uni-h5": "^2.0.2-4020620250102001",
+    "@dcloudio/uni-mp-weixin": "^2.0.2-4020620250102001",
+    "@dcloudio/uni-cli-shared": "^2.0.2-4020620250102001",
+    "@dcloudio/uni-app-vite": "^2.0.2-4020620250102001",
+    "@dcloudio/uni-quickapp-webview": "^2.0.2-4020620250102001",
+    "@dcloudio/vite-plugin-uni": "^2.0.2-4020620250102001",
+    "vite": "5.2.0"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/template/template",
+    "pages/skill/skill"
+  ],
+  "window": {
+    "navigationBarTitleText": "英语技能分级训练",
+    "navigationBarBackgroundColor": "#0D3B66",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#F4F6F8",
+    "backgroundTextStyle": "dark"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

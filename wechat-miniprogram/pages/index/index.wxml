@@ -1,0 +1,33 @@
+<view class="page">
+  <view class="hero card">
+    <view class="hero-title">英语技能分级训练</view>
+    <view class="hero-subtitle">先分类，再选Top3技能，再看L1-L6进阶和微切分任务</view>
+    <button class="template-btn" size="mini" bindtap="goToTemplate">学科模板生成</button>
+  </view>
+
+  <block wx:for="{{categories}}" wx:key="categoryId" wx:for-item="category">
+    <view class="card category-card">
+      <view class="row">
+        <view class="name">{{category.categoryName}}</view>
+        <view class="stage">{{category.stage}}</view>
+      </view>
+      <view class="label">Top3技能</view>
+
+      <block wx:for="{{category.topSkills}}" wx:key="skillId" wx:for-item="skill" wx:for-index="idx">
+        <view class="skill-item">
+          <view>
+            <view class="skill-name">{{idx + 1}}. {{skill.skillName}}</view>
+            <view class="skill-summary">{{skill.summary}}</view>
+          </view>
+          <button
+            class="skill-btn"
+            size="mini"
+            data-category-id="{{category.categoryId}}"
+            data-skill-id="{{skill.skillId}}"
+            bindtap="goToSkill"
+          >查看</button>
+        </view>
+      </block>
+    </view>
+  </block>
+</view>

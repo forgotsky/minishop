@@ -18,6 +18,13 @@ spec:
                 name: web-shop-backend-service
                 port:
                   number: 8000
+          - path: /uni
+            pathType: Prefix
+            backend:
+              service:
+                name: uni-frontend
+                port:
+                  number: 80
           - path: /
             pathType: Prefix
             backend:

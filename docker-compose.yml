@@ -1,11 +1,25 @@
 version: '3.9'
 services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=skill_trainer
+      - POSTGRES_USER=skill_user
+      - POSTGRES_PASSWORD=skill_pass
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
   backend:
     build: ./backend
     ports:
       - "8000:8000"
     environment:
-      - ALLOWED_ORIGINS=http://localhost:5173
+      - ALLOWED_ORIGINS=http://localhost:5173,http://localhost:5174
+      - DATABASE_URL=postgresql+psycopg2://skill_user:skill_pass@db:5432/skill_trainer
+    depends_on:
+      - db
 
   frontend:
     build: ./frontend
@@ -13,3 +27,13 @@ services:
       - "5173:80"
     depends_on:
       - backend
+
+  uni-frontend:
+    build: ./uni-app
+    ports:
+      - "5174:80"
+    depends_on:
+      - backend
+
+volumes:
+  pg_data:

@@ -1,0 +1,28 @@
+{
+  "pages": [
+    {
+      "path": "pages/index/index",
+      "style": {
+        "navigationBarTitleText": "技能分类"
+      }
+    },
+    {
+      "path": "pages/template/template",
+      "style": {
+        "navigationBarTitleText": "模板生成"
+      }
+    },
+    {
+      "path": "pages/skill/skill",
+      "style": {
+        "navigationBarTitleText": "技能详情"
+      }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "英语技能分级训练",
+    "navigationBarBackgroundColor": "#0D3B66",
+    "backgroundColor": "#F4F6F8"
+  }
+}

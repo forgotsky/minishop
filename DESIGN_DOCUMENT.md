@@ -1,91 +1,94 @@
-# Web Shop Design Document
+# Skill Trainer Design Document
 
 ## 1. Objective
-Build a small shopping application where users can:
-- Browse products
-- Add products to cart
-- Enter delivery address
-- Choose payment method
-- Submit order
+Build a mini-app that helps learners:
+- Browse skill categories and top skills
+- See L1-L6 progression with knowledge points
+- Generate weekly plans based on daily time
+- Track completion and progress
+- Create subject templates that auto-generate skill trees
 
 ## 2. Architecture
 Two-service architecture:
-- Frontend service: React SPA (Vite build, served by Nginx)
-- Backend service: Python FastAPI REST API
+- Frontend: uni-app (Vue syntax), compiled to WeChat/Douyin/Alipay mini-apps and H5
+- Backend: Python FastAPI REST API
 
 Communication:
-- Frontend calls backend over HTTP JSON APIs (`/api/products`, `/api/checkout`)
+- Frontend calls backend over HTTP JSON APIs (`/api/skills`, `/api/template`, `/api/plan`)
+- Client stores progress locally (storage) to keep the backend stateless
 
-## 3. Frontend Design (React)
+## 3. Frontend Design (uni-app)
 Location:
-- `frontend/src/App.jsx`
-- `frontend/src/styles.css`
+- `uni-app/pages/index/index.vue`
+- `uni-app/pages/skill/skill.vue`
+- `uni-app/pages/template/template.vue`
 
 Responsibilities:
-- Render product catalog from API
-- Manage cart state in browser memory
-- Validate checkout form before submit
-- Send checkout payload to backend
-- Show order success or error status
+- Render categories and Top3 skills
+- Show L1-L6 knowledge points
+- Trigger template generation (backend, fallback local)
+- Trigger plan generation (backend, fallback local)
+- Persist plan progress locally
 
-Runtime config:
-- `frontend/public/config.js`
-- `window.APP_CONFIG.API_BASE_URL`
-  - Empty string for same-domain deployments
-  - Backend base URL for separate deployments
+State management:
+- Local component state + storage
+- API base URL stored in `API_BASE_URL` (storage)
 
 ## 4. Backend Design (FastAPI)
 Location:
 - `backend/app/main.py`
+- `backend/app/models.py`
+- `backend/app/db.py`
 
 Responsibilities:
-- Expose health, products, and checkout endpoints
-- Validate input payload with Pydantic models
-- Validate product IDs and quantities
-- Compute subtotal, delivery fee, and total
-- Return generated order ID and order summary
+- Serve base skills data from DB
+- Generate subject templates and persist them
+- Generate weekly plans and persist them
 
-CORS:
-- Controlled by `ALLOWED_ORIGINS` environment variable
+Database:
+- Default: SQLite for local (`sqlite:///./app.db`)
+- Production: Postgres via `DATABASE_URL`
 
 ## 5. API Contract
-### GET `/api/health`
+### GET `/api/skills`
 Response:
-- `{ "status": "ok" }`
+- `{ "categories": [ ... ] }`
 
-### GET `/api/products`
-Response:
-- `{ "products": [{"id":1,"name":"...","price":49.99}, ...] }`
-
-### POST `/api/checkout`
+### POST `/api/template`
 Request body:
-- `cart_items`: array of `{ id, qty }`
-- `address`: `{ full_name, phone, street, city, zip }`
-- `payment_method`: `card | cash`
+- `{ "subject": "英语" }`
 
-Success response:
-- `message`
-- `order`: `order_id`, `subtotal`, `delivery_fee`, `total`, `payment_method`, `shipping_city`
+Response:
+- `{ "category": { ... } }`
+
+### POST `/api/plan`
+Request body:
+- `hour_tasks`: array of tasks with `slot`, `wordsText`, `sentence`, `usage`
+- `daily_minutes`: int (20-180)
+- `days_per_week`: int (1-7)
+
+Response:
+- `{ "plan": { planId, dailyMinutes, daysPerWeek, schedule, flatTasks } }`
 
 ## 6. Deployment Design
 Containers:
-- `frontend/Dockerfile`: builds React and serves via Nginx on port 80
 - `backend/Dockerfile`: serves FastAPI via Uvicorn on port 8000
+- `uni-app/Dockerfile`: builds H5 bundle and serves via Nginx on port 80
 
 Kubernetes:
-- Frontend Deployment + Service
 - Backend Deployment + Service
+- Postgres Deployment + Service + PVC
+- uni-frontend Deployment + Service
 - Optional ALB Ingress routes:
-  - `/` -> frontend service
   - `/api` -> backend service
+  - `/uni` -> uni-frontend service
 
 ## 7. Security and Validation Notes
-- Backend is source of truth for pricing and total calculation
-- Backend validates cart item IDs/quantities and payment method
+- Backend validates plan inputs and constraints
 - CORS allowlist should be restricted in production
 - TLS should be enabled at Ingress/Load Balancer
 
 ## 8. Scalability Notes
 - Stateless services; horizontal scaling via replica count
-- Product data is currently in-memory mock data
-- For production, move product/order data to persistent database
+- Skills data is seeded into DB on startup if empty
+- For production, use managed Postgres and backups
