@@ -1,74 +1,66 @@
-# Deployment Guide (uni-app + FastAPI + Postgres)
+# Deployment Guide (Simple Docker)
 
-## 1. Docker Compose (Local)
+This branch provides a minimal Docker-only deployment (no Kubernetes, no compose required).
+
+## Requirements
+- Linux server with Docker
+- Open ports: 8000 (backend), 5174 (frontend)
+
+## Step 1. Set API base URL for H5 build
+Edit `uni-app/utils/api.js`:
+
+```js
+const DEFAULT_BASE_URL = "http://<SERVER_IP>:8000";
+```
+
+This is required so the H5 build calls the correct backend host.
+
+## Step 2. Build images
 ```bash
-docker compose up --build
+cd /root/codex/backend
+docker build -t skill-backend:latest .
+
+cd /root/codex/uni-app
+docker build -t skill-frontend:latest .
 ```
 
-Services:
-- Postgres: `localhost:5432`
-- Backend: `http://localhost:8000`
-- uni-app H5: `http://localhost:5174`
-
-## 2. Build Images
-Backend:
+## Step 3. Run containers
 ```bash
-docker build -t your-registry/skill-backend:latest ./backend
+# create isolated network
+docker network create skill-net
+
+# postgres
+docker run -d --name skill-postgres --network skill-net \
+  -e POSTGRES_DB=skill_trainer \
+  -e POSTGRES_USER=skill_user \
+  -e POSTGRES_PASSWORD=skill_pass \
+  -p 5432:5432 postgres:15-alpine
+
+# backend
+docker run -d --name skill-backend --network skill-net \
+  -e DATABASE_URL=postgresql+psycopg2://skill_user:skill_pass@skill-postgres:5432/skill_trainer \
+  -e ALLOWED_ORIGINS=http://<SERVER_IP>:5174 \
+  -p 8000:8000 skill-backend:latest
+
+# frontend
+docker run -d --name skill-frontend --network skill-net \
+  -p 5174:80 skill-frontend:latest
 ```
 
-uni-app (H5):
+## Step 4. Verify
 ```bash
-cd uni-app
-npm install
-npm run build:h5
-cd ..
-docker build -t your-registry/uni-frontend:latest ./uni-app
+curl http://<SERVER_IP>:8000/api/health
 ```
+Open in browser:
+- `http://<SERVER_IP>:5174`
 
-## 3. Push Images
+## Stop / Remove
 ```bash
-docker push your-registry/skill-backend:latest
-docker push your-registry/uni-frontend:latest
+docker stop skill-frontend skill-backend skill-postgres
 ```
-
-## 4. Kubernetes Apply
 ```bash
-kubectl apply -f k8s/postgres/pvc.yaml
-kubectl apply -f k8s/postgres/deployment.yaml
-kubectl apply -f k8s/postgres/service.yaml
-kubectl apply -f k8s/backend/service.yaml
-kubectl apply -f k8s/backend/deployment.yaml
-kubectl apply -f k8s/uni-frontend/service.yaml
-kubectl apply -f k8s/uni-frontend/deployment.yaml
-kubectl apply -f k8s/gateway/ingress.yaml
+docker rm skill-frontend skill-backend skill-postgres
 ```
-
-## 5. Configure Ingress
-Edit `k8s/gateway/ingress.yaml`:
-- `host` change to your domain
-- paths:
-  - `/api` -> backend
-  - `/uni` -> uni-frontend
-
-## 6. Environment Variables
-Backend:
-- `ALLOWED_ORIGINS`
-- `DATABASE_URL`
-
-Example:
+```bash
+docker network rm skill-net
 ```
-ALLOWED_ORIGINS=https://yourdomain.com
-DATABASE_URL=postgresql+psycopg2://skill_user:skill_pass@postgres:5432/skill_trainer
-```
-
-## 7. Mini-App Deployment
-Use HBuilderX to build for each platform:
-1. Open `uni-app/` in HBuilderX
-2. Fill `manifest.json` AppID per platform
-3. 发行 -> 小程序 -> 选择平台
-4. Use platform devtools to预览/上传
-
-## 8. Production Notes
-- Prefer managed Postgres
-- Configure backups and TLS
-- Restrict CORS in production

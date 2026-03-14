@@ -1,14 +1,11 @@
 # Python
 backend/.venv/
-backend/app.db
 __pycache__/
 *.pyc
 
 # Node
 frontend/node_modules/
 frontend/dist/
-uni-app/node_modules/
-uni-app/dist/
 
 # Archives/logs
 *.log

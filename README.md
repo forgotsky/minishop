@@ -1,44 +1,52 @@
-# Skill Trainer Mini App
+# Skill Trainer (Simple Docker)
 
-Stack:
-- Frontend: uni-app (Vue-based) for multi-platform mini apps + H5 build
-- Backend: Python FastAPI REST API
-- Database: Postgres (SQLite fallback for local)
-- Deployment: Docker + Kubernetes
+Minimal deployment using Docker only.
 
-Main docs:
-- `DESIGN_DOCUMENT.md`
-- `FRONTEND_GUIDE.md`
+## What you get
+- Backend: FastAPI API service
+- Frontend: uni-app H5 build served by Nginx
+- Database: Postgres container
+
+## Quick Start (Linux)
+
+1. Build images
+```bash
+cd /root/codex/backend
+docker build -t skill-backend:latest .
+
+cd /root/codex/uni-app
+# edit DEFAULT_BASE_URL before build (see Deployment Guide)
+docker build -t skill-frontend:latest .
+```
+
+2. Run containers
+```bash
+# create network
+docker network create skill-net
+
+# run postgres
+docker run -d --name skill-postgres --network skill-net \
+  -e POSTGRES_DB=skill_trainer \
+  -e POSTGRES_USER=skill_user \
+  -e POSTGRES_PASSWORD=skill_pass \
+  -p 5432:5432 postgres:15-alpine
+
+# run backend
+docker run -d --name skill-backend --network skill-net \
+  -e DATABASE_URL=postgresql+psycopg2://skill_user:skill_pass@skill-postgres:5432/skill_trainer \
+  -e ALLOWED_ORIGINS=http://<SERVER_IP>:5174 \
+  -p 8000:8000 skill-backend:latest
+
+# run frontend
+docker run -d --name skill-frontend --network skill-net \
+  -p 5174:80 skill-frontend:latest
+```
+
+3. Open
+- API: `http://<SERVER_IP>:8000/api/health`
+- H5: `http://<SERVER_IP>:5174`
+
+## Docs
 - `DEPLOYMENT_GUIDE.md`
-
-## Project Layout
-- `uni-app/` uni-app source (mini-app + H5)
-- `backend/` FastAPI app
-- `k8s/` Kubernetes manifests
-- `scripts/` utility scripts
-
-## Local Development
-Backend:
-```bash
-cd backend
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-```
-
-Frontend (H5):
-```bash
-cd uni-app
-npm install
-npm run dev:h5
-```
-
-Optional Docker local:
-```bash
-docker compose up --build
-```
-
-## Notes
-- Mini-app builds are done via HBuilderX or `uni-app` CLI.
-- H5 preview runs on `http://localhost:5174` when using Docker Compose.
+- `FRONTEND_GUIDE.md`
+- `DESIGN_DOCUMENT.md`
