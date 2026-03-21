@@ -1,4 +1,4 @@
-# Skill Trainer (Simple Docker)
+# Skill Trainer (Simple Docker) 
 
 Minimal deployment using Docker only.
 
