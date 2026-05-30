@@ -9,7 +9,7 @@ metadata:
 spec:
   ingressClassName: traefik
   rules:
-    - host: shop.example.com
+    - host: renewshuttle.cn
       http:
         paths:
           - path: /
