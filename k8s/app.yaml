@@ -19,13 +19,13 @@ spec:
           ports:
             - containerPort: 8000
           env:
-            - name: DATABASE_URL
-              value: "postgresql://shop_user:$(DB_PASSWORD)@postgres:5432/shop_db"
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: shop-secret
                   key: DB_PASSWORD
+            - name: DATABASE_URL
+              value: "postgresql://shop_user:$(DB_PASSWORD)@postgres:5432/shop_db"
           resources:
             requests:
               memory: "64Mi"
