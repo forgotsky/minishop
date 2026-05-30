@@ -4,12 +4,30 @@ metadata:
   name: shop-ingress
   namespace: shop
   annotations:
-    # K3s 自带 Traefik，这些注解控制路由行为
-    traefik.ingress.kubernetes.io/router.entrypoints: web
+    # K3s 内置 Traefik — 同时支持 HTTP 和 HTTPS
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+    # cert-manager 自动申请 Let's Encrypt 证书
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+
 spec:
   ingressClassName: traefik
+  tls:
+    - hosts:
+        - renewshuttle.cn
+        - www.renewshuttle.cn
+      secretName: renewshuttle-tls
   rules:
     - host: renewshuttle.cn
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: shop-app
+                port:
+                  number: 80
+    - host: www.renewshuttle.cn
       http:
         paths:
           - path: /
