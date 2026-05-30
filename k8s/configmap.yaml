@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: shop-config
+  namespace: shop
+data:
+  # 数据库连接 — 密码来自 Secret，这里只放用户名和库名
+  DATABASE_URL: "postgresql://shop_user:$(DB_PASSWORD)@postgres:5432/shop_db"
+  ALLOWED_ORIGINS: "*"
+  # K3s 内部 DNS 自动解析 Service 名，postgres 就是 postgres-service 的地址

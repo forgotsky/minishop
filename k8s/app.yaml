@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shop-app
+  namespace: shop
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: shop-app
+  template:
+    metadata:
+      labels:
+        app: shop-app
+    spec:
+      containers:
+        - name: shop-app
+          image: ghcr.io/forgotsky/minishop:latest
+          ports:
+            - containerPort: 8000
+          env:
+            - name: DATABASE_URL
+              value: "postgresql://shop_user:$(DB_PASSWORD)@postgres:5432/shop_db"
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: shop-secret
+                  key: DB_PASSWORD
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 20
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shop-app
+  namespace: shop
+spec:
+  selector:
+    app: shop-app
+  ports:
+    - port: 80
+      targetPort: 8000
+  type: ClusterIP

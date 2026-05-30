@@ -11,5 +11,8 @@ frontend/dist/
 *.log
 web-shop-app.tar.gz
 
+# K8s secret — 真正的密码在服务器上用 kubectl 创建
+k8s/secret.yaml
+
 # Legacy folder (old implementation)
 legacy/
