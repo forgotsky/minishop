@@ -121,3 +121,4 @@ jobs:
 
             # 显示当前 Pod 状态
             kubectl get pods -n shop
+
