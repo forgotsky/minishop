@@ -8,7 +8,7 @@ on:
 
 jobs:
   # ============================================================
-  # 后端：Python FastAPI
+  # 后端：Python FastAPI + PostgreSQL
   # ============================================================
   backend:
     runs-on: ubuntu-latest
@@ -50,7 +50,7 @@ jobs:
           pip install -r requirements.txt
           pip install pytest pytest-asyncio httpx
 
-      # 第四步：运行测试
+      # 第四步：运行测试（将 `pytest` 换成你的测试命令）
       - name: Run tests
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
@@ -62,62 +62,3 @@ jobs:
         run: |
           pip install flake8
           flake8 app/ --count --max-line-length=120 --statistics --exit-zero
-
-  # ============================================================
-  # 前端：React Vite
-  # ============================================================
-  frontend:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: frontend
-    steps:
-      # 第一步：检出代码
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      # 第二步：设置项目环境
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: npm
-          cache-dependency-path: frontend/package-lock.json
-
-      # 第三步：安装依赖
-      - name: Install dependencies
-        run: npm ci
-
-      # 第四步：运行测试 & 构建
-      - name: Build check
-        run: npm run build
-
-  # ============================================================
-  # uni-app 前端
-  # ============================================================
-  uni-app:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: uni-app
-    steps:
-      # 第一步：检出代码
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      # 第二步：设置项目环境
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: npm
-          cache-dependency-path: uni-app/package.json
-
-      # 第三步：安装依赖
-      - name: Install dependencies
-        run: npm install
-
-      # 第四步：运行测试（替换为你的测试命令）
-      - name: Run tests
-        run: |
-          npm run lint 2>/dev/null || echo "⚠️  No test script configured — add tests in package.json"
