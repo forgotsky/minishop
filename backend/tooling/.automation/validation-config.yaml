@@ -1,0 +1,103 @@
+# Validation Loop Configuration
+# Controls automated feedback and validation gates
+
+validation:
+  enabled: true
+
+  tiers:
+    # Tier 1: Pre-flight validation (before any agent runs)
+    preflight:
+      enabled: true
+      gates:
+        - name: story_exists
+          enabled: true
+          on_fail: block
+        - name: budget_available
+          enabled: true
+          on_fail: block
+        - name: dependencies_valid
+          enabled: true
+          on_fail: warn
+      on_all_fail: block
+
+    # Tier 2: Inter-phase validation (between agents/phases)
+    inter_phase:
+      enabled: true
+      max_retries: 3
+      retry_cooldown_seconds: 5
+      gates:
+        context_to_dev:
+          - name: context_complete
+            enabled: true
+            on_fail: retry
+            retry_with_agent: SM
+        dev_to_review:
+          - name: code_compiles
+            enabled: true
+            on_fail: retry
+            retry_with_agent: DEV
+          - name: lint_pass
+            enabled: true
+            on_fail: retry
+            auto_fix: true
+        review_to_complete:
+          - name: review_approved
+            enabled: true
+            on_fail: retry
+            retry_with_agent: DEV
+
+    # Tier 3: Post-completion validation (after pipeline completes)
+    post_completion:
+      enabled: true
+      gates:
+        - name: tests_pass
+          enabled: true
+          on_fail: block
+          timeout_seconds: 300
+        - name: lint_clean
+          enabled: true
+          on_fail: warn
+          auto_fix: true
+        - name: types_valid
+          enabled: true
+          on_fail: warn
+        - name: version_synced
+          enabled: true
+          on_fail: warn
+        - name: changelog_updated
+          enabled: true
+          on_fail: warn
+      on_fail: warn  # Don't block, just warn
+
+  automation:
+    auto_fix:
+      enabled: true
+      safe_fixes_only: true  # Only run fixes marked as safe
+
+    escalation:
+      after_retries: 3
+      notify: user  # Options: user, slack, email, github_issue
+
+    learning:
+      track_patterns: true
+      suggest_improvements: true
+
+  # Gate-specific overrides
+  gate_overrides:
+    tests_pass:
+      timeout_seconds: 300
+      command: "python -m pytest -x -q"
+    lint_pass:
+      timeout_seconds: 60
+      command: "python -m ruff check ."
+      auto_fix_command: "python -m ruff check --fix ."
+    types_valid:
+      timeout_seconds: 120
+      command: "python -m mypy --ignore-missing-imports ."
+
+  # Output and reporting
+  reporting:
+    format: text  # text, json, markdown
+    verbose: false
+    save_reports: true
+    report_dir: tooling/.automation/validation/history

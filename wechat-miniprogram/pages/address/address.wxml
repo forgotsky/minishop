@@ -1,0 +1,11 @@
+<view class="container">
+  <view wx:if="{{addresses.length === 0}}" class="empty">No addresses saved</view>
+  <view wx:for="{{addresses}}" wx:key="id" class="card flex-between" bindtap="onEdit" data-id="{{item.id}}">
+    <view class="flex-1">
+      <view style="font-weight:500">{{item.full_name}} {{item.phone}} <text wx:if="{{item.is_default}}" class="tag tag-red">Default</text></view>
+      <view style="color:#666;margin-top:6rpx;font-size:26rpx">{{item.province}} {{item.city}} {{item.district}} {{item.street}}</view>
+    </view>
+    <view class="remove-btn" bindtap="onDelete" data-id="{{item.id}}" catchtap="onDelete">Del</view>
+  </view>
+  <button class="btn" style="width:100%;margin-top:40rpx" bindtap="onAdd">+ Add Address</button>
+</view>

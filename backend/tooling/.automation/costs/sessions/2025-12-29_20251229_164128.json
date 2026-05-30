@@ -1,0 +1,22 @@
+{
+  "session_id": "20251229_164128",
+  "start_time": "2025-12-29T16:41:28.272147",
+  "end_time": "2025-12-29T16:41:48.516733",
+  "model": "claude-opus-4-5-20251101",
+  "story_key": null,
+  "entries": [
+    {
+      "timestamp": "2025-12-29T16:41:40.147324",
+      "model": "opus",
+      "input_tokens": 1000,
+      "output_tokens": 500,
+      "cost_usd": 0.0525
+    }
+  ],
+  "totals": {
+    "input_tokens": 1000,
+    "output_tokens": 500,
+    "total_tokens": 1500,
+    "cost_usd": 0.0525
+  }
+}

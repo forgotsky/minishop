@@ -1,0 +1,15 @@
+{
+  "tasks": [
+    {
+      "id": "0abc7f58",
+      "cron": "27 */2 * * *",
+      "prompt": "Continue developing the WeChat Mini Program e-commerce app (wechat-mall project at f:\\Shop\\web-shop-app). Pick up the next incomplete task from this list and implement it:\n\n**Backend remaining tasks:**\n- WeChat Pay integration (wx.requestPayment flow)\n- Product image upload API\n- Order status management (ship, deliver, cancel)\n- Admin API for product/coupon management\n\n**Frontend remaining tasks:**\n- User profile / settings page\n- Order cancellation flow in order detail\n- Image lazy loading and error placeholders\n- Pull-to-refresh on all list pages\n- Search page with search history\n\n**General tasks:**\n- Error handling improvements\n- Add offline mock data for when API is unreachable\n- Generate tab bar icons (need actual PNG files in data/)\n- Docker deployment scripts update for the new app\n\nPick the highest priority task, implement it, and commit the changes. Focus on quality over quantity. Do one task well, commit, then report what was done.",
+      "createdAt": 1779727534865,
+      "recurring": true,
+      "createdBySessionId": "660006d9-418e-4a56-9e3d-5cb8fb63489e",
+      "createdByPid": 31012,
+      "createdByProcStart": "639157799837654780",
+      "lastFiredAt": 1780154388007
+    }
+  ]
+}

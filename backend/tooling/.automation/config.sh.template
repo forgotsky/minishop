@@ -1,0 +1,48 @@
+#!/bin/zsh
+################################################################################
+# Automation Configuration Template
+# Copy to config.sh and customize for your project
+################################################################################
+
+# Project settings
+export PROJECT_NAME="your-project-name"
+export PROJECT_TYPE="generic"  # Supported: node, flutter, python, rust, go, ruby, java, kotlin, swift, android, generic
+
+# Claude Code CLI settings
+export CLAUDE_CLI="${CLAUDE_CLI:-claude}"
+export CLAUDE_MODEL_DEV="opus"
+export CLAUDE_MODEL_PLANNING="sonnet"
+export CLAUDE_MODEL="${CLAUDE_MODEL:-sonnet}"
+
+# Permission mode
+export PERMISSION_MODE="${PERMISSION_MODE:-dangerouslySkipPermissions}"
+
+# Auto-commit settings
+export AUTO_COMMIT="${AUTO_COMMIT:-false}"
+export AUTO_PR="${AUTO_PR:-false}"
+
+# Budget limits (USD)
+export MAX_BUDGET_CONTEXT=3.00
+export MAX_BUDGET_DEV=15.00
+export MAX_BUDGET_REVIEW=5.00
+
+# Cost tracking settings
+export COST_DISPLAY_CURRENCY="USD"          # Primary display currency
+export COST_WARNING_PERCENT=75              # Warning at 75% budget
+export COST_CRITICAL_PERCENT=90             # Critical at 90% budget
+export COST_AUTO_STOP="true"                # Auto-stop at 100% budget
+
+# Currency exchange rates (USD to target)
+# Update these for accurate multi-currency display
+export CURRENCY_RATE_EUR=0.92
+export CURRENCY_RATE_GBP=0.79
+export CURRENCY_RATE_BRL=6.10
+
+# Paths
+export AUTOMATION_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export PROJECT_ROOT="$(cd "$AUTOMATION_DIR/../.." && pwd)"
+export SCRIPTS_DIR="$PROJECT_ROOT/tooling/scripts"
+export DOCS_DIR="$PROJECT_ROOT/tooling/docs"
+
+# Checkpoint thresholds (warning, critical, emergency)
+export CHECKPOINT_THRESHOLDS="75,85,95"

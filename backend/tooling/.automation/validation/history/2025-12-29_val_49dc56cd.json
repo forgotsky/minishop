@@ -1,0 +1,59 @@
+{
+  "id": "val_49dc56cd",
+  "timestamp": "2025-12-29T17:01:56.165891",
+  "story_key": "validation-check",
+  "tier": 3,
+  "gate_results": [
+    {
+      "gate_name": "tests_pass",
+      "result": "pass",
+      "message": "Validation passed",
+      "duration_ms": 535.1378917694092,
+      "retry_count": 0,
+      "auto_fixed": false,
+      "details": {}
+    },
+    {
+      "gate_name": "lint_clean",
+      "result": "pass",
+      "message": "Validation passed",
+      "duration_ms": 15.160083770751953,
+      "retry_count": 0,
+      "auto_fixed": false,
+      "details": {}
+    },
+    {
+      "gate_name": "types_valid",
+      "result": "pass",
+      "message": "Validation passed",
+      "duration_ms": 14.86825942993164,
+      "retry_count": 0,
+      "auto_fixed": false,
+      "details": {}
+    },
+    {
+      "gate_name": "version_synced",
+      "result": "pass",
+      "message": "Validation passed",
+      "duration_ms": 28.46503257751465,
+      "retry_count": 0,
+      "auto_fixed": false,
+      "details": {}
+    }
+  ],
+  "overall_result": "pass",
+  "total_duration_ms": 593.7106609344482,
+  "passed": true,
+  "context": {
+    "story_key": "validation-check",
+    "iteration": 0,
+    "max_iterations": 3,
+    "accumulated_issues": [],
+    "accumulated_fixes": [],
+    "cost_so_far": 0.0,
+    "time_elapsed_seconds": 0.0,
+    "phase": "tier_3",
+    "from_agent": "",
+    "to_agent": ""
+  }
+}

@@ -1,0 +1,61 @@
+#################################################################################
+# Automation Configuration Template for Windows
+# Copy to config.ps1 and customize for your project
+#################################################################################
+
+# Project settings
+$script:PROJECT_NAME = "your-project-name"
+$script:PROJECT_TYPE = "generic"  # Supported: node, flutter, python, rust, go, ruby, java, kotlin, swift, android, generic
+
+# Claude Code CLI settings
+$script:CLAUDE_CLI = if ($env:CLAUDE_CLI) { $env:CLAUDE_CLI } else { "claude" }
+$script:CLAUDE_MODEL_DEV = "opus"
+$script:CLAUDE_MODEL_PLANNING = "sonnet"
+$script:CLAUDE_MODEL = if ($env:CLAUDE_MODEL) { $env:CLAUDE_MODEL } else { "sonnet" }
+
+# Permission mode
+$script:PERMISSION_MODE = if ($env:PERMISSION_MODE) { $env:PERMISSION_MODE } else { "dangerouslySkipPermissions" }
+
+# Auto-commit settings
+$script:AUTO_COMMIT = if ($env:AUTO_COMMIT) { $env:AUTO_COMMIT -eq "true" } else { $false }
+$script:AUTO_PR = if ($env:AUTO_PR) { $env:AUTO_PR -eq "true" } else { $false }
+
+# Budget limits (USD)
+$script:MAX_BUDGET_CONTEXT = 3.00
+$script:MAX_BUDGET_DEV = 15.00
+$script:MAX_BUDGET_REVIEW = 5.00
+
+# Cost tracking settings
+$script:COST_DISPLAY_CURRENCY = "USD"          # Primary display currency
+$script:COST_WARNING_PERCENT = 75              # Warning at 75% budget
+$script:COST_CRITICAL_PERCENT = 90             # Critical at 90% budget
+$script:COST_AUTO_STOP = $true                 # Auto-stop at 100% budget
+
+# Currency exchange rates (USD to target)
+# Update these for accurate multi-currency display
+$script:CURRENCY_RATES = @{
+    "USD" = 1.0
+    "EUR" = 0.92
+    "GBP" = 0.79
+    "BRL" = 6.10
+    "CAD" = 1.36
+    "AUD" = 1.53
+}
+
+# Paths
+$script:AUTOMATION_DIR = Split-Path -Parent $MyInvocation.MyCommand.Path
+$script:PROJECT_ROOT = (Get-Item "$script:AUTOMATION_DIR\..\..").FullName
+$script:SCRIPTS_DIR = Join-Path $script:PROJECT_ROOT "tooling\scripts"
+$script:DOCS_DIR = Join-Path $script:PROJECT_ROOT "tooling\docs"
+
+# Checkpoint thresholds (warning, critical, emergency)
+$script:CHECKPOINT_THRESHOLDS = @(75, 85, 95)
+
+# Export variables as environment variables for child processes
+$env:PROJECT_NAME = $script:PROJECT_NAME
+$env:PROJECT_TYPE = $script:PROJECT_TYPE
+$env:CLAUDE_MODEL = $script:CLAUDE_MODEL
+$env:MAX_BUDGET_DEV = $script:MAX_BUDGET_DEV
+$env:COST_DISPLAY_CURRENCY = $script:COST_DISPLAY_CURRENCY
+$env:COST_WARNING_PERCENT = $script:COST_WARNING_PERCENT
+$env:COST_CRITICAL_PERCENT = $script:COST_CRITICAL_PERCENT

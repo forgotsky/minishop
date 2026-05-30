@@ -1,0 +1,6 @@
+# This directory stores persistent agent memories
+# Memory files are named: {agent-name}.memory.md
+# Example: dev.memory.md
+#
+# Memories are automatically loaded when agents run
+# and help them remember context across sessions.

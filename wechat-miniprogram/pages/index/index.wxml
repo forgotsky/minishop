@@ -1,33 +1,33 @@
-<view class="page">
-  <view class="hero card">
-    <view class="hero-title">英语技能分级训练</view>
-    <view class="hero-subtitle">先分类，再选Top3技能，再看L1-L6进阶和微切分任务</view>
-    <button class="template-btn" size="mini" bindtap="goToTemplate">学科模板生成</button>
+<view class="container">
+  <view class="search-bar">
+    <input placeholder="Search products..." value="{{search}}" bindinput="onSearchInput" bindconfirm="onSearch" confirm-type="search"/>
+    <button class="btn" size="mini" bindtap="onSearch">Search</button>
   </view>
 
-  <block wx:for="{{categories}}" wx:key="categoryId" wx:for-item="category">
-    <view class="card category-card">
-      <view class="row">
-        <view class="name">{{category.categoryName}}</view>
-        <view class="stage">{{category.stage}}</view>
-      </view>
-      <view class="label">Top3技能</view>
+  <scroll-view scroll-x class="cat-scroll">
+    <view class="cat-tag {{activeCategory === '' ? 'active' : ''}}" bindtap="onCategoryTap" data-category="">All</view>
+    <view wx:for="{{categories}}" wx:key="*this" class="cat-tag {{activeCategory === item ? 'active' : ''}}" bindtap="onCategoryTap" data-category="{{item}}">{{item}}</view>
+  </scroll-view>
 
-      <block wx:for="{{category.topSkills}}" wx:key="skillId" wx:for-item="skill" wx:for-index="idx">
-        <view class="skill-item">
-          <view>
-            <view class="skill-name">{{idx + 1}}. {{skill.skillName}}</view>
-            <view class="skill-summary">{{skill.summary}}</view>
-          </view>
-          <button
-            class="skill-btn"
-            size="mini"
-            data-category-id="{{category.categoryId}}"
-            data-skill-id="{{skill.skillId}}"
-            bindtap="goToSkill"
-          >查看</button>
+  <view wx:if="{{loading}}" class="loading">Loading...</view>
+
+  <view wx:else class="product-grid">
+    <view wx:for="{{products}}" wx:key="id" class="product-card card" bindtap="onProductTap" data-id="{{item.id}}">
+      <image class="product-img" src="{{item.image_url}}" mode="aspectFill" lazy-load/>
+      <view class="product-info">
+        <view class="product-name ellipsis">{{item.name}}</view>
+        <view class="price">{{item.price}}</view>
+        <view class="flex-between mt-10">
+          <text class="tag tag-gray">{{item.category}}</text>
+          <text style="font-size:22rpx;color:#999">{{item.sales_count}} sold</text>
         </view>
-      </block>
+      </view>
     </view>
-  </block>
+  </view>
+
+  <view wx:if="{{products.length < total}}" class="load-more" bindtap="onLoadMore">
+    <button class="btn-outline" size="mini">Load more</button>
+  </view>
+
+  <view wx:if="{{!loading && products.length === 0}}" class="empty">No products found</view>
 </view>

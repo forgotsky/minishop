@@ -1,0 +1,32 @@
+{
+  "id": "val_9f7c3b57",
+  "timestamp": "2025-12-29T17:00:47.509450",
+  "story_key": "test",
+  "tier": 1,
+  "gate_results": [
+    {
+      "gate_name": "block",
+      "result": "fail",
+      "message": "Validation failed",
+      "duration_ms": 0.00095367431640625,
+      "retry_count": 0,
+      "auto_fixed": false,
+      "details": {}
+    }
+  ],
+  "overall_result": "fail",
+  "total_duration_ms": 0.015735626220703125,
+  "passed": false,
+  "context": {
+    "story_key": "test",
+    "iteration": 0,
+    "max_iterations": 3,
+    "accumulated_issues": [],
+    "accumulated_fixes": [],
+    "cost_so_far": 0.0,
+    "time_elapsed_seconds": 0.0,
+    "phase": "",
+    "from_agent": "",
+    "to_agent": ""
+  }
+}

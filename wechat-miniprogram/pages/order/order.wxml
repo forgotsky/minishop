@@ -1,0 +1,18 @@
+<view class="container">
+  <view wx:if="{{orders.length === 0}}" class="empty">No orders yet</view>
+  <block wx:for="{{orders}}" wx:key="id">
+    <view class="card" bindtap="onOrderTap" data-id="{{item.id}}">
+      <view class="flex-between">
+        <text style="font-size:24rpx;color:#999">{{item.created_at}}</text>
+        <text class="tag {{item.status === 'paid' ? 'tag-green' : item.status === 'cancelled' ? 'tag-gray' : 'tag-red'}}">{{item.status}}</text>
+      </view>
+      <view class="mt-10" wx:for="{{item.items}}" wx:for-item="oi" wx:key="id" style="color:#666;font-size:26rpx">
+        {{oi.product_name}} x{{oi.quantity}}
+      </view>
+      <view class="flex-between mt-20" style="border-top:2rpx solid #f0f0f0;padding-top:14rpx">
+        <text>Total {{item.items.length}} item(s)</text>
+        <text class="price" style="font-size:36rpx">{{item.payment_amount}}</text>
+      </view>
+    </view>
+  </block>
+</view>

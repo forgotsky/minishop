@@ -1,0 +1,1644 @@
+{
+  "story_key": "test",
+  "last_updated": "2026-01-18T10:57:50.207183",
+  "entries": [
+    {
+      "id": "mem_459b587a",
+      "timestamp": "2025-12-29T14:29:34.977213",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 2 gates, 2 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_68c782da",
+      "timestamp": "2025-12-29T14:29:34.977718",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 2 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_5bd9a59c",
+      "timestamp": "2025-12-29T14:29:34.978202",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 1 gates, 0 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_8dcbc212",
+      "timestamp": "2025-12-29T14:29:34.978668",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 1 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_916ac75a",
+      "timestamp": "2025-12-29T14:29:34.979099",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 1 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-3",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_5ffe8ae1",
+      "timestamp": "2025-12-29T14:29:34.981369",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 1 gates, 0 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_2d1de147",
+      "timestamp": "2025-12-29T14:31:22.833819",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 2 gates, 2 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_97a93aee",
+      "timestamp": "2025-12-29T14:31:22.834258",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 2 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_f33c98fa",
+      "timestamp": "2025-12-29T14:31:22.834830",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 1 gates, 0 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_282d878c",
+      "timestamp": "2025-12-29T14:31:22.835450",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 1 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_00097991",
+      "timestamp": "2025-12-29T14:31:22.835964",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 1 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-3",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_80de32c4",
+      "timestamp": "2025-12-29T14:31:22.838355",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 1 gates, 0 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_5fe466b7",
+      "timestamp": "2025-12-29T14:48:41.540520",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 2 gates, 2 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_5f872449",
+      "timestamp": "2025-12-29T14:48:41.541056",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 2 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_ecae73fc",
+      "timestamp": "2025-12-29T14:48:41.541785",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 1 gates, 0 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_65ebb20e",
+      "timestamp": "2025-12-29T14:48:41.542352",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 1 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_2260f5d7",
+      "timestamp": "2025-12-29T14:48:41.542886",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 1 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-3",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_74d3a464",
+      "timestamp": "2025-12-29T14:48:41.545024",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 1 gates, 0 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_f1732c35",
+      "timestamp": "2025-12-29T16:51:42.743013",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 2 gates, 2 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_e851d2ce",
+      "timestamp": "2025-12-29T16:51:42.743813",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 2 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_a48a80f2",
+      "timestamp": "2025-12-29T16:51:42.744381",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 1 gates, 0 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_f06d4b2c",
+      "timestamp": "2025-12-29T16:51:42.744957",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 1 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_bde0f37b",
+      "timestamp": "2025-12-29T16:51:42.745477",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 1 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-3",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_d4abe30c",
+      "timestamp": "2025-12-29T16:51:42.747833",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 1 gates, 0 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_fe28dc44",
+      "timestamp": "2025-12-29T16:53:50.364413",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 2 gates, 2 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_98c9ea8e",
+      "timestamp": "2025-12-29T16:53:50.365038",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 2 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_2bb608a7",
+      "timestamp": "2025-12-29T16:53:50.365640",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 1 gates, 0 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_c59add48",
+      "timestamp": "2025-12-29T16:53:50.366233",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 1 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_0953b74a",
+      "timestamp": "2025-12-29T16:53:50.366872",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 1 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-3",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_2b729397",
+      "timestamp": "2025-12-29T16:53:50.369322",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 1 gates, 0 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_e0c06a45",
+      "timestamp": "2025-12-29T16:55:07.359969",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 2 gates, 2 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_7a084475",
+      "timestamp": "2025-12-29T16:55:07.360669",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 2 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_c8539edc",
+      "timestamp": "2025-12-29T16:55:07.361328",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 1 gates, 0 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_3ba3271c",
+      "timestamp": "2025-12-29T16:55:07.362043",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 1 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_ce7039e7",
+      "timestamp": "2025-12-29T16:55:07.362840",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 1 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-3",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_d4404177",
+      "timestamp": "2025-12-29T16:55:07.365074",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 1 gates, 0 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_7ef2ad39",
+      "timestamp": "2025-12-29T16:57:10.631523",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 2 gates, 2 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_5d1d7a67",
+      "timestamp": "2025-12-29T16:57:10.632281",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 2 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_a17b2eb5",
+      "timestamp": "2025-12-29T16:57:10.632987",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 1 gates, 0 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_a77b2efa",
+      "timestamp": "2025-12-29T16:57:10.633707",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 1 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_a7c1ce3b",
+      "timestamp": "2025-12-29T16:57:10.634543",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 1 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-3",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_d43b599e",
+      "timestamp": "2025-12-29T16:57:10.637041",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 1 gates, 0 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_9737e863",
+      "timestamp": "2025-12-29T16:57:19.840738",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 2 gates, 2 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_cc35337f",
+      "timestamp": "2025-12-29T16:57:19.841514",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 2 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_ef874785",
+      "timestamp": "2025-12-29T16:57:19.842263",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 1 gates, 0 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_e48fc465",
+      "timestamp": "2025-12-29T16:57:19.843152",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 1 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_30e4a1db",
+      "timestamp": "2025-12-29T16:57:19.843875",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 1 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-3",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_a06b2e51",
+      "timestamp": "2025-12-29T16:57:19.846211",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 1 gates, 0 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_af007d77",
+      "timestamp": "2025-12-29T16:57:33.762458",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 2 gates, 2 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_47cbb9fe",
+      "timestamp": "2025-12-29T16:57:33.763315",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 2 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_8b222347",
+      "timestamp": "2025-12-29T16:57:33.764143",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 1 gates, 0 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_cee4bdae",
+      "timestamp": "2025-12-29T16:57:33.765015",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 1 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_d194e43d",
+      "timestamp": "2025-12-29T16:57:33.765754",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 1 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-3",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_0eb7b6c0",
+      "timestamp": "2025-12-29T16:57:33.768205",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 1 gates, 0 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_8e9dcd27",
+      "timestamp": "2025-12-29T17:00:47.507514",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 2 gates, 2 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_8f414c5f",
+      "timestamp": "2025-12-29T17:00:47.508618",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 2 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_7146793b",
+      "timestamp": "2025-12-29T17:00:47.509542",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 1 gates, 0 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_691e166e",
+      "timestamp": "2025-12-29T17:00:47.510348",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 1 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_22280597",
+      "timestamp": "2025-12-29T17:00:47.511088",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 1 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-3",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_b2f8f000",
+      "timestamp": "2025-12-29T17:00:47.513548",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 1 gates, 0 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_ec2888a4",
+      "timestamp": "2025-12-29T17:00:58.039755",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 2 gates, 2 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_0d75687e",
+      "timestamp": "2025-12-29T17:00:58.041045",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 2 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_0513ab68",
+      "timestamp": "2025-12-29T17:00:58.042065",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 1 gates, 0 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_51de4c44",
+      "timestamp": "2025-12-29T17:00:58.042913",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 1 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_84ba6431",
+      "timestamp": "2025-12-29T17:00:58.043793",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 1 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-3",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_745cf7a9",
+      "timestamp": "2025-12-29T17:00:58.046379",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 1 gates, 0 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_98186902",
+      "timestamp": "2025-12-29T17:01:56.030174",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 2 gates, 2 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_cf166621",
+      "timestamp": "2025-12-29T17:01:56.031207",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 2 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_a49b0587",
+      "timestamp": "2025-12-29T17:01:56.032097",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 1 gates, 0 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_4f7a6d90",
+      "timestamp": "2025-12-29T17:01:56.032992",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 1 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_d487d49c",
+      "timestamp": "2025-12-29T17:01:56.033847",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 1 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-3",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_6689072c",
+      "timestamp": "2025-12-29T17:01:56.036653",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 1 gates, 0 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_c51b61d3",
+      "timestamp": "2025-12-29T17:02:14.700877",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 2 gates, 2 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_ccf00930",
+      "timestamp": "2025-12-29T17:02:14.701946",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 2 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_9e75685b",
+      "timestamp": "2025-12-29T17:02:14.702988",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 1 gates, 0 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_df307542",
+      "timestamp": "2025-12-29T17:02:14.703885",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 1 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_3db4be3f",
+      "timestamp": "2025-12-29T17:02:14.704802",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 1 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-3",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_61d9a59f",
+      "timestamp": "2025-12-29T17:02:14.707464",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 1 gates, 0 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_39fc976c",
+      "timestamp": "2025-12-30T10:31:36.396492",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 2 gates, 2 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_dd99e07c",
+      "timestamp": "2025-12-30T10:31:36.397837",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 2 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_3eb24571",
+      "timestamp": "2025-12-30T10:31:36.398908",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 1 gates, 0 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_af45c71c",
+      "timestamp": "2025-12-30T10:31:36.399919",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 1 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_a02c4060",
+      "timestamp": "2025-12-30T10:31:36.401019",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 1 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-3",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_d0d59fb1",
+      "timestamp": "2025-12-30T10:31:36.404161",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 1 gates, 0 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_d1662ff3",
+      "timestamp": "2025-12-30T10:32:20.830941",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 2 gates, 2 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_d3147379",
+      "timestamp": "2025-12-30T10:32:20.832467",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 2 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_bfc67d7f",
+      "timestamp": "2025-12-30T10:32:20.833518",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 1 gates, 0 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_ff08f043",
+      "timestamp": "2025-12-30T10:32:20.834583",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 1 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_c183af1b",
+      "timestamp": "2025-12-30T10:32:20.835726",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 1 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-3",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_b5532212",
+      "timestamp": "2025-12-30T10:32:20.838630",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 1 gates, 0 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_74b766c0",
+      "timestamp": "2025-12-30T10:50:21.303284",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 2 gates, 2 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_195cbe8d",
+      "timestamp": "2025-12-30T10:50:21.306281",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 2 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_bc11fa08",
+      "timestamp": "2025-12-30T10:50:21.307726",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 1 gates, 0 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_283c99ad",
+      "timestamp": "2025-12-30T10:50:21.308959",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 1 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_74792329",
+      "timestamp": "2025-12-30T10:50:21.310029",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 1 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-3",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_ab377dfe",
+      "timestamp": "2025-12-30T10:50:21.312995",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 1 gates, 0 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_8c955b1c",
+      "timestamp": "2026-01-03T14:30:38.226838",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 2 gates, 2 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_555dde17",
+      "timestamp": "2026-01-03T14:30:38.228560",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 2 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_3858cf39",
+      "timestamp": "2026-01-03T14:30:38.229681",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 1 gates, 0 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_0f015277",
+      "timestamp": "2026-01-03T14:30:38.230833",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 1 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_5ece956e",
+      "timestamp": "2026-01-03T14:30:38.231980",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 1 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-3",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_4179d48f",
+      "timestamp": "2026-01-03T14:30:38.235600",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 1 gates, 0 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_89eecf3b",
+      "timestamp": "2026-01-16T12:33:31.096819",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 2 gates, 2 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_3211a77c",
+      "timestamp": "2026-01-16T12:33:31.098289",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 2 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_229ac8b9",
+      "timestamp": "2026-01-16T12:33:31.099487",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 1 gates, 0 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_228f00ae",
+      "timestamp": "2026-01-16T12:33:31.100808",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 1 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_aa694938",
+      "timestamp": "2026-01-16T12:33:31.101946",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 1 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-3",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_3dc70b76",
+      "timestamp": "2026-01-16T12:33:31.105274",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 1 gates, 0 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_ba55f0a7",
+      "timestamp": "2026-01-16T12:33:49.010662",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 2 gates, 2 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_73310bd6",
+      "timestamp": "2026-01-16T12:33:49.011864",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 2 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_548ee093",
+      "timestamp": "2026-01-16T12:33:49.013071",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 1 gates, 0 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_2c814794",
+      "timestamp": "2026-01-16T12:33:49.014570",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 1 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_406b70da",
+      "timestamp": "2026-01-16T12:33:49.015759",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 1 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-3",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_333caa75",
+      "timestamp": "2026-01-16T12:33:49.018884",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 1 gates, 0 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_56d20652",
+      "timestamp": "2026-01-18T10:55:19.079211",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 2 gates, 2 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_a528af7f",
+      "timestamp": "2026-01-18T10:55:19.080394",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 2 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_fd2556f2",
+      "timestamp": "2026-01-18T10:55:19.081868",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 1 gates, 0 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_7940e07c",
+      "timestamp": "2026-01-18T10:55:19.083125",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 1 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_2854b82f",
+      "timestamp": "2026-01-18T10:55:19.084333",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 1 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-3",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_8da04b63",
+      "timestamp": "2026-01-18T10:55:19.087462",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 1 gates, 0 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_cf7688d2",
+      "timestamp": "2026-01-18T10:57:50.198760",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 2 gates, 2 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_f746aa2d",
+      "timestamp": "2026-01-18T10:57:50.200075",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 2 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_1d6fd608",
+      "timestamp": "2026-01-18T10:57:50.201323",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 1 gates, 0 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_b3f67802",
+      "timestamp": "2026-01-18T10:57:50.202522",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 1 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_de116433",
+      "timestamp": "2026-01-18T10:57:50.203723",
+      "agent": "VALIDATOR",
+      "content": "Validation pass: 1 gates, 1 passed",
+      "tags": [
+        "validation",
+        "tier-3",
+        "pass"
+      ],
+      "story_key": "test",
+      "references": []
+    },
+    {
+      "id": "mem_b34cccdf",
+      "timestamp": "2026-01-18T10:57:50.207147",
+      "agent": "VALIDATOR",
+      "content": "Validation fail: 1 gates, 0 passed",
+      "tags": [
+        "validation",
+        "tier-1",
+        "fail"
+      ],
+      "story_key": "test",
+      "references": []
+    }
+  ]
+}

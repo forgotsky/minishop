@@ -1,0 +1,7 @@
+.detail-img { width: 100%; height: 500rpx; background: #eee; }
+.bottom-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  display: flex; gap: 20rpx; padding: 20rpx 30rpx; background: #fff;
+  box-shadow: 0 -2rpx 12rpx rgba(0,0,0,0.06);
+}
+.bottom-bar button { margin: 0; }

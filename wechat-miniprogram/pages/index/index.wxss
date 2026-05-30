@@ -1,81 +1,25 @@
-.page {
-  padding: 24rpx;
+.search-bar {
+  display: flex; gap: 16rpx; padding: 20rpx; background: #fff;
+  margin-bottom: 16rpx; border-radius: 16rpx;
+}
+.search-bar input {
+  flex: 1; background: #f5f5f5; border-radius: 12rpx; padding: 14rpx 20rpx; font-size: 28rpx;
 }
 
-.hero {
-  margin-bottom: 20rpx;
-  background: linear-gradient(130deg, #0d3b66 0%, #1d6fa5 100%);
-  color: #fff;
+.cat-scroll { white-space: nowrap; padding: 0 20rpx 16rpx; }
+.cat-tag {
+  display: inline-block; padding: 10rpx 24rpx; margin-right: 12rpx;
+  border-radius: 999rpx; background: #fff; font-size: 26rpx; color: #666;
 }
+.cat-tag.active { background: #ff5500; color: #fff; }
 
-.hero-title {
-  font-size: 40rpx;
-  font-weight: 700;
+.product-grid { display: flex; flex-wrap: wrap; padding: 0 10rpx; }
+.product-card {
+  width: calc(50% - 40rpx); margin: 0 10rpx 20rpx; overflow: hidden;
 }
+.product-img { width: 100%; height: 280rpx; border-radius: 12rpx; background: #eee; }
+.product-name { font-size: 28rpx; font-weight: 500; margin-top: 12rpx; }
+.product-info { padding: 16rpx 6rpx 0; }
+.product-info .price { font-size: 32rpx; margin-top: 8rpx; }
 
-.hero-subtitle {
-  margin-top: 12rpx;
-  font-size: 26rpx;
-  opacity: 0.9;
-}
-
-.template-btn {
-  margin-top: 16rpx;
-  background: #ffffff;
-  color: #0d3b66;
-  border: 1rpx solid #d9e8f7;
-}
-
-.category-card {
-  margin-bottom: 18rpx;
-}
-
-.row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.name {
-  font-size: 32rpx;
-  font-weight: 700;
-}
-
-.stage {
-  padding: 6rpx 12rpx;
-  border-radius: 999rpx;
-  background: #eef4ff;
-  color: #2d4f73;
-  font-size: 22rpx;
-}
-
-.label {
-  margin: 14rpx 0;
-  font-size: 24rpx;
-  color: #5a6d80;
-}
-
-.skill-item {
-  display: flex;
-  justify-content: space-between;
-  gap: 14rpx;
-  border-top: 1rpx solid #edf1f5;
-  padding: 14rpx 0;
-}
-
-.skill-name {
-  font-size: 28rpx;
-  font-weight: 600;
-}
-
-.skill-summary {
-  margin-top: 6rpx;
-  font-size: 23rpx;
-  color: #6f7f8f;
-}
-
-.skill-btn {
-  background: #0d3b66;
-  color: #fff;
-  margin: 0;
-}
+.load-more { text-align: center; padding: 20rpx; }

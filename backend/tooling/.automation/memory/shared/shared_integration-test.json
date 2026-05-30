@@ -1,0 +1,306 @@
+{
+  "story_key": "integration-test",
+  "last_updated": "2026-01-18T10:57:50.036775",
+  "entries": [
+    {
+      "id": "mem_1bf0cedf",
+      "timestamp": "2025-12-22T10:21:29.593840",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for implementation",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "integration-test",
+      "references": []
+    },
+    {
+      "id": "mem_bbf9bedd",
+      "timestamp": "2025-12-22T10:21:59.779219",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for implementation",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "integration-test",
+      "references": []
+    },
+    {
+      "id": "mem_62ae719a",
+      "timestamp": "2025-12-22T13:25:54.098467",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for implementation",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "integration-test",
+      "references": []
+    },
+    {
+      "id": "mem_38159972",
+      "timestamp": "2025-12-22T13:26:44.920261",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for implementation",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "integration-test",
+      "references": []
+    },
+    {
+      "id": "mem_dcd8618b",
+      "timestamp": "2025-12-29T16:55:07.181956",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for implementation",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "integration-test",
+      "references": []
+    },
+    {
+      "id": "mem_1f13e025",
+      "timestamp": "2025-12-29T16:57:10.456354",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for implementation",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "integration-test",
+      "references": []
+    },
+    {
+      "id": "mem_e68d0084",
+      "timestamp": "2025-12-29T16:57:19.664724",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for implementation",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "integration-test",
+      "references": []
+    },
+    {
+      "id": "mem_605a359f",
+      "timestamp": "2025-12-29T16:57:33.585279",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for implementation",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "integration-test",
+      "references": []
+    },
+    {
+      "id": "mem_85f0bea5",
+      "timestamp": "2025-12-29T17:00:47.333553",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for implementation",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "integration-test",
+      "references": []
+    },
+    {
+      "id": "mem_d18847be",
+      "timestamp": "2025-12-29T17:00:57.863152",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for implementation",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "integration-test",
+      "references": []
+    },
+    {
+      "id": "mem_db132645",
+      "timestamp": "2025-12-29T17:01:55.853665",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for implementation",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "integration-test",
+      "references": []
+    },
+    {
+      "id": "mem_4d894b93",
+      "timestamp": "2025-12-29T17:02:14.524618",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for implementation",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "integration-test",
+      "references": []
+    },
+    {
+      "id": "mem_ba3acef4",
+      "timestamp": "2025-12-30T10:26:07.181951",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for implementation",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "integration-test",
+      "references": []
+    },
+    {
+      "id": "mem_3dcb00be",
+      "timestamp": "2025-12-30T10:27:00.143868",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for implementation",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "integration-test",
+      "references": []
+    },
+    {
+      "id": "mem_a18e705f",
+      "timestamp": "2025-12-30T10:28:59.261095",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for implementation",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "integration-test",
+      "references": []
+    },
+    {
+      "id": "mem_07703d71",
+      "timestamp": "2025-12-30T10:29:59.362582",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for implementation",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "integration-test",
+      "references": []
+    },
+    {
+      "id": "mem_b4ad218a",
+      "timestamp": "2025-12-30T10:31:36.224188",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for implementation",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "integration-test",
+      "references": []
+    },
+    {
+      "id": "mem_429b4e92",
+      "timestamp": "2025-12-30T10:32:20.657444",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for implementation",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "integration-test",
+      "references": []
+    },
+    {
+      "id": "mem_f0166aa6",
+      "timestamp": "2025-12-30T10:50:21.129098",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for implementation",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "integration-test",
+      "references": []
+    },
+    {
+      "id": "mem_bb260d11",
+      "timestamp": "2026-01-03T14:30:38.052311",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for implementation",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "integration-test",
+      "references": []
+    },
+    {
+      "id": "mem_3309650f",
+      "timestamp": "2026-01-16T12:33:30.919658",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for implementation",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "integration-test",
+      "references": []
+    },
+    {
+      "id": "mem_8294aaab",
+      "timestamp": "2026-01-16T12:33:48.830271",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for implementation",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "integration-test",
+      "references": []
+    },
+    {
+      "id": "mem_f9571d90",
+      "timestamp": "2026-01-18T10:54:54.616332",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for implementation",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "integration-test",
+      "references": []
+    },
+    {
+      "id": "mem_0dabbe7b",
+      "timestamp": "2026-01-18T10:55:18.910712",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for implementation",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "integration-test",
+      "references": []
+    },
+    {
+      "id": "mem_1f1a34d7",
+      "timestamp": "2026-01-18T10:57:50.036734",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for implementation",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "integration-test",
+      "references": []
+    }
+  ]
+}

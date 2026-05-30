@@ -1,0 +1,32 @@
+{
+  "id": "val_9a046f3a",
+  "timestamp": "2026-01-18T10:57:50.202427",
+  "story_key": "test",
+  "tier": 1,
+  "gate_results": [
+    {
+      "gate_name": "test",
+      "result": "pass",
+      "message": "Validation passed",
+      "duration_ms": 0.0,
+      "retry_count": 0,
+      "auto_fixed": false,
+      "details": {}
+    }
+  ],
+  "overall_result": "pass",
+  "total_duration_ms": 0.0021457672119140625,
+  "passed": true,
+  "context": {
+    "story_key": "test",
+    "iteration": 0,
+    "max_iterations": 3,
+    "accumulated_issues": [],
+    "accumulated_fixes": [],
+    "cost_so_far": 0.0,
+    "time_elapsed_seconds": 0.0,
+    "phase": "",
+    "from_agent": "",
+    "to_agent": ""
+  }
+}

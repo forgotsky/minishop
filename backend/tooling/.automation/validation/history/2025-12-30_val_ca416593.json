@@ -1,0 +1,41 @@
+{
+  "id": "val_ca416593",
+  "timestamp": "2025-12-30T10:31:36.396175",
+  "story_key": "test",
+  "tier": 1,
+  "gate_results": [
+    {
+      "gate_name": "gate1",
+      "result": "pass",
+      "message": "Validation passed",
+      "duration_ms": 0.0011920928955078125,
+      "retry_count": 0,
+      "auto_fixed": false,
+      "details": {}
+    },
+    {
+      "gate_name": "gate2",
+      "result": "pass",
+      "message": "Validation passed",
+      "duration_ms": 0.0,
+      "retry_count": 0,
+      "auto_fixed": false,
+      "details": {}
+    }
+  ],
+  "overall_result": "pass",
+  "total_duration_ms": 0.005245208740234375,
+  "passed": true,
+  "context": {
+    "story_key": "test",
+    "iteration": 0,
+    "max_iterations": 3,
+    "accumulated_issues": [],
+    "accumulated_fixes": [],
+    "cost_so_far": 0.0,
+    "time_elapsed_seconds": 0.0,
+    "phase": "",
+    "from_agent": "",
+    "to_agent": ""
+  }
+}

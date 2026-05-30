@@ -1,0 +1,116 @@
+#compdef run-story.sh run-story run-collab.sh run-collab
+
+# Devflow Story Runner Zsh Completion
+#
+# Installation:
+# 1. Copy this file to a directory in your $fpath (e.g., ~/.zsh/completions/)
+# 2. Add to ~/.zshrc: fpath=(~/.zsh/completions $fpath)
+# 3. Reload: source ~/.zshrc
+#
+# Or for quick setup, add to ~/.zshrc:
+#   source /path/to/devflow/tooling/completions/_run-story
+
+# Agent personas
+local -a agents
+agents=(
+    'SM:Scrum Master - Sprint coordination and Agile practices'
+    'DEV:Developer - Code implementation and technical solutions'
+    'BA:Business Analyst - Requirements analysis and stakeholder alignment'
+    'ARCHITECT:Architect - System design and technical decisions'
+    'PM:Product Manager - Roadmap and feature prioritization'
+    'WRITER:Technical Writer - Documentation and user guides'
+    'MAINTAINER:Maintainer - Code quality and long-term health'
+    'REVIEWER:Code Reviewer - Quality assurance and best practices'
+)
+
+# Collaboration modes
+local -a modes
+modes=(
+    'swarm:Multi-agent debate with consensus building'
+    'pair:DEV + REVIEWER pair programming'
+    'auto:Intelligent auto-routing to best agents'
+    'sequential:Traditional sequential pipeline'
+)
+
+# Model options
+local -a models
+models=(
+    'opus:Claude Opus - Most capable, highest quality'
+    'sonnet:Claude Sonnet - Balanced performance'
+    'haiku:Claude Haiku - Fast and efficient'
+)
+
+# Common options
+local -a common_opts
+common_opts=(
+    '--help[Show help message]'
+    '--quiet[Reduce output verbosity]'
+    '--debug[Enable debug mode]'
+    '--dry-run[Show what would be done without executing]'
+)
+
+# Collaboration options
+local -a collab_opts
+collab_opts=(
+    '--swarm[Enable swarm mode - multi-agent debate]'
+    '--pair[Enable pair programming mode]'
+    '--auto-route[Enable auto-routing mode]'
+    '--sequential[Enable sequential mode]'
+    '--agents[Comma-separated list of agents]:agent list:_values -s , agents SM DEV BA ARCHITECT PM WRITER MAINTAINER REVIEWER'
+    '--max-iterations[Maximum iterations]:iterations:(1 2 3 4 5)'
+    '--model[Claude model to use]:model:(opus sonnet haiku)'
+    '--budget[Budget limit in USD]:budget:'
+    '--memory[Show shared memory and knowledge graph]'
+    '--query[Query the knowledge graph]:query:'
+    '--route-only[Only show routing decision]'
+)
+
+# run-story.sh specific completions
+_run-story() {
+    local curcontext="$curcontext" state line
+    typeset -A opt_args
+
+    _arguments -C \
+        '1:story key or description:->story' \
+        '*::option:->option' \
+        $common_opts \
+        $collab_opts
+
+    case $state in
+        story)
+            # Could provide completions from JIRA/etc if configured
+            _message 'story key (e.g., PROJ-123) or task description'
+            ;;
+        option)
+            _arguments $common_opts $collab_opts
+            ;;
+    esac
+}
+
+# run-collab.py specific completions
+_run-collab() {
+    _arguments \
+        '1:story key or description:' \
+        '--swarm[Enable swarm mode]' \
+        '--pair[Enable pair programming mode]' \
+        '--auto[Enable auto-routing mode]' \
+        '--sequential[Enable sequential mode]' \
+        '--agents[Agent list]:agents:_values -s , agents SM DEV BA ARCHITECT PM WRITER MAINTAINER REVIEWER' \
+        '--max-iterations[Max iterations]:iterations:(1 2 3 4 5 10)' \
+        '--model[Claude model]:model:(opus sonnet haiku)' \
+        '--budget[Budget limit]:budget:' \
+        '--memory[Show shared memory]' \
+        '--query[Query knowledge graph]:query:' \
+        '--route-only[Only show routing]' \
+        '--quiet[Reduce verbosity]' \
+        '--help[Show help]'
+}
+
+# Alias completions
+compdef _run-story run-story.sh
+compdef _run-story run-story
+compdef _run-collab run-collab.py
+compdef _run-collab run-collab
+
+# Export for direct sourcing
+_run-story "$@"

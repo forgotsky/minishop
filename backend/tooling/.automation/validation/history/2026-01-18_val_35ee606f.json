@@ -1,0 +1,32 @@
+{
+  "id": "val_35ee606f",
+  "timestamp": "2026-01-18T10:54:46.532296",
+  "story_key": "validation-check",
+  "tier": 3,
+  "gate_results": [
+    {
+      "gate_name": "tests_pass",
+      "result": "fail",
+      "message": "Validation failed",
+      "duration_ms": 301.6009330749512,
+      "retry_count": 0,
+      "auto_fixed": false,
+      "details": {}
+    }
+  ],
+  "overall_result": "fail",
+  "total_duration_ms": 301.6519546508789,
+  "passed": false,
+  "context": {
+    "story_key": "validation-check",
+    "iteration": 0,
+    "max_iterations": 3,
+    "accumulated_issues": [],
+    "accumulated_fixes": [],
+    "cost_so_far": 0.0,
+    "time_elapsed_seconds": 0.0,
+    "phase": "tier_3",
+    "from_agent": "",
+    "to_agent": ""
+  }
+}

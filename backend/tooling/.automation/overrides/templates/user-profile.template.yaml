@@ -1,0 +1,62 @@
+# User Profile - Global Personalization Settings
+# Copy this file to ../user-profile.yaml and customize
+#
+# This file contains user preferences that apply to all agents.
+# Edit the values below to personalize your automation experience.
+
+user:
+  # Your name (agents will address you by this name)
+  name: "Your Name"
+
+  # Your preferred language for agent communication
+  # Options: en, es, pt, fr, de, zh, ja
+  preferred_language: "en"
+
+  # Your technical experience level
+  # Options: junior, mid, senior, principal
+  technical_level: "senior"
+
+  # Communication style preference
+  # Options: concise, detailed, verbose
+  communication_style: "concise"
+
+preferences:
+  # Code style preferences (agents will follow these)
+  code_style:
+    - "Prefer explicit types over inference"
+    - "Use meaningful variable names"
+    # Add your own preferences:
+    # - "Your preference here"
+
+  # Review preferences
+  # Options: quick, standard, thorough
+  review_depth: "standard"
+
+  # Testing preferences
+  testing:
+    - "Write unit tests for business logic"
+    # Add your testing preferences:
+    # - "Your testing preference here"
+
+# Project-specific context that all agents should know
+context:
+  # Technology stack - uncomment and customize for your project
+  stack: []
+    # - "React/TypeScript for frontend"
+    # - "Node.js/Express for backend"
+    # - "PostgreSQL for database"
+
+  # Project conventions
+  conventions: []
+    # - "Feature-based folder structure"
+    # - "Repository pattern for data access"
+
+  # Important project paths (optional)
+  # paths:
+  #   app_root: "src"
+  #   test_path: "tests"
+
+# Memories - persistent facts agents should always remember
+memories: []
+  # - "Always run linter before committing"
+  # - "Tests must pass before marking story complete"

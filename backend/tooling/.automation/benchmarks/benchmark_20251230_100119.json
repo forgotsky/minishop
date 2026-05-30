@@ -1,0 +1,314 @@
+[
+  {
+    "test_id": "sim_20251230_100119",
+    "task": "Design a secure authentication system with OAuth2 and JWT",
+    "agents": [
+      "ARCHITECT",
+      "DEV",
+      "REVIEWER"
+    ],
+    "personas_used": [
+      "Enterprise Architect",
+      "Cloud Native",
+      "Pragmatic Minimalist"
+    ],
+    "total_rounds": 5,
+    "termination_reason": "max_rounds",
+    "final_agreement_score": 0.4152174154581419,
+    "total_tokens": 4674,
+    "total_cost_usd": 0.046740000000000004,
+    "timestamp": "2025-12-30T10:01:19.418096",
+    "duration_seconds": 0.0007348060607910156,
+    "rounds": [
+      {
+        "round_num": 0,
+        "new_arguments": 4,
+        "challenges_raised": 4,
+        "concessions_made": 0,
+        "agreement_score": 0.16548581440877563,
+        "agreement_delta": 0.16548581440877563,
+        "unique_issues": 8,
+        "tokens_used": 639,
+        "cost_usd": 0.006390000000000001,
+        "positions_changed": 1
+      },
+      {
+        "round_num": 1,
+        "new_arguments": 5,
+        "challenges_raised": 2,
+        "concessions_made": 0,
+        "agreement_score": 0.2572500710936962,
+        "agreement_delta": 0.09176425668492055,
+        "unique_issues": 4,
+        "tokens_used": 923,
+        "cost_usd": 0.00923,
+        "positions_changed": 1
+      },
+      {
+        "round_num": 2,
+        "new_arguments": 2,
+        "challenges_raised": 0,
+        "concessions_made": 1,
+        "agreement_score": 0.32163266454672484,
+        "agreement_delta": 0.06438259345302866,
+        "unique_issues": 2,
+        "tokens_used": 1405,
+        "cost_usd": 0.014050000000000002,
+        "positions_changed": 0
+      },
+      {
+        "round_num": 3,
+        "new_arguments": 3,
+        "challenges_raised": 1,
+        "concessions_made": 2,
+        "agreement_score": 0.3887506875113108,
+        "agreement_delta": 0.06711802296458597,
+        "unique_issues": 1,
+        "tokens_used": 887,
+        "cost_usd": 0.008870000000000001,
+        "positions_changed": 0
+      },
+      {
+        "round_num": 4,
+        "new_arguments": 2,
+        "challenges_raised": 1,
+        "concessions_made": 2,
+        "agreement_score": 0.4152174154581419,
+        "agreement_delta": 0.02646672794683108,
+        "unique_issues": 0,
+        "tokens_used": 820,
+        "cost_usd": 0.0082,
+        "positions_changed": 0
+      }
+    ],
+    "arguments_per_round": [
+      4,
+      5,
+      2,
+      3,
+      2
+    ],
+    "agreement_progression": [
+      0.16548581440877563,
+      0.2572500710936962,
+      0.32163266454672484,
+      0.3887506875113108,
+      0.4152174154581419
+    ],
+    "marginal_value": [
+      15.109324169151417,
+      8.578160960833376,
+      1.8817266437937983,
+      5.2662685790821415,
+      3.981301560327209
+    ]
+  },
+  {
+    "test_id": "sim_20251230_100119",
+    "task": "Implement a caching layer for the API with Redis",
+    "agents": [
+      "DEV",
+      "REVIEWER",
+      "SECURITY"
+    ],
+    "personas_used": [
+      "Enterprise Architect",
+      "Cloud Native",
+      "Legacy Steward"
+    ],
+    "total_rounds": 5,
+    "termination_reason": "max_rounds",
+    "final_agreement_score": 0.633611109969572,
+    "total_tokens": 5717,
+    "total_cost_usd": 0.057170000000000006,
+    "timestamp": "2025-12-30T10:01:19.418465",
+    "duration_seconds": 0.00034999847412109375,
+    "rounds": [
+      {
+        "round_num": 0,
+        "new_arguments": 6,
+        "challenges_raised": 4,
+        "concessions_made": 0,
+        "agreement_score": 0.24779613641768966,
+        "agreement_delta": 0.24779613641768966,
+        "unique_issues": 8,
+        "tokens_used": 896,
+        "cost_usd": 0.008960000000000001,
+        "positions_changed": 1
+      },
+      {
+        "round_num": 1,
+        "new_arguments": 6,
+        "challenges_raised": 2,
+        "concessions_made": 0,
+        "agreement_score": 0.4224856503032449,
+        "agreement_delta": 0.17468951388555526,
+        "unique_issues": 4,
+        "tokens_used": 745,
+        "cost_usd": 0.007450000000000001,
+        "positions_changed": 1
+      },
+      {
+        "round_num": 2,
+        "new_arguments": 2,
+        "challenges_raised": 1,
+        "concessions_made": 1,
+        "agreement_score": 0.49914978983499475,
+        "agreement_delta": 0.07666413953174983,
+        "unique_issues": 2,
+        "tokens_used": 1241,
+        "cost_usd": 0.012410000000000001,
+        "positions_changed": 0
+      },
+      {
+        "round_num": 3,
+        "new_arguments": 3,
+        "challenges_raised": 0,
+        "concessions_made": 1,
+        "agreement_score": 0.5746733088536397,
+        "agreement_delta": 0.0755235190186449,
+        "unique_issues": 1,
+        "tokens_used": 1454,
+        "cost_usd": 0.01454,
+        "positions_changed": 0
+      },
+      {
+        "round_num": 4,
+        "new_arguments": 1,
+        "challenges_raised": 0,
+        "concessions_made": 3,
+        "agreement_score": 0.633611109969572,
+        "agreement_delta": 0.05893780111593239,
+        "unique_issues": 0,
+        "tokens_used": 1381,
+        "cost_usd": 0.013810000000000001,
+        "positions_changed": 0
+      }
+    ],
+    "arguments_per_round": [
+      6,
+      6,
+      2,
+      3,
+      1
+    ],
+    "agreement_progression": [
+      0.24779613641768966,
+      0.4224856503032449,
+      0.49914978983499475,
+      0.5746733088536397,
+      0.633611109969572
+    ],
+    "marginal_value": [
+      13.926296165376002,
+      13.083080723296044,
+      3.03516631371273,
+      2.582692703016815,
+      1.1508892187974828
+    ]
+  },
+  {
+    "test_id": "sim_20251230_100119",
+    "task": "Refactor the monolith into microservices",
+    "agents": [
+      "ARCHITECT",
+      "DEV",
+      "MAINTAINER"
+    ],
+    "personas_used": [
+      "Enterprise Architect",
+      "Cloud Native",
+      "Pragmatic Minimalist"
+    ],
+    "total_rounds": 5,
+    "termination_reason": "max_rounds",
+    "final_agreement_score": 0.6020975857005524,
+    "total_tokens": 6145,
+    "total_cost_usd": 0.061450000000000005,
+    "timestamp": "2025-12-30T10:01:19.418781",
+    "duration_seconds": 0.0003027915954589844,
+    "rounds": [
+      {
+        "round_num": 0,
+        "new_arguments": 7,
+        "challenges_raised": 2,
+        "concessions_made": 0,
+        "agreement_score": 0.21906235961694137,
+        "agreement_delta": 0.21906235961694137,
+        "unique_issues": 8,
+        "tokens_used": 1410,
+        "cost_usd": 0.014100000000000001,
+        "positions_changed": 1
+      },
+      {
+        "round_num": 1,
+        "new_arguments": 4,
+        "challenges_raised": 1,
+        "concessions_made": 1,
+        "agreement_score": 0.3745279924008167,
+        "agreement_delta": 0.15546563278387532,
+        "unique_issues": 4,
+        "tokens_used": 1452,
+        "cost_usd": 0.014520000000000002,
+        "positions_changed": 1
+      },
+      {
+        "round_num": 2,
+        "new_arguments": 2,
+        "challenges_raised": 1,
+        "concessions_made": 2,
+        "agreement_score": 0.49082614889689385,
+        "agreement_delta": 0.11629815649607717,
+        "unique_issues": 2,
+        "tokens_used": 1190,
+        "cost_usd": 0.0119,
+        "positions_changed": 0
+      },
+      {
+        "round_num": 3,
+        "new_arguments": 2,
+        "challenges_raised": 1,
+        "concessions_made": 1,
+        "agreement_score": 0.5596567470953212,
+        "agreement_delta": 0.06883059819842735,
+        "unique_issues": 1,
+        "tokens_used": 736,
+        "cost_usd": 0.00736,
+        "positions_changed": 0
+      },
+      {
+        "round_num": 4,
+        "new_arguments": 2,
+        "challenges_raised": 0,
+        "concessions_made": 2,
+        "agreement_score": 0.6020975857005524,
+        "agreement_delta": 0.04244083860523118,
+        "unique_issues": 0,
+        "tokens_used": 1357,
+        "cost_usd": 0.01357,
+        "positions_changed": 0
+      }
+    ],
+    "arguments_per_round": [
+      7,
+      4,
+      2,
+      2,
+      2
+    ],
+    "agreement_progression": [
+      0.21906235961694137,
+      0.3745279924008167,
+      0.49082614889689385,
+      0.5596567470953212,
+      0.6020975857005524
+    ],
+    "marginal_value": [
+      7.9366124795527755,
+      4.5142261211010695,
+      3.498303836101489,
+      5.0112853016090675,
+      1.786594241748203
+    ]
+  }
+]

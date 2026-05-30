@@ -1,0 +1,34 @@
+<view class="container">
+  <view wx:if="{{items.length === 0}}" class="empty">Your cart is empty</view>
+
+  <view wx:else>
+    <view wx:for="{{items}}" wx:key="id" class="cart-item card">
+      <view class="cb-box {{item._checked ? 'cb-box--on' : ''}}" bindtap="onToggleItem" data-id="{{item.id}}" hover-class="cb-box-hover">
+        <text wx:if="{{item._checked}}" class="cb-tick">✓</text>
+      </view>
+      <image class="cart-img" src="{{item.product_image}}" mode="aspectFill"/>
+      <view class="flex-1" style="margin-left:20rpx">
+        <view class="ellipsis" style="font-weight:500">{{item.product_name}}</view>
+        <view class="price mt-10">{{item.subtotal}}</view>
+      </view>
+      <view style="text-align:center">
+        <view class="qty-btn" bindtap="onQtyChange" data-id="{{item.id}}" data-qty="{{item.quantity + 1}}">+</view>
+        <text style="font-size:32rpx;font-weight:bold;margin:8rpx 0">{{item.quantity}}</text>
+        <view wx:if="{{item.quantity > 1}}" class="qty-btn" bindtap="onQtyChange" data-id="{{item.id}}" data-qty="{{item.quantity - 1}}">-</view>
+        <view wx:else class="qty-btn qty-btn--disabled">-</view>
+        <view class="remove-btn" bindtap="onRemove" data-id="{{item.id}}">Del</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="cart-footer" wx:if="{{items.length > 0}}">
+    <view class="cb-box {{allChecked ? 'cb-box--on' : ''}}" bindtap="onToggleAll" hover-class="cb-box-hover">
+      <text wx:if="{{allChecked}}" class="cb-tick">✓</text>
+    </view>
+    <text style="margin-left:12rpx">All</text>
+    <view class="flex-1" style="text-align:right;padding-right:20rpx">
+      <text>Total: </text><text class="price" style="font-size:36rpx">{{selectedTotal}}</text>
+    </view>
+    <button class="btn" bindtap="onCheckout">Checkout</button>
+  </view>
+</view>

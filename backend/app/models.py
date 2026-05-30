@@ -1,66 +1,161 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
+from sqlalchemy import (
+    Column, Integer, String, Float, Boolean, DateTime, ForeignKey, Text, Enum as SAEnum,
+)
 from sqlalchemy.sql import func
-from sqlalchemy.dialects.sqlite import JSON as SQLITE_JSON
-from sqlalchemy.dialects.postgresql import JSONB
-from sqlalchemy import JSON
 from sqlalchemy.orm import relationship
 from .db import Base
+import enum
 
 
-def json_column():
-    # Use JSON/JSONB depending on backend
-    return Column(JSON().with_variant(JSONB, "postgresql").with_variant(SQLITE_JSON, "sqlite"))
+class OrderStatus(str, enum.Enum):
+    PENDING = "pending"
+    PAID = "paid"
+    SHIPPED = "shipped"
+    DELIVERED = "delivered"
+    CANCELLED = "cancelled"
 
 
-class Category(Base):
-    __tablename__ = "categories"
+class CouponType(str, enum.Enum):
+    FULL_REDUCTION = "full_reduction"  # 满减
+    DISCOUNT = "discount"              # 折扣
+
+
+class CouponStatus(str, enum.Enum):
+    UNUSED = "unused"
+    USED = "used"
+    EXPIRED = "expired"
+
+
+# --- User ---
+class User(Base):
+    __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
-    category_id = Column(String, unique=True, index=True, nullable=False)
-    name = Column(String, nullable=False)
-    stage = Column(String, nullable=False)
-    source = Column(String, nullable=False, default="seed")
-    subject = Column(String, nullable=True)
+    openid = Column(String, unique=True, index=True, nullable=False)
+    nickname = Column(String, nullable=True)
+    avatar = Column(String, nullable=True)
+    phone = Column(String, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
-    skills = relationship("Skill", back_populates="category", cascade="all, delete-orphan")
+    addresses = relationship("Address", back_populates="user", cascade="all, delete-orphan")
+    cart_items = relationship("CartItem", back_populates="user", cascade="all, delete-orphan")
+    orders = relationship("Order", back_populates="user", cascade="all, delete-orphan")
+    coupons = relationship("UserCoupon", back_populates="user", cascade="all, delete-orphan")
 
 
-class Skill(Base):
-    __tablename__ = "skills"
+# --- Address ---
+class Address(Base):
+    __tablename__ = "addresses"
 
     id = Column(Integer, primary_key=True, index=True)
-    skill_id = Column(String, index=True, nullable=False)
-    category_id = Column(Integer, ForeignKey("categories.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    full_name = Column(String, nullable=False)
+    phone = Column(String, nullable=False)
+    province = Column(String, nullable=False)
+    city = Column(String, nullable=False)
+    district = Column(String, nullable=False)
+    street = Column(String, nullable=False)
+    zip_code = Column(String, nullable=True)
+    is_default = Column(Boolean, default=False)
+
+    user = relationship("User", back_populates="addresses")
+
+
+# --- Product ---
+class Product(Base):
+    __tablename__ = "products"
+
+    id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
-    summary = Column(String, nullable=False)
-
-    category = relationship("Category", back_populates="skills")
-    levels = relationship("Level", back_populates="skill", cascade="all, delete-orphan")
-
-
-class Level(Base):
-    __tablename__ = "levels"
-
-    id = Column(Integer, primary_key=True, index=True)
-    skill_id = Column(Integer, ForeignKey("skills.id"), nullable=False)
-    level = Column(String, nullable=False)
-    title = Column(String, nullable=False)
-    objective = Column(String, nullable=False)
-    points = json_column()
-    micro_split = json_column()
-
-    skill = relationship("Skill", back_populates="levels")
-
-
-class Plan(Base):
-    __tablename__ = "plans"
-
-    id = Column(Integer, primary_key=True, index=True)
-    plan_id = Column(String, unique=True, index=True, nullable=False)
-    skill_ref = Column(String, nullable=True)
-    daily_minutes = Column(Integer, nullable=False)
-    days_per_week = Column(Integer, nullable=False)
-    schedule = json_column()
-    flat_tasks = json_column()
+    description = Column(Text, nullable=True)
+    price = Column(Float, nullable=False)
+    image_url = Column(String, nullable=True)
+    images = Column(String, nullable=True)  # comma-separated URLs
+    stock = Column(Integer, default=0)
+    category = Column(String, nullable=False, index=True)
+    is_on_sale = Column(Boolean, default=True)
+    sales_count = Column(Integer, default=0)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+
+# --- CartItem ---
+class CartItem(Base):
+    __tablename__ = "cart_items"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
+    quantity = Column(Integer, nullable=False, default=1)
+
+    user = relationship("User", back_populates="cart_items")
+    product = relationship("Product")
+
+
+# --- Order ---
+class Order(Base):
+    __tablename__ = "orders"
+
+    id = Column(Integer, primary_key=True, index=True)
+    order_no = Column(String, unique=True, index=True, nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    address_id = Column(Integer, ForeignKey("addresses.id"), nullable=True)
+    address_snapshot = Column(String, nullable=True)  # JSON snapshot of address at order time
+    total_amount = Column(Float, nullable=False, default=0)
+    discount_amount = Column(Float, nullable=False, default=0)
+    delivery_fee = Column(Float, nullable=False, default=0)
+    payment_amount = Column(Float, nullable=False, default=0)
+    status = Column(SAEnum(OrderStatus), default=OrderStatus.PENDING, nullable=False)
+    payment_method = Column(String, nullable=True)
+    paid_at = Column(DateTime(timezone=True), nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    user = relationship("User", back_populates="orders")
+    items = relationship("OrderItem", back_populates="order", cascade="all, delete-orphan")
+
+
+# --- OrderItem ---
+class OrderItem(Base):
+    __tablename__ = "order_items"
+
+    id = Column(Integer, primary_key=True, index=True)
+    order_id = Column(Integer, ForeignKey("orders.id"), nullable=False)
+    product_id = Column(Integer, nullable=False)
+    product_name = Column(String, nullable=False)
+    product_image = Column(String, nullable=True)
+    product_price = Column(Float, nullable=False)
+    quantity = Column(Integer, nullable=False)
+
+    order = relationship("Order", back_populates="items")
+
+
+# --- CouponTemplate ---
+class CouponTemplate(Base):
+    __tablename__ = "coupon_templates"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    description = Column(String, nullable=True)
+    type = Column(SAEnum(CouponType), nullable=False)
+    threshold = Column(Float, nullable=False, default=0)  # 满减阈值金额
+    value = Column(Float, nullable=False)  # 满减：减多少元；折扣：百分比(85=八五折)
+    total_count = Column(Integer, nullable=False, default=0)
+    used_count = Column(Integer, nullable=False, default=0)
+    start_time = Column(DateTime(timezone=True), nullable=False)
+    end_time = Column(DateTime(timezone=True), nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+# --- UserCoupon ---
+class UserCoupon(Base):
+    __tablename__ = "user_coupons"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    coupon_template_id = Column(Integer, ForeignKey("coupon_templates.id"), nullable=False)
+    status = Column(SAEnum(CouponStatus), default=CouponStatus.UNUSED, nullable=False)
+    used_at = Column(DateTime(timezone=True), nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    user = relationship("User", back_populates="coupons")
+    template = relationship("CouponTemplate")

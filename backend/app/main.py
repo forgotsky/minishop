@@ -1,53 +1,30 @@
-from fastapi import FastAPI, HTTPException, Depends
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
-from typing import List, Dict, Any
 import os
 import time
+import json
+from datetime import datetime
+from typing import List, Optional
 
+from fastapi import FastAPI, HTTPException, Depends, Query
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
-from .db import Base, engine, get_db, SessionLocal
-from .repository import load_categories, serialize_category, upsert_category, persist_plan
-from .skills_seed import seed_skills
+from sqlalchemy import and_
 
-class Product(BaseModel):
-    id: int
-    name: str
-    price: float
+from .db import Base, engine, get_db
+from .models import (
+    User, Address, Product, CartItem, Order, OrderItem, OrderStatus,
+    CouponTemplate, UserCoupon, CouponType, CouponStatus,
+)
+from .auth import create_access_token, require_user, get_current_user
 
-
-class CartItem(BaseModel):
-    id: int
-    qty: int = Field(gt=0)
-
-
-class Address(BaseModel):
-    full_name: str = Field(min_length=2)
-    phone: str = Field(min_length=5)
-    street: str = Field(min_length=3)
-    city: str = Field(min_length=2)
-    zip: str = Field(min_length=3)
-
-
-class CheckoutRequest(BaseModel):
-    cart_items: List[CartItem] = Field(min_length=1)
-    address: Address
-    payment_method: str
-
-
-class CheckoutResponse(BaseModel):
-    message: str
-    order: dict
-
-
-app = FastAPI(title="Skill Trainer API", version="1.0.0")
+app = FastAPI(title="WeChat Shop API", version="1.0.0")
 
 allowed_origins = [
     origin.strip()
     for origin in os.getenv("ALLOWED_ORIGINS", "*").split(",")
     if origin.strip()
 ]
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins if allowed_origins else ["*"],
@@ -56,325 +33,627 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-PRODUCTS = [
-    Product(id=1, name="Wireless Headphones", price=49.99),
-    Product(id=2, name="Smart Watch", price=89.0),
-    Product(id=3, name="Bluetooth Speaker", price=35.5),
-    Product(id=4, name="Backpack", price=28.75),
-    Product(id=5, name="Running Shoes", price=64.2),
-    Product(id=6, name="Power Bank", price=22.99),
-]
+STATIC_DIR = os.path.join(os.path.dirname(__file__), "..", "static")
+app.mount("/images", StaticFiles(directory=os.path.join(STATIC_DIR, "images")), name="images")
+
 DELIVERY_FEE = 5.0
 
 
 @app.on_event("startup")
 def on_startup() -> None:
     Base.metadata.create_all(bind=engine)
-    # Seed once if empty
-    db = SessionLocal()
+    db = next(get_db())
     try:
-        existing = load_categories(db)
-        if not existing:
-            seed_skills(db)
+        if db.query(Product).count() == 0:
+            seed_products(db)
+        if db.query(CouponTemplate).count() == 0:
+            seed_coupons(db)
     finally:
         db.close()
 
 
-# --- Skill Trainer API data and helpers ---
+# ============================================================
+# Seed data
+# ============================================================
 
-
-class TemplateRequest(BaseModel):
-    subject: str = Field(min_length=1)
-
-
-class PlanRequest(BaseModel):
-    hour_tasks: List[Dict[str, Any]] = Field(min_length=1)
-    daily_minutes: int = Field(ge=20, le=180)
-    days_per_week: int = Field(ge=1, le=7)
-
-
-def normalize_subject(subject: str) -> str:
-    txt = subject.lower().strip()
-    if "english" in txt or "英语" in txt:
-        return "english"
-    if "math" in txt or "数学" in txt:
-        return "math"
-    if "chinese" in txt or "语文" in txt:
-        return "chinese"
-    if "physics" in txt or "物理" in txt:
-        return "physics"
-    if "chemistry" in txt or "化学" in txt:
-        return "chemistry"
-    if "biology" in txt or "生物" in txt:
-        return "biology"
-    return "generic"
-
-
-BASE_LEVELS = [
-    {
-        "level": "L1",
-        "title": "基础识别",
-        "objective": "建立最小可用词汇与句型。",
-        "points": ["核心词汇", "基础句型", "输入-输出对照"],
-    },
-    {
-        "level": "L2",
-        "title": "稳定应用",
-        "objective": "能在固定场景中稳定使用。",
-        "points": ["词块积累", "句型替换", "主题表达"],
-    },
-    {
-        "level": "L3",
-        "title": "场景迁移",
-        "objective": "可迁移到新场景并完成表达。",
-        "points": ["扩展词汇", "表达变体", "理解与复述"],
-    },
-    {
-        "level": "L4",
-        "title": "结构化输出",
-        "objective": "形成段落级输出能力。",
-        "points": ["结构组织", "逻辑连接", "准确性检查"],
-    },
-    {
-        "level": "L5",
-        "title": "策略化提升",
-        "objective": "可在任务中选择策略解决问题。",
-        "points": ["任务拆解", "策略选择", "复盘修正"],
-    },
-    {
-        "level": "L6",
-        "title": "综合实战",
-        "objective": "在复杂任务中保持质量与效率。",
-        "points": ["综合应用", "限时完成", "质量评估"],
-    },
-]
-
-SUBJECT_TOP_SKILLS = {
-    "english": ["词汇与表达", "阅读理解", "写作输出"],
-    "math": ["概念与公式", "题型策略", "综合建模"],
-    "chinese": ["基础字词", "阅读分析", "写作表达"],
-    "physics": ["核心概念", "公式推导", "实验与综合题"],
-    "chemistry": ["基础理论", "方程式应用", "实验分析"],
-    "biology": ["概念系统", "图表解读", "综合应用"],
-}
-
-
-def build_l1_micro(subject: str, skill_name: str) -> Dict[str, Any]:
-    s = normalize_subject(subject)
-    if s == "english":
-        return {
-            "dailyLoad": "40分钟/天",
-            "hourlyLoad": "每小时 6词 + 2例句 + 1应用",
-            "hourTasks": [
-                {
-                    "slot": "第1小时",
-                    "words": ["book", "class", "teacher", "student", "read", "write"],
-                    "wordsText": "book / class / teacher / student / read / write",
-                    "sentence": "I read a book in class.",
-                    "usage": "用学校场景说2句。",
-                },
-                {
-                    "slot": "第2小时",
-                    "words": ["happy", "busy", "early", "late", "always", "often"],
-                    "wordsText": "happy / busy / early / late / always / often",
-                    "sentence": "I am always early for class.",
-                    "usage": "描述你的一天习惯。",
-                },
-                {
-                    "slot": "第3小时",
-                    "words": ["go", "come", "eat", "drink", "play", "study"],
-                    "wordsText": "go / come / eat / drink / play / study",
-                    "sentence": "I study English every day.",
-                    "usage": "围绕放学后活动说3句。",
-                },
-            ],
-            "dayTasks": [
-                {"day": "Day 1", "target": "学校主题词汇+一般现在时", "deliverable": "掌握6词，输出2句。"},
-                {"day": "Day 2", "target": "状态和频率副词", "deliverable": "掌握6词，输出2句。"},
-                {"day": "Day 3", "target": "动作动词表达", "deliverable": "掌握6词，输出3句。"},
-            ],
-        }
-    return {
-        "dailyLoad": "40分钟/天",
-        "hourlyLoad": f"每小时 3概念 + 2例子 + 1应用（{skill_name}）",
-        "hourTasks": [
-            {
-                "slot": "第1小时",
-                "words": ["概念A", "概念B", "概念C"],
-                "wordsText": "概念A / 概念B / 概念C",
-                "sentence": f"这是{skill_name}的基础定义。",
-                "usage": "用自己的话复述定义。",
-            },
-            {
-                "slot": "第2小时",
-                "words": ["规则A", "规则B", "规则C"],
-                "wordsText": "规则A / 规则B / 规则C",
-                "sentence": f"在{skill_name}题目中应用规则A。",
-                "usage": "做1道对应练习并讲解过程。",
-            },
-        ],
-        "dayTasks": [
-            {"day": "Day 1", "target": "基础定义", "deliverable": "复述3个核心概念。"},
-            {"day": "Day 2", "target": "规则应用", "deliverable": "完成2道基础题。"},
-        ],
-    }
-
-
-def build_levels(subject: str, skill_name: str) -> List[Dict[str, Any]]:
-    levels = []
-    for item in BASE_LEVELS:
-        level = {
-            "level": item["level"],
-            "title": f"{item['title']}（{skill_name}）",
-            "objective": item["objective"],
-            "points": item["points"],
-        }
-        if item["level"] == "L1":
-            level["microSplit"] = build_l1_micro(subject, skill_name)
-        levels.append(level)
-    return levels
-
-
-def generate_template(subject: str) -> Dict[str, Any]:
-    key = normalize_subject(subject)
-    top_skills = SUBJECT_TOP_SKILLS.get(key, ["基础能力", "关键方法", "综合应用"])
-    skills = []
-    for idx, name in enumerate(top_skills):
-        skills.append(
-            {
-                "skillId": f"tpl_{idx + 1}",
-                "skillName": name,
-                "summary": f"{subject} · {name}",
-                "levels": build_levels(subject, name),
-            }
-        )
-    return {
-        "categoryId": f"tpl_{int(time.time() * 1000)}",
-        "categoryName": f"{subject} 模板",
-        "stage": "自动生成",
-        "topSkills": skills,
-    }
-
-
-def build_plan(hour_tasks: List[Dict[str, Any]], daily_minutes: int, days_per_week: int) -> Dict[str, Any]:
-    def to_minute_task(task: Dict[str, Any], idx: int) -> Dict[str, Any]:
-        return {
-            "id": f"task_{idx + 1}",
-            "title": task.get("slot", f"任务{idx + 1}"),
-            "wordsText": task.get("wordsText", ""),
-            "sentence": task.get("sentence", ""),
-            "usage": task.get("usage", ""),
-            "estimateMin": 60,
-        }
-
-    def split_task(task: Dict[str, Any], target_min: int, segment_idx: int) -> Dict[str, Any]:
-        return {
-            "id": f"{task['id']}_seg_{segment_idx + 1}",
-            "title": f"{task['title']}（切分{segment_idx + 1}）",
-            "wordsText": task.get("wordsText", ""),
-            "sentence": task.get("sentence", ""),
-            "usage": task.get("usage", ""),
-            "estimateMin": target_min,
-        }
-
-    tasks = [to_minute_task(task, idx) for idx, task in enumerate(hour_tasks)]
-    expanded = []
-    for task in tasks:
-        if task["estimateMin"] <= daily_minutes:
-            expanded.append(task)
-            continue
-        seg_count = (task["estimateMin"] + daily_minutes - 1) // daily_minutes
-        seg_min = (task["estimateMin"] + seg_count - 1) // seg_count
-        for i in range(seg_count):
-            expanded.append(split_task(task, seg_min, i))
-
-    schedule = []
-    for i in range(days_per_week):
-        schedule.append({"day": f"Day {i + 1}", "minutes": 0, "tasks": []})
-
-    for idx, task in enumerate(expanded):
-        day_index = idx % days_per_week
-        schedule[day_index]["tasks"].append(task)
-        schedule[day_index]["minutes"] += task["estimateMin"]
-
-    plan_id = f"{int(time.time() * 1000)}"
-    flat_tasks = [
-        {"day": day["day"], **task}
-        for day in schedule
-        for task in day["tasks"]
+def seed_products(db: Session) -> None:
+    products = [
+        Product(name="Wireless Headphones", description="Premium noise-cancelling wireless headphones with 30hr battery life.", price=49.99, image_url="/images/headphones.jpg", stock=120, category="electronics", sales_count=56),
+        Product(name="Smart Watch", description="Fitness tracker with heart rate monitor and GPS.", price=89.00, image_url="/images/watch.jpg", stock=80, category="electronics", sales_count=34),
+        Product(name="Bluetooth Speaker", description="Portable waterproof speaker with deep bass.", price=35.50, image_url="/images/speaker.jpg", stock=200, category="electronics", sales_count=78),
+        Product(name="Backpack", description="Lightweight travel backpack, water-resistant.", price=28.75, image_url="/images/backpack.jpg", stock=150, category="accessories", sales_count=22),
+        Product(name="Running Shoes", description="Breathable mesh running shoes with cushioned sole.", price=64.20, image_url="/images/shoes.jpg", stock=60, category="sports", sales_count=91),
+        Product(name="Power Bank", description="20000mAh fast-charging power bank with USB-C.", price=22.99, image_url="/images/powerbank.jpg", stock=180, category="electronics", sales_count=110),
+        Product(name="Coffee Mug", description="Insulated stainless steel mug, 500ml.", price=15.99, image_url="/images/mug.jpg", stock=300, category="kitchen", sales_count=45),
+        Product(name="Desk Lamp", description="LED desk lamp with adjustable brightness.", price=19.99, image_url="/images/lamp.jpg", stock=90, category="home", sales_count=67),
     ]
-    return {
-        "planId": plan_id,
-        "dailyMinutes": daily_minutes,
-        "daysPerWeek": days_per_week,
-        "totalTasks": len(flat_tasks),
-        "schedule": schedule,
-        "flatTasks": flat_tasks,
-    }
+    for p in products:
+        db.add(p)
+    db.commit()
 
+
+def seed_coupons(db: Session) -> None:
+    now = datetime.utcnow()
+    templates = [
+        CouponTemplate(name="新用户满100减20", description="新用户首单专享", type=CouponType.FULL_REDUCTION, threshold=100.0, value=20.0, total_count=500, start_time=now, end_time=now.replace(year=now.year + 1)),
+        CouponTemplate(name="全场满200减30", description="全场通用", type=CouponType.FULL_REDUCTION, threshold=200.0, value=30.0, total_count=1000, start_time=now, end_time=now.replace(year=now.year + 1)),
+        CouponTemplate(name="电子产品9折券", description="电子产品专享", type=CouponType.DISCOUNT, threshold=0.0, value=90.0, total_count=300, start_time=now, end_time=now.replace(year=now.year + 1)),
+    ]
+    for t in templates:
+        db.add(t)
+    db.commit()
+
+
+# ============================================================
+# Pydantic schemas
+# ============================================================
+
+class ProductOut(BaseModel):
+    id: int
+    name: str
+    description: Optional[str] = None
+    price: float
+    image_url: Optional[str] = None
+    images: Optional[str] = None
+    stock: int
+    category: str
+    is_on_sale: bool
+    sales_count: int
+
+    class Config:
+        from_attributes = True
+
+
+class ProductListOut(BaseModel):
+    products: List[ProductOut]
+    total: int
+
+
+class CartItemIn(BaseModel):
+    product_id: int
+    quantity: int = Field(gt=0, default=1)
+
+
+class CartItemOut(BaseModel):
+    id: int
+    product_id: int
+    product_name: str
+    product_image: Optional[str] = None
+    product_price: float
+    quantity: int
+    subtotal: float
+
+
+class CartOut(BaseModel):
+    items: List[CartItemOut]
+    total: float
+
+
+class AddressIn(BaseModel):
+    full_name: str = Field(min_length=2)
+    phone: str = Field(min_length=5)
+    province: str
+    city: str
+    district: str
+    street: str
+    zip_code: Optional[str] = None
+    is_default: bool = False
+
+
+class AddressOut(BaseModel):
+    id: int
+    full_name: str
+    phone: str
+    province: str
+    city: str
+    district: str
+    street: str
+    zip_code: Optional[str] = None
+    is_default: bool
+
+    class Config:
+        from_attributes = True
+
+
+class OrderCreateIn(BaseModel):
+    address_id: int
+    coupon_id: Optional[int] = None
+    payment_method: str = "wechat"
+    remark: Optional[str] = None
+    item_ids: Optional[List[int]] = None
+
+
+class OrderItemOut(BaseModel):
+    id: int
+    product_id: int
+    product_name: str
+    product_image: Optional[str] = None
+    product_price: float
+    quantity: int
+
+    class Config:
+        from_attributes = True
+
+
+class OrderOut(BaseModel):
+    id: int
+    order_no: str
+    total_amount: float
+    discount_amount: float
+    delivery_fee: float
+    payment_amount: float
+    status: OrderStatus
+    payment_method: Optional[str] = None
+    created_at: Optional[str] = None
+    items: List[OrderItemOut] = []
+
+    class Config:
+        from_attributes = True
+
+
+class CouponOut(BaseModel):
+    id: int
+    name: str
+    description: Optional[str] = None
+    type: CouponType
+    threshold: float
+    value: float
+    start_time: str
+    end_time: str
+
+    class Config:
+        from_attributes = True
+
+
+class UserCouponOut(BaseModel):
+    id: int
+    status: CouponStatus
+    template: CouponOut
+
+    class Config:
+        from_attributes = True
+
+
+class WxLoginIn(BaseModel):
+    code: str
+    nickname: Optional[str] = None
+    avatar: Optional[str] = None
+
+
+class LoginOut(BaseModel):
+    token: str
+    user_id: int
+    nickname: Optional[str] = None
+
+
+# ============================================================
+# Helper functions
+# ============================================================
+
+def row2dict(obj):
+    return {c.name: getattr(obj, c.name) for c in obj.__table__.columns}
+
+
+# ============================================================
+# Auth endpoints
+# ============================================================
+
+@app.post("/api/auth/login", response_model=LoginOut)
+def wx_login(payload: WxLoginIn, db: Session = Depends(get_db)):
+    """
+    WeChat mini-program login.
+    In production, exchange code for openid via WeChat API.
+    For dev: use code as a mock openid.
+    """
+    # TODO: In production, call WeChat API:
+    # GET https://api.weixin.qq.com/sns/jscode2session?appid=APPID&secret=SECRET&js_code=CODE&grant_type=authorization_code
+    # The response contains openid and session_key.
+    mock_openid = f"wx_{payload.code}" if payload.code else f"wx_dev_{int(time.time())}"
+
+    user = db.query(User).filter(User.openid == mock_openid).first()
+    if not user:
+        user = User(openid=mock_openid, nickname=payload.nickname, avatar=payload.avatar)
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+    elif payload.nickname:
+        user.nickname = payload.nickname
+        user.avatar = payload.avatar
+        db.commit()
+        db.refresh(user)
+
+    token = create_access_token(user.id)
+    return LoginOut(token=token, user_id=user.id, nickname=user.nickname)
+
+
+# ============================================================
+# Product endpoints
+# ============================================================
+
+@app.get("/api/products", response_model=ProductListOut)
+def list_products(
+    category: Optional[str] = Query(None),
+    search: Optional[str] = Query(None),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(10, ge=1, le=50),
+    db: Session = Depends(get_db),
+):
+    q = db.query(Product).filter(Product.is_on_sale == True)
+    if category:
+        q = q.filter(Product.category == category)
+    if search:
+        q = q.filter(Product.name.ilike(f"%{search}%"))
+
+    total = q.count()
+    products = q.order_by(Product.sales_count.desc()).offset((page - 1) * page_size).limit(page_size).all()
+
+    return ProductListOut(products=[ProductOut.model_validate(p) for p in products], total=total)
+
+
+@app.get("/api/products/{product_id}", response_model=ProductOut)
+def get_product(product_id: int, db: Session = Depends(get_db)):
+    product = db.query(Product).filter(Product.id == product_id).first()
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    return ProductOut.model_validate(product)
+
+
+@app.get("/api/categories")
+def list_categories(db: Session = Depends(get_db)):
+    categories = db.query(Product.category).filter(Product.is_on_sale == True).distinct().all()
+    return {"categories": [c[0] for c in categories]}
+
+
+# ============================================================
+# Cart endpoints
+# ============================================================
+
+@app.get("/api/cart", response_model=CartOut)
+def get_cart(user: User = Depends(require_user), db: Session = Depends(get_db)):
+    items = db.query(CartItem).filter(CartItem.user_id == user.id).all()
+    result = []
+    total = 0.0
+    for item in items:
+        product = item.product
+        subtotal = round(product.price * item.quantity, 2)
+        total += subtotal
+        result.append(CartItemOut(
+            id=item.id,
+            product_id=product.id,
+            product_name=product.name,
+            product_image=product.image_url,
+            product_price=product.price,
+            quantity=item.quantity,
+            subtotal=subtotal,
+        ))
+    return CartOut(items=result, total=round(total, 2))
+
+
+@app.post("/api/cart/items")
+def add_to_cart(payload: CartItemIn, user: User = Depends(require_user), db: Session = Depends(get_db)):
+    product = db.query(Product).filter(Product.id == payload.product_id, Product.is_on_sale == True).first()
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    if product.stock < payload.quantity:
+        raise HTTPException(status_code=400, detail="Insufficient stock")
+
+    existing = db.query(CartItem).filter(
+        CartItem.user_id == user.id, CartItem.product_id == payload.product_id
+    ).first()
+    if existing:
+        existing.quantity += payload.quantity
+    else:
+        existing = CartItem(user_id=user.id, product_id=payload.product_id, quantity=payload.quantity)
+        db.add(existing)
+    db.commit()
+    return {"message": "Added to cart"}
+
+
+@app.put("/api/cart/items/{item_id}")
+def update_cart_item(item_id: int, quantity: int = Query(ge=1, le=99),
+                     user: User = Depends(require_user), db: Session = Depends(get_db)):
+    item = db.query(CartItem).filter(CartItem.id == item_id, CartItem.user_id == user.id).first()
+    if not item:
+        raise HTTPException(status_code=404, detail="Cart item not found")
+    item.quantity = quantity
+    db.commit()
+    return {"message": "Updated"}
+
+
+@app.delete("/api/cart/items/{item_id}")
+def remove_cart_item(item_id: int, user: User = Depends(require_user), db: Session = Depends(get_db)):
+    item = db.query(CartItem).filter(CartItem.id == item_id, CartItem.user_id == user.id).first()
+    if not item:
+        raise HTTPException(status_code=404, detail="Cart item not found")
+    db.delete(item)
+    db.commit()
+    return {"message": "Removed"}
+
+
+@app.delete("/api/cart")
+def clear_cart(user: User = Depends(require_user), db: Session = Depends(get_db)):
+    db.query(CartItem).filter(CartItem.user_id == user.id).delete()
+    db.commit()
+    return {"message": "Cart cleared"}
+
+
+# ============================================================
+# Order endpoints
+# ============================================================
+
+@app.post("/api/orders", response_model=OrderOut)
+def create_order(payload: OrderCreateIn, user: User = Depends(require_user), db: Session = Depends(get_db)):
+    # Validate address
+    address = db.query(Address).filter(Address.id == payload.address_id, Address.user_id == user.id).first()
+    if not address:
+        raise HTTPException(status_code=400, detail="Address not found")
+
+    # Get cart items (filter by item_ids if specified)
+    cart_items = db.query(CartItem).filter(CartItem.user_id == user.id)
+    if payload.item_ids:
+        cart_items = cart_items.filter(CartItem.id.in_(payload.item_ids))
+    cart_items = cart_items.all()
+    if not cart_items:
+        raise HTTPException(status_code=400, detail="Cart is empty")
+
+    # Build order items & calculate total
+    total_amount = 0.0
+    order_items = []
+    for ci in cart_items:
+        product = ci.product
+        if not product or not product.is_on_sale:
+            raise HTTPException(status_code=400, detail=f"Product {ci.product_id} is no longer available")
+        if product.stock < ci.quantity:
+            raise HTTPException(status_code=400, detail=f"Insufficient stock for {product.name}")
+
+        total_amount += product.price * ci.quantity
+        order_items.append({
+            "product_id": product.id,
+            "product_name": product.name,
+            "product_image": product.image_url,
+            "product_price": product.price,
+            "quantity": ci.quantity,
+        })
+
+    # Calculate discount from coupon
+    discount_amount = 0.0
+    if payload.coupon_id:
+        user_coupon = db.query(UserCoupon).filter(
+            UserCoupon.id == payload.coupon_id,
+            UserCoupon.user_id == user.id,
+            UserCoupon.status == CouponStatus.UNUSED,
+        ).first()
+        if user_coupon:
+            template = user_coupon.template
+            now = datetime.utcnow()
+            if template.start_time <= now <= template.end_time:
+                if template.type == CouponType.FULL_REDUCTION:
+                    if total_amount >= template.threshold:
+                        discount_amount = template.value
+                elif template.type == CouponType.DISCOUNT:
+                    discount_amount = round(total_amount * (1 - template.value / 100), 2)
+                user_coupon.status = CouponStatus.USED
+                user_coupon.used_at = now
+                db.add(user_coupon)
+
+    payment_amount = round(total_amount - discount_amount + DELIVERY_FEE, 2)
+    order_no = f"ORD{int(time.time() * 1000)}"
+
+    order = Order(
+        order_no=order_no,
+        user_id=user.id,
+        address_id=address.id,
+        address_snapshot=json.dumps(row2dict(address), default=str),
+        total_amount=round(total_amount, 2),
+        discount_amount=round(discount_amount, 2),
+        delivery_fee=DELIVERY_FEE,
+        payment_amount=payment_amount,
+        status=OrderStatus.PENDING,
+        payment_method=payload.payment_method,
+    )
+    db.add(order)
+    db.flush()
+
+    for item_data in order_items:
+        oi = OrderItem(order_id=order.id, **item_data)
+        db.add(oi)
+
+    # Deduct stock & clear cart
+    for ci in cart_items:
+        product = ci.product
+        product.stock -= ci.quantity
+        product.sales_count += ci.quantity
+        db.add(product)
+        db.delete(ci)
+
+    db.commit()
+    db.refresh(order)
+
+    return OrderOut(
+        id=order.id,
+        order_no=order.order_no,
+        total_amount=order.total_amount,
+        discount_amount=order.discount_amount,
+        delivery_fee=order.delivery_fee,
+        payment_amount=order.payment_amount,
+        status=order.status,
+        payment_method=order.payment_method,
+        created_at=order.created_at.isoformat() if order.created_at else None,
+        items=[OrderItemOut.model_validate(oi) for oi in order.items],
+    )
+
+
+@app.get("/api/orders", response_model=List[OrderOut])
+def list_orders(user: User = Depends(require_user), db: Session = Depends(get_db),
+                page: int = Query(1, ge=1), page_size: int = Query(10, ge=1, le=50)):
+    orders = (
+        db.query(Order)
+        .filter(Order.user_id == user.id)
+        .order_by(Order.created_at.desc())
+        .offset((page - 1) * page_size)
+        .limit(page_size)
+        .all()
+    )
+    return [OrderOut(
+        id=o.id, order_no=o.order_no, total_amount=o.total_amount,
+        discount_amount=o.discount_amount, delivery_fee=o.delivery_fee,
+        payment_amount=o.payment_amount, status=o.status,
+        payment_method=o.payment_method,
+        created_at=o.created_at.isoformat() if o.created_at else None,
+        items=[OrderItemOut.model_validate(oi) for oi in o.items],
+    ) for o in orders]
+
+
+@app.get("/api/orders/{order_id}", response_model=OrderOut)
+def get_order(order_id: int, user: User = Depends(require_user), db: Session = Depends(get_db)):
+    order = db.query(Order).filter(Order.id == order_id, Order.user_id == user.id).first()
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    return OrderOut(
+        id=order.id, order_no=order.order_no, total_amount=order.total_amount,
+        discount_amount=order.discount_amount, delivery_fee=order.delivery_fee,
+        payment_amount=order.payment_amount, status=order.status,
+        payment_method=order.payment_method,
+        created_at=order.created_at.isoformat() if order.created_at else None,
+        items=[OrderItemOut.model_validate(oi) for oi in order.items],
+    )
+
+
+@app.post("/api/orders/{order_id}/pay")
+def pay_order(order_id: int, user: User = Depends(require_user), db: Session = Depends(get_db)):
+    order = db.query(Order).filter(Order.id == order_id, Order.user_id == user.id).first()
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    if order.status != OrderStatus.PENDING:
+        raise HTTPException(status_code=400, detail="Order cannot be paid")
+    order.status = OrderStatus.PAID
+    order.paid_at = datetime.utcnow()
+    db.commit()
+    return {"message": "Payment successful", "order_no": order.order_no}
+
+
+# ============================================================
+# Coupon endpoints
+# ============================================================
+
+@app.get("/api/coupons", response_model=List[CouponOut])
+def list_available_coupons(db: Session = Depends(get_db)):
+    now = datetime.utcnow()
+    templates = db.query(CouponTemplate).filter(
+        CouponTemplate.start_time <= now,
+        CouponTemplate.end_time >= now,
+        CouponTemplate.used_count < CouponTemplate.total_count,
+    ).all()
+    return [CouponOut(
+        id=t.id, name=t.name, description=t.description, type=t.type,
+        threshold=t.threshold, value=t.value,
+        start_time=t.start_time.isoformat(), end_time=t.end_time.isoformat(),
+    ) for t in templates]
+
+
+@app.post("/api/coupons/{template_id}/claim")
+def claim_coupon(template_id: int, user: User = Depends(require_user), db: Session = Depends(get_db)):
+    template = db.query(CouponTemplate).filter(CouponTemplate.id == template_id).first()
+    if not template:
+        raise HTTPException(status_code=404, detail="Coupon not found")
+
+    now = datetime.utcnow()
+    if not (template.start_time <= now <= template.end_time):
+        raise HTTPException(status_code=400, detail="Coupon is not available")
+    if template.used_count >= template.total_count:
+        raise HTTPException(status_code=400, detail="Coupon has been fully claimed")
+
+    existing = db.query(UserCoupon).filter(
+        UserCoupon.user_id == user.id, UserCoupon.coupon_template_id == template_id
+    ).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="You already claimed this coupon")
+
+    user_coupon = UserCoupon(user_id=user.id, coupon_template_id=template_id, status=CouponStatus.UNUSED)
+    template.used_count += 1
+    db.add(user_coupon)
+    db.add(template)
+    db.commit()
+    return {"message": "Coupon claimed"}
+
+
+@app.get("/api/user/coupons", response_model=List[UserCouponOut])
+def list_user_coupons(user: User = Depends(require_user), db: Session = Depends(get_db)):
+    coupons = db.query(UserCoupon).filter(UserCoupon.user_id == user.id).all()
+    result = []
+    now = datetime.utcnow()
+    for c in coupons:
+        t = c.template
+        # Auto-expire if past end time
+        if c.status == CouponStatus.UNUSED and t.end_time < now:
+            c.status = CouponStatus.EXPIRED
+            db.add(c)
+        result.append(UserCouponOut(
+            id=c.id, status=c.status,
+            template=CouponOut(
+                id=t.id, name=t.name, description=t.description, type=t.type,
+                threshold=t.threshold, value=t.value,
+                start_time=t.start_time.isoformat(), end_time=t.end_time.isoformat(),
+            ),
+        ))
+    if db.new or db.dirty:
+        db.commit()
+    return result
+
+
+# ============================================================
+# Address endpoints
+# ============================================================
+
+@app.get("/api/addresses", response_model=List[AddressOut])
+def list_addresses(user: User = Depends(require_user), db: Session = Depends(get_db)):
+    return [AddressOut.model_validate(a) for a in user.addresses]
+
+
+@app.post("/api/addresses", response_model=AddressOut)
+def create_address(payload: AddressIn, user: User = Depends(require_user), db: Session = Depends(get_db)):
+    if payload.is_default:
+        db.query(Address).filter(Address.user_id == user.id).update({"is_default": False})
+    addr = Address(user_id=user.id, **payload.model_dump())
+    db.add(addr)
+    db.commit()
+    db.refresh(addr)
+    return AddressOut.model_validate(addr)
+
+
+@app.put("/api/addresses/{address_id}", response_model=AddressOut)
+def update_address(address_id: int, payload: AddressIn, user: User = Depends(require_user), db: Session = Depends(get_db)):
+    addr = db.query(Address).filter(Address.id == address_id, Address.user_id == user.id).first()
+    if not addr:
+        raise HTTPException(status_code=404, detail="Address not found")
+    if payload.is_default:
+        db.query(Address).filter(Address.user_id == user.id).update({"is_default": False})
+    for key, val in payload.model_dump().items():
+        setattr(addr, key, val)
+    db.commit()
+    db.refresh(addr)
+    return AddressOut.model_validate(addr)
+
+
+@app.delete("/api/addresses/{address_id}")
+def delete_address(address_id: int, user: User = Depends(require_user), db: Session = Depends(get_db)):
+    addr = db.query(Address).filter(Address.id == address_id, Address.user_id == user.id).first()
+    if not addr:
+        raise HTTPException(status_code=404, detail="Address not found")
+    db.delete(addr)
+    db.commit()
+    return {"message": "Address deleted"}
+
+
+# ============================================================
+# Health
+# ============================================================
 
 @app.get("/api/health")
-def health() -> dict:
+def health():
     return {"status": "ok"}
 
 
-@app.get("/api/products")
-def get_products() -> dict:
-    return {"products": PRODUCTS}
-
-
-@app.post("/api/checkout", response_model=CheckoutResponse)
-def checkout(payload: CheckoutRequest) -> CheckoutResponse:
-    if payload.payment_method not in ["card", "cash"]:
-        raise HTTPException(status_code=400, detail="Invalid payment method.")
-
-    subtotal = 0.0
-    for item in payload.cart_items:
-        product = next((p for p in PRODUCTS if p.id == item.id), None)
-        if not product:
-            raise HTTPException(status_code=400, detail=f"Product {item.id} not found.")
-        subtotal += product.price * item.qty
-
-    total = subtotal + DELIVERY_FEE
-    order = {
-        "order_id": f"ORD-{int(time.time() * 1000)}",
-        "subtotal": round(subtotal, 2),
-        "delivery_fee": DELIVERY_FEE,
-        "total": round(total, 2),
-        "payment_method": payload.payment_method,
-        "shipping_city": payload.address.city,
-    }
-
-    return CheckoutResponse(
-        message="Payment successful. Your order has been placed.",
-        order=order,
-    )
-
-
-# --- Skill Trainer API endpoints ---
-@app.get("/api/skills")
-def list_skills(db: Session = Depends(get_db)) -> dict:
-    categories = load_categories(db)
-    return {"categories": [serialize_category(c) for c in categories]}
-
-
-@app.post("/api/template")
-def create_template(payload: TemplateRequest, db: Session = Depends(get_db)) -> dict:
-    category = generate_template(payload.subject)
-    stored = upsert_category(db, category, source="template", subject=payload.subject)
-    return {"category": serialize_category(stored)}
-
-
-@app.post("/api/plan")
-def create_plan(payload: PlanRequest, db: Session = Depends(get_db)) -> dict:
-    plan = build_plan(payload.hour_tasks, payload.daily_minutes, payload.days_per_week)
-    persist_plan(
-        db,
-        plan_id=plan["planId"],
-        skill_ref=None,
-        daily_minutes=plan["dailyMinutes"],
-        days_per_week=plan["daysPerWeek"],
-        schedule=plan["schedule"],
-        flat_tasks=plan["flatTasks"],
-    )
-    return {"plan": plan}
+@app.get("/api/hello")
+def hello():
+    return {"message": "Hello, World!"}

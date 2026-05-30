@@ -1,0 +1,31 @@
+{
+  "budget_context": 3.0,
+  "budget_dev": 15.0,
+  "budget_review": 5.0,
+  "warning_percent": 75,
+  "critical_percent": 90,
+  "auto_stop": true,
+  "subscription_plan": "pro",
+  "subscription_token_limit": 5000000,
+  "subscription_cost_usd": 100.00,
+  "subscription_billing_period_days": 30,
+  "display_currency": "USD",
+  "currency_rates": {
+    "USD": 1.0,
+    "EUR": 0.92,
+    "GBP": 0.79,
+    "BRL": 6.1,
+    "CAD": 1.36,
+    "AUD": 1.53,
+    "JPY": 149.5
+  },
+  "display_currencies": [
+    "USD",
+    "EUR",
+    "GBP",
+    "BRL"
+  ],
+  "baseline_tokens": 0,
+  "baseline_cost": 0,
+  "baseline_configured": true
+}

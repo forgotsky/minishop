@@ -1,0 +1,1086 @@
+{
+  "story_key": "test-story",
+  "last_updated": "2026-01-18T10:57:50.011594",
+  "entries": [
+    {
+      "id": "mem_94d28071",
+      "timestamp": "2025-12-22T10:21:29.541596",
+      "agent": "SM",
+      "content": "Handed off to DEV: Created story context",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_e2eb9c0b",
+      "timestamp": "2025-12-22T10:21:29.554260",
+      "agent": "DEV",
+      "content": "Handed off to REVIEWER: Implementation complete",
+      "tags": [
+        "handoff",
+        "reviewer"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_63bf9312",
+      "timestamp": "2025-12-22T10:21:29.566592",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for development",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_428adad5",
+      "timestamp": "2025-12-22T10:21:59.730584",
+      "agent": "SM",
+      "content": "Handed off to DEV: Created story context",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_8fc5e0ea",
+      "timestamp": "2025-12-22T10:21:59.742576",
+      "agent": "DEV",
+      "content": "Handed off to REVIEWER: Implementation complete",
+      "tags": [
+        "handoff",
+        "reviewer"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_4cdc11f7",
+      "timestamp": "2025-12-22T10:21:59.754353",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for development",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_6ed43f6c",
+      "timestamp": "2025-12-22T13:25:54.043613",
+      "agent": "SM",
+      "content": "Handed off to DEV: Created story context",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_a45e6ef0",
+      "timestamp": "2025-12-22T13:25:54.059350",
+      "agent": "DEV",
+      "content": "Handed off to REVIEWER: Implementation complete",
+      "tags": [
+        "handoff",
+        "reviewer"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_9c802d55",
+      "timestamp": "2025-12-22T13:25:54.074794",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for development",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_bd042810",
+      "timestamp": "2025-12-22T13:26:44.866120",
+      "agent": "SM",
+      "content": "Handed off to DEV: Created story context",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_179756ec",
+      "timestamp": "2025-12-22T13:26:44.881680",
+      "agent": "DEV",
+      "content": "Handed off to REVIEWER: Implementation complete",
+      "tags": [
+        "handoff",
+        "reviewer"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_83f996a7",
+      "timestamp": "2025-12-22T13:26:44.896677",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for development",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_13ebcce8",
+      "timestamp": "2025-12-29T16:55:07.147424",
+      "agent": "SM",
+      "content": "Handed off to DEV: Created story context",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_cbbbe1ff",
+      "timestamp": "2025-12-29T16:55:07.156494",
+      "agent": "DEV",
+      "content": "Handed off to REVIEWER: Implementation complete",
+      "tags": [
+        "handoff",
+        "reviewer"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_3789f440",
+      "timestamp": "2025-12-29T16:55:07.164975",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for development",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_ef62b558",
+      "timestamp": "2025-12-29T16:57:10.420325",
+      "agent": "SM",
+      "content": "Handed off to DEV: Created story context",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_7fa35e22",
+      "timestamp": "2025-12-29T16:57:10.429534",
+      "agent": "DEV",
+      "content": "Handed off to REVIEWER: Implementation complete",
+      "tags": [
+        "handoff",
+        "reviewer"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_3fe07b02",
+      "timestamp": "2025-12-29T16:57:10.438017",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for development",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_a34a61d0",
+      "timestamp": "2025-12-29T16:57:19.615323",
+      "agent": "SM",
+      "content": "Handed off to DEV: Created story context",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_0aa5eece",
+      "timestamp": "2025-12-29T16:57:19.628480",
+      "agent": "DEV",
+      "content": "Handed off to REVIEWER: Implementation complete",
+      "tags": [
+        "handoff",
+        "reviewer"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_3f43ad49",
+      "timestamp": "2025-12-29T16:57:19.641910",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for development",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_cda8e473",
+      "timestamp": "2025-12-29T16:57:33.535332",
+      "agent": "SM",
+      "content": "Handed off to DEV: Created story context",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_4f263fa0",
+      "timestamp": "2025-12-29T16:57:33.548967",
+      "agent": "DEV",
+      "content": "Handed off to REVIEWER: Implementation complete",
+      "tags": [
+        "handoff",
+        "reviewer"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_4f5eb44f",
+      "timestamp": "2025-12-29T16:57:33.561757",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for development",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_80d402a2",
+      "timestamp": "2025-12-29T17:00:47.296483",
+      "agent": "SM",
+      "content": "Handed off to DEV: Created story context",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_4af37c87",
+      "timestamp": "2025-12-29T17:00:47.306313",
+      "agent": "DEV",
+      "content": "Handed off to REVIEWER: Implementation complete",
+      "tags": [
+        "handoff",
+        "reviewer"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_59279f4e",
+      "timestamp": "2025-12-29T17:00:47.315769",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for development",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_84974124",
+      "timestamp": "2025-12-29T17:00:57.811140",
+      "agent": "SM",
+      "content": "Handed off to DEV: Created story context",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_de3f1f94",
+      "timestamp": "2025-12-29T17:00:57.825133",
+      "agent": "DEV",
+      "content": "Handed off to REVIEWER: Implementation complete",
+      "tags": [
+        "handoff",
+        "reviewer"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_190deda8",
+      "timestamp": "2025-12-29T17:00:57.838907",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for development",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_542bcc40",
+      "timestamp": "2025-12-29T17:01:55.800932",
+      "agent": "SM",
+      "content": "Handed off to DEV: Created story context",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_0c6d5c8e",
+      "timestamp": "2025-12-29T17:01:55.815396",
+      "agent": "DEV",
+      "content": "Handed off to REVIEWER: Implementation complete",
+      "tags": [
+        "handoff",
+        "reviewer"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_f07a3f86",
+      "timestamp": "2025-12-29T17:01:55.829150",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for development",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_04aa1d83",
+      "timestamp": "2025-12-29T17:02:14.485047",
+      "agent": "SM",
+      "content": "Handed off to DEV: Created story context",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_d8c4df84",
+      "timestamp": "2025-12-29T17:02:14.495452",
+      "agent": "DEV",
+      "content": "Handed off to REVIEWER: Implementation complete",
+      "tags": [
+        "handoff",
+        "reviewer"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_78d6f7f5",
+      "timestamp": "2025-12-29T17:02:14.504713",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for development",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_2f968f56",
+      "timestamp": "2025-12-30T10:15:52.631666",
+      "agent": "SM",
+      "content": "Handed off to DEV: Created story context",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_912c0f1f",
+      "timestamp": "2025-12-30T10:15:52.643129",
+      "agent": "DEV",
+      "content": "Handed off to REVIEWER: Implementation complete",
+      "tags": [
+        "handoff",
+        "reviewer"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_e8c6fd5e",
+      "timestamp": "2025-12-30T10:15:52.653701",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for development",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_890e5b89",
+      "timestamp": "2025-12-30T10:16:44.903120",
+      "agent": "SM",
+      "content": "Handed off to DEV: Created story context",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_5c298e75",
+      "timestamp": "2025-12-30T10:16:44.915759",
+      "agent": "DEV",
+      "content": "Handed off to REVIEWER: Implementation complete",
+      "tags": [
+        "handoff",
+        "reviewer"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_398df338",
+      "timestamp": "2025-12-30T10:16:44.926260",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for development",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_f7f5f980",
+      "timestamp": "2025-12-30T10:17:08.940810",
+      "agent": "SM",
+      "content": "Handed off to DEV: Created story context",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_4c11315b",
+      "timestamp": "2025-12-30T10:17:08.957596",
+      "agent": "DEV",
+      "content": "Handed off to REVIEWER: Implementation complete",
+      "tags": [
+        "handoff",
+        "reviewer"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_65c47d2c",
+      "timestamp": "2025-12-30T10:17:08.973153",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for development",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_78eeb14f",
+      "timestamp": "2025-12-30T10:18:39.818959",
+      "agent": "SM",
+      "content": "Handed off to DEV: Created story context",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_a09ae581",
+      "timestamp": "2025-12-30T10:18:39.837172",
+      "agent": "DEV",
+      "content": "Handed off to REVIEWER: Implementation complete",
+      "tags": [
+        "handoff",
+        "reviewer"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_5b4eadf4",
+      "timestamp": "2025-12-30T10:18:39.852843",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for development",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_49e322da",
+      "timestamp": "2025-12-30T10:23:07.589650",
+      "agent": "SM",
+      "content": "Handed off to DEV: Created story context",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_19e4f884",
+      "timestamp": "2025-12-30T10:23:07.605359",
+      "agent": "DEV",
+      "content": "Handed off to REVIEWER: Implementation complete",
+      "tags": [
+        "handoff",
+        "reviewer"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_32c26c6b",
+      "timestamp": "2025-12-30T10:23:07.620475",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for development",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_253a59c6",
+      "timestamp": "2025-12-30T10:26:07.120654",
+      "agent": "SM",
+      "content": "Handed off to DEV: Created story context",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_8e8fa9f7",
+      "timestamp": "2025-12-30T10:26:07.137878",
+      "agent": "DEV",
+      "content": "Handed off to REVIEWER: Implementation complete",
+      "tags": [
+        "handoff",
+        "reviewer"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_a95ffbc9",
+      "timestamp": "2025-12-30T10:26:07.152985",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for development",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_e2863f35",
+      "timestamp": "2025-12-30T10:27:00.080148",
+      "agent": "SM",
+      "content": "Handed off to DEV: Created story context",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_d2edcda1",
+      "timestamp": "2025-12-30T10:27:00.097807",
+      "agent": "DEV",
+      "content": "Handed off to REVIEWER: Implementation complete",
+      "tags": [
+        "handoff",
+        "reviewer"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_9345c0b9",
+      "timestamp": "2025-12-30T10:27:00.114602",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for development",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_63c30f37",
+      "timestamp": "2025-12-30T10:28:59.196639",
+      "agent": "SM",
+      "content": "Handed off to DEV: Created story context",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_3b5b74cc",
+      "timestamp": "2025-12-30T10:28:59.213960",
+      "agent": "DEV",
+      "content": "Handed off to REVIEWER: Implementation complete",
+      "tags": [
+        "handoff",
+        "reviewer"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_9a48815a",
+      "timestamp": "2025-12-30T10:28:59.230684",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for development",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_3d46c850",
+      "timestamp": "2025-12-30T10:29:59.298675",
+      "agent": "SM",
+      "content": "Handed off to DEV: Created story context",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_195d9a6f",
+      "timestamp": "2025-12-30T10:29:59.316569",
+      "agent": "DEV",
+      "content": "Handed off to REVIEWER: Implementation complete",
+      "tags": [
+        "handoff",
+        "reviewer"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_905a368f",
+      "timestamp": "2025-12-30T10:29:59.332596",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for development",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_0c48b55c",
+      "timestamp": "2025-12-30T10:31:36.160633",
+      "agent": "SM",
+      "content": "Handed off to DEV: Created story context",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_abf9b52e",
+      "timestamp": "2025-12-30T10:31:36.178060",
+      "agent": "DEV",
+      "content": "Handed off to REVIEWER: Implementation complete",
+      "tags": [
+        "handoff",
+        "reviewer"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_75f162ba",
+      "timestamp": "2025-12-30T10:31:36.194727",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for development",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_144ca512",
+      "timestamp": "2025-12-30T10:32:20.606971",
+      "agent": "SM",
+      "content": "Handed off to DEV: Created story context",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_ae3dff96",
+      "timestamp": "2025-12-30T10:32:20.620864",
+      "agent": "DEV",
+      "content": "Handed off to REVIEWER: Implementation complete",
+      "tags": [
+        "handoff",
+        "reviewer"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_e61d9620",
+      "timestamp": "2025-12-30T10:32:20.632449",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for development",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_1cfd0227",
+      "timestamp": "2025-12-30T10:50:21.082761",
+      "agent": "SM",
+      "content": "Handed off to DEV: Created story context",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_81527b19",
+      "timestamp": "2025-12-30T10:50:21.095466",
+      "agent": "DEV",
+      "content": "Handed off to REVIEWER: Implementation complete",
+      "tags": [
+        "handoff",
+        "reviewer"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_0f97ba06",
+      "timestamp": "2025-12-30T10:50:21.106099",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for development",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_c4372819",
+      "timestamp": "2026-01-03T14:30:38.007244",
+      "agent": "SM",
+      "content": "Handed off to DEV: Created story context",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_1b8e1be0",
+      "timestamp": "2026-01-03T14:30:38.019647",
+      "agent": "DEV",
+      "content": "Handed off to REVIEWER: Implementation complete",
+      "tags": [
+        "handoff",
+        "reviewer"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_4b3bf56a",
+      "timestamp": "2026-01-03T14:30:38.028794",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for development",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_21c9ac0d",
+      "timestamp": "2026-01-16T12:33:30.870755",
+      "agent": "SM",
+      "content": "Handed off to DEV: Created story context",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_e4e645a3",
+      "timestamp": "2026-01-16T12:33:30.883295",
+      "agent": "DEV",
+      "content": "Handed off to REVIEWER: Implementation complete",
+      "tags": [
+        "handoff",
+        "reviewer"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_ff22610c",
+      "timestamp": "2026-01-16T12:33:30.893913",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for development",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_9bff4998",
+      "timestamp": "2026-01-16T12:33:48.782037",
+      "agent": "SM",
+      "content": "Handed off to DEV: Created story context",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_12b6d1eb",
+      "timestamp": "2026-01-16T12:33:48.794601",
+      "agent": "DEV",
+      "content": "Handed off to REVIEWER: Implementation complete",
+      "tags": [
+        "handoff",
+        "reviewer"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_db12d518",
+      "timestamp": "2026-01-16T12:33:48.805592",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for development",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_f467c9ef",
+      "timestamp": "2026-01-18T10:54:54.542397",
+      "agent": "SM",
+      "content": "Handed off to DEV: Created story context",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_8e9f1dfb",
+      "timestamp": "2026-01-18T10:54:54.559492",
+      "agent": "DEV",
+      "content": "Handed off to REVIEWER: Implementation complete",
+      "tags": [
+        "handoff",
+        "reviewer"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_63050a9d",
+      "timestamp": "2026-01-18T10:54:54.573697",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for development",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_92c008a9",
+      "timestamp": "2026-01-18T10:55:18.852972",
+      "agent": "SM",
+      "content": "Handed off to DEV: Created story context",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_cea47618",
+      "timestamp": "2026-01-18T10:55:18.870097",
+      "agent": "DEV",
+      "content": "Handed off to REVIEWER: Implementation complete",
+      "tags": [
+        "handoff",
+        "reviewer"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_8e0b9c53",
+      "timestamp": "2026-01-18T10:55:18.885739",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for development",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_04fa8e81",
+      "timestamp": "2026-01-18T10:57:49.986427",
+      "agent": "SM",
+      "content": "Handed off to DEV: Created story context",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_a5e21ef4",
+      "timestamp": "2026-01-18T10:57:50.000840",
+      "agent": "DEV",
+      "content": "Handed off to REVIEWER: Implementation complete",
+      "tags": [
+        "handoff",
+        "reviewer"
+      ],
+      "story_key": "test-story",
+      "references": []
+    },
+    {
+      "id": "mem_044c6c7a",
+      "timestamp": "2026-01-18T10:57:50.011539",
+      "agent": "SM",
+      "content": "Handed off to DEV: Ready for development",
+      "tags": [
+        "handoff",
+        "dev"
+      ],
+      "story_key": "test-story",
+      "references": []
+    }
+  ]
+}

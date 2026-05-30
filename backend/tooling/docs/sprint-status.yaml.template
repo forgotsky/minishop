@@ -1,0 +1,24 @@
+# Sprint Status
+# Updated: YYYY-MM-DD
+
+sprint:
+  number: 1
+  start: YYYY-MM-DD
+  end: YYYY-MM-DD
+
+# Story Status Values:
+# - backlog: Not yet started
+# - drafted: Story specification created
+# - ready-for-dev: Context created, ready for implementation
+# - in-progress: Currently being worked on
+# - review: Implementation complete, awaiting review
+# - done: Reviewed and approved
+
+stories:
+  # Add your stories here in format:
+  # story-key: status
+  #
+  # Example:
+  # 1-1-setup-project: backlog
+  # 1-2-implement-feature: in-progress
+  # 1-3-add-tests: done
