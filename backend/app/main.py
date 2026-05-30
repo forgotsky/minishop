@@ -34,7 +34,9 @@ app.add_middleware(
 )
 
 STATIC_DIR = os.path.join(os.path.dirname(__file__), "..", "static")
-app.mount("/images", StaticFiles(directory=os.path.join(STATIC_DIR, "images")), name="images")
+IMAGES_DIR = os.path.join(STATIC_DIR, "images")
+if os.path.isdir(IMAGES_DIR):
+    app.mount("/images", StaticFiles(directory=IMAGES_DIR), name="images")
 
 DELIVERY_FEE = 5.0
 
