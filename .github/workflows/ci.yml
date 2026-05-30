@@ -1,10 +1,8 @@
 name: CI/CD
 
 on:
-  push:
-    branches: [main, simple]
   pull_request:
-    branches: [main, simple]
+    branches: [main]
 
 jobs:
   # ============================================================
