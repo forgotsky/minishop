@@ -333,6 +333,8 @@ async def wx_login(payload: WxLoginIn, db: Session = Depends(get_db)):
     For dev: use code as a mock openid.
     """
     openid = await exchange_code_for_openid(payload.code)
+    if not openid:
+        raise HTTPException(status_code=400, detail="微信登录失败，请重试")
 
     user = db.query(User).filter(User.openid == openid).first()
     if not user:
@@ -348,6 +350,8 @@ async def wx_login(payload: WxLoginIn, db: Session = Depends(get_db)):
             changed = True
         if payload.nickname:
             user.nickname = payload.nickname
+            changed = True
+        if payload.avatar:
             user.avatar = payload.avatar
             changed = True
         if changed:

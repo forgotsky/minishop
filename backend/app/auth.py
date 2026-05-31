@@ -65,7 +65,9 @@ def get_current_user(
     if user_id is None:
         return None
     user = db.query(User).filter(User.id == user_id).first()
-    if user and not user.is_active:
+    if user is None:
+        return None
+    if user.is_active is False:  # Explicit check — NULL treated as active
         return None
     return user
 
