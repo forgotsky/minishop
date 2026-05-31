@@ -523,14 +523,18 @@ def create_order(payload: OrderCreateIn, user: User = Depends(require_user), db:
             template = user_coupon.template
             now = datetime.now(timezone.utc)
             if template.start_time <= now <= template.end_time:
+                coupon_applied = False
                 if template.type == CouponType.FULL_REDUCTION:
                     if total_amount >= template.threshold:
                         discount_amount = template.value
+                        coupon_applied = True
                 elif template.type == CouponType.DISCOUNT:
                     discount_amount = round(total_amount * (1 - template.value / 100), 2)
-                user_coupon.status = CouponStatus.USED
-                user_coupon.used_at = now
-                db.add(user_coupon)
+                    coupon_applied = True
+                if coupon_applied:
+                    user_coupon.status = CouponStatus.USED
+                    user_coupon.used_at = now
+                    db.add(user_coupon)
 
     payment_amount = round(total_amount - discount_amount + DELIVERY_FEE, 2)
     order_no = f"ORD{int(time.time() * 1000)}"

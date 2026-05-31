@@ -4,6 +4,12 @@ Shared pytest fixtures for MiniShop backend tests.
 Uses SQLite file-based database for testing.
 Sets DATABASE_URL env var BEFORE importing app modules so the engine
 is created against the test database.
+
+Database lifecycle:
+- Tables are created once per test module (scope="module").
+- Data is reset (deleted + re-seeded) between every test function.
+- This avoids DDL race conditions that occur when drop_all/create_all
+  interleave with async tests under asyncio_mode=auto.
 """
 
 import os
@@ -28,7 +34,10 @@ from sqlalchemy import event
 
 from app.main import app
 from app.db import SessionLocal, Base, engine, get_db
-from app.models import Product, CouponTemplate
+from app.models import (
+    Product, CouponTemplate,
+    CartItem, Order, OrderItem, Address, User, UserCoupon,
+)
 
 
 # ── SQLite datetime fix ────────────────────────────────────────────────
@@ -60,35 +69,48 @@ def override_get_db():
 app.dependency_overrides[get_db] = override_get_db
 
 
-# ── Function-scoped database setup / teardown ──────────────────────────
-# Each test gets fresh tables and seed data to avoid cross-test contamination.
+# ── Module-scoped table creation (once per test file) ──────────────────
+# Tables persist across tests; only data is reset between functions.
 
+@pytest.fixture(scope="module", autouse=True)
+def create_tables():
+    """Create all tables once per test module."""
+    Base.metadata.create_all(bind=engine)
+    yield
+    # Tables remain for the duration of the module (dropped by cleanup)
+
+
+# ── Function-scoped data reset ─────────────────────────────────────────
+# Each test gets fresh seed data; cross-test contamination is prevented
+# by deleting all rows from every table before re-seeding.
 
 @pytest.fixture(scope="function", autouse=True)
-def setup_database():
-    """Create all tables and seed data fresh for each test function."""
-    Base.metadata.create_all(bind=engine)
-
+def reset_data():
+    """Delete all data and re-seed between test functions."""
     db = SessionLocal()
     try:
+        # Delete child tables first to respect foreign keys
+        for model in [OrderItem, Order, CartItem, Address, UserCoupon, User, CouponTemplate, Product]:
+            db.query(model).delete()
+        db.commit()
+
         from app.main import seed_products, seed_coupons
-        if db.query(Product).count() == 0:
-            seed_products(db)
-        if db.query(CouponTemplate).count() == 0:
-            seed_coupons(db)
+        seed_products(db)
+        seed_coupons(db)
+        db.commit()
     finally:
         db.close()
 
     yield
 
-    # Drop all tables so the next test gets a clean slate
-    Base.metadata.drop_all(bind=engine)
 
+# ── Session-scoped database file cleanup ───────────────────────────────
 
 @pytest.fixture(scope="session", autouse=True)
 def cleanup_db_file():
-    """Delete test database file after all tests complete."""
+    """Drop all tables and delete test database file after all tests complete."""
     yield
+    Base.metadata.drop_all(bind=engine)
     engine.dispose()
     try:
         os.remove(TEST_DB)
