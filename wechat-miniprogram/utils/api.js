@@ -1,4 +1,4 @@
-const BASE_URL = 'http://renewshuttle.cn'
+const BASE_URL = 'https://renewshuttle.cn'
 
 const request = (method, path, data, needAuth) => {
   return new Promise((resolve, reject) => {
