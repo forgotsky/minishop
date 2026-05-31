@@ -6,17 +6,30 @@ Page({
   onShow() { this.loadData() },
 
   loadData() {
-    Promise.all([api.getAvailableCoupons(), api.getMyCoupons()]).then(([available, myCoupons]) => {
-      this.setData({ available, myCoupons })
+    api.getAvailableCoupons().then(available => {
+      this.setData({ available })
+    }).catch(err => {
+      console.error('load coupons failed:', err)
+    })
+    api.getMyCoupons().then(myCoupons => {
+      this.setData({ myCoupons })
+    }).catch(err => {
+      console.error('load my coupons failed:', err)
     })
   },
 
   onClaim(e) {
-    api.claimCoupon(e.currentTarget.dataset.id).then(() => {
+    const id = e.currentTarget.dataset.id
+    wx.showLoading({ title: 'Claiming...' })
+    api.claimCoupon(id).then(() => {
+      wx.hideLoading()
       wx.showToast({ title: 'Claimed!', icon: 'success' })
       this.loadData()
     }).catch(err => {
-      wx.showToast({ title: err.detail || 'Failed', icon: 'none' })
+      wx.hideLoading()
+      const msg = (err && err.detail) ? err.detail : JSON.stringify(err)
+      wx.showToast({ title: msg || 'Failed', icon: 'none', duration: 3000 })
+      console.error('claim failed:', err)
     })
   },
 
