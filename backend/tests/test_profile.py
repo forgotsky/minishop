@@ -108,10 +108,23 @@ async def test_delete_account(client, auth_headers):
     """DELETE /api/user/account soft-deletes; re-login reactivates and issues a new token."""
     headers = await auth_headers(code="profile_delete_test")
 
+    # Get user_id before deletion so we can verify is_active in DB
+    profile_before = await client.get("/api/user/profile", headers=headers)
+    user_id = profile_before.json()["id"]
+
     # Delete account
     resp = await client.delete("/api/user/account", headers=headers)
     assert resp.status_code == 200
     assert resp.json()["message"] == "Account deleted"
+
+    # Verify is_active=False in the database
+    db = SessionLocal()
+    try:
+        user = db.query(User).filter(User.id == user_id).first()
+        assert user is not None
+        assert user.is_active is False, "is_active should be False after soft-delete"
+    finally:
+        db.close()
 
     # The old token should now be rejected (user is_active=False)
     resp_blocked = await client.get("/api/user/profile", headers=headers)

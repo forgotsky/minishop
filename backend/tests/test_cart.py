@@ -183,6 +183,11 @@ async def test_add_to_cart_out_of_stock(client, auth_headers):
     assert resp.status_code == 400
     assert "stock" in resp.json()["detail"].lower()
 
+    # Verify cart was NOT modified (the item should not have been added)
+    cart = await client.get("/api/cart", headers=headers)
+    assert cart.json()["items"] == []
+    assert cart.json()["total"] == 0
+
 
 async def test_add_to_cart_product_not_on_sale(client, auth_headers):
     """POST /api/cart/items with a product that is not on sale → 404."""
@@ -197,6 +202,9 @@ async def test_add_to_cart_product_not_on_sale(client, auth_headers):
         assert product is not None, "Product 8 (Desk Lamp) must exist in seed data"
         product.is_on_sale = False
         db.commit()
+        # Verify the mutation was persisted
+        db.refresh(product)
+        assert product.is_on_sale is False, "is_on_sale should be False after mutation"
     finally:
         db.close()
     # Now attempt to add this off-sale product to cart → 404
@@ -205,6 +213,7 @@ async def test_add_to_cart_product_not_on_sale(client, auth_headers):
         "quantity": 1,
     }, headers=headers)
     assert resp.status_code == 404
+    assert "not found" in resp.json()["detail"].lower()
 
 
 async def test_add_to_cart_zero_quantity(client, auth_headers):
@@ -232,6 +241,7 @@ async def test_update_cart_item_404(client, auth_headers):
     headers = await auth_headers(code="cart_upd404_test")
     resp = await client.put("/api/cart/items/9999", params={"quantity": 3}, headers=headers)
     assert resp.status_code == 404
+    assert "not found" in resp.json()["detail"].lower()
 
 
 async def test_remove_cart_item_404(client, auth_headers):
@@ -239,6 +249,7 @@ async def test_remove_cart_item_404(client, auth_headers):
     headers = await auth_headers(code="cart_del404_test")
     resp = await client.delete("/api/cart/items/9999", headers=headers)
     assert resp.status_code == 404
+    assert "not found" in resp.json()["detail"].lower()
 
 
 async def test_cart_requires_auth(client):

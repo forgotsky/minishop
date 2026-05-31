@@ -199,6 +199,7 @@ async def test_pay_nonexistent_order(client, auth_headers):
     headers = await auth_headers(code="order_pay_404_test")
     resp = await client.post("/api/orders/9999/pay", headers=headers)
     assert resp.status_code == 404
+    assert "not found" in resp.json()["detail"].lower()
 
 
 # ── Coupon application ────────────────────────────────────────────────
@@ -429,11 +430,20 @@ async def test_create_order_invalid_address(client, auth_headers):
         "product_id": 1, "quantity": 1,
     }, headers=headers)
 
+    # Verify cart has items before the failed order attempt
+    cart_before = await client.get("/api/cart", headers=headers)
+    assert len(cart_before.json()["items"]) == 1
+
     resp = await client.post("/api/orders", json={
         "address_id": 9999,
     }, headers=headers)
     assert resp.status_code == 400
     assert "address" in resp.json()["detail"].lower()
+
+    # Verify cart was NOT emptied (address check comes before cart clearing)
+    cart_after = await client.get("/api/cart", headers=headers)
+    assert len(cart_after.json()["items"]) == 1
+    assert cart_after.json()["items"][0]["product_id"] == 1
 
 
 async def test_get_order_404(client, auth_headers):
@@ -621,6 +631,29 @@ async def test_list_orders_pagination(client, auth_headers):
     resp = await client.get("/api/orders", headers=headers)
     assert resp.status_code == 200
     assert len(resp.json()) == 3
+
+
+async def test_list_orders_pagination_page_size_one(client, auth_headers):
+    """GET /api/orders with page=1&page_size=1 returns exactly 1 order."""
+    headers = await auth_headers(code="order_psize1_test")
+
+    # Create 2 orders
+    for i in range(2):
+        await client.post("/api/cart/items", json={
+            "product_id": i + 1, "quantity": 1,
+        }, headers=headers)
+        addr_id = await _create_address(client, headers, f"PSize1-{i}")
+        resp = await client.post("/api/orders", json={
+            "address_id": addr_id,
+        }, headers=headers)
+        assert resp.status_code == 200
+
+    # Page 1, size 1 → 1 item
+    resp = await client.get("/api/orders", headers=headers, params={
+        "page": 1, "page_size": 1,
+    })
+    assert resp.status_code == 200
+    assert len(resp.json()) == 1
 
 
 async def test_list_orders_pagination_invalid_page(client, auth_headers):

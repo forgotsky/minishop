@@ -131,6 +131,12 @@ async def test_login_missing_code_field(client):
     assert resp.status_code == 422
 
 
+async def test_login_empty_body(client):
+    """POST /api/auth/login with empty JSON body → 422 (Pydantic validation)."""
+    resp = await client.post("/api/auth/login", json={})
+    assert resp.status_code == 422
+
+
 # ── Protected-endpoint tests ──────────────────────────────────────────
 
 async def test_protected_endpoint_no_token(client):
@@ -322,6 +328,39 @@ async def test_protected_endpoint_algorithm_substitution(client):
 
     resp = await client.get("/api/cart", headers={
         "Authorization": f"Bearer {bad_token}",
+    })
+    assert resp.status_code == 401
+
+
+async def test_protected_endpoint_tampered_token(client):
+    """Token whose payload was altered after signing (signature mismatch) → 401."""
+    import base64
+    import json
+
+    # Forge a valid token for user 1
+    token = _forge_token(sub=1)
+    parts = token.split(".")
+
+    # Decode the original payload
+    payload_enc = parts[1]
+    padding = 4 - len(payload_enc) % 4
+    if padding != 4:
+        payload_enc += "=" * padding
+    payload = json.loads(base64.urlsafe_b64decode(payload_enc))
+
+    # Tamper: change sub to a different user_id
+    payload["sub"] = "999999"
+
+    # Re-encode payload without padding (JWT convention)
+    new_payload = base64.urlsafe_b64encode(
+        json.dumps(payload).encode()
+    ).rstrip(b"=").decode()
+
+    # Reconstruct with original signature — now mismatched
+    tampered = f"{parts[0]}.{new_payload}.{parts[2]}"
+
+    resp = await client.get("/api/cart", headers={
+        "Authorization": f"Bearer {tampered}",
     })
     assert resp.status_code == 401
 

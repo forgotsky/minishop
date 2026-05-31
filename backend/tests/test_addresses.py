@@ -258,6 +258,78 @@ async def test_address_cross_user_delete(client, auth_headers):
     assert len(list_a.json()) == 1
 
 
+async def test_address_cross_user_delete_preserves_own_addresses(client, auth_headers):
+    """User B's own addresses survive an attempted cross-user delete of User A's address."""
+    headers_a = await auth_headers(code="addr_del_presv_a")
+    headers_b = await auth_headers(code="addr_del_presv_b")
+
+    # User A creates an address
+    create_a = await client.post("/api/addresses", json={
+        "full_name": "AddrA", "phone": "13800138000",
+        "province": "A", "city": "B", "district": "C", "street": "D",
+    }, headers=headers_a)
+    addr_a_id = create_a.json()["id"]
+
+    # User B creates their own address
+    create_b = await client.post("/api/addresses", json={
+        "full_name": "AddrB", "phone": "13900139000",
+        "province": "X", "city": "Y", "district": "Z", "street": "W",
+    }, headers=headers_b)
+    addr_b_id = create_b.json()["id"]
+
+    # User B tries to delete User A's address → 404
+    resp = await client.delete(f"/api/addresses/{addr_a_id}", headers=headers_b)
+    assert resp.status_code == 404
+
+    # User B's own address is intact
+    list_b = await client.get("/api/addresses", headers=headers_b)
+    b_ids = [a["id"] for a in list_b.json()]
+    assert addr_b_id in b_ids
+    assert len(b_ids) == 1
+
+    # User A's address still exists
+    list_a = await client.get("/api/addresses", headers=headers_a)
+    assert len(list_a.json()) == 1
+
+
+async def test_address_cross_user_update_preserves_default(client, auth_headers):
+    """Cross-user update with is_default=True must not affect the attacker's own default."""
+    headers_a = await auth_headers(code="addr_upd_def_a")
+    headers_b = await auth_headers(code="addr_upd_def_b")
+
+    # User A creates a non-default address
+    create_a = await client.post("/api/addresses", json={
+        "full_name": "AddrA", "phone": "13800138000",
+        "province": "A", "city": "B", "district": "C", "street": "D",
+    }, headers=headers_a)
+    addr_a_id = create_a.json()["id"]
+
+    # User B creates an address set as default
+    await client.post("/api/addresses", json={
+        "full_name": "AddrB", "phone": "13900139000",
+        "province": "X", "city": "Y", "district": "Z", "street": "W",
+        "is_default": True,
+    }, headers=headers_b)
+
+    # User B tries to update User A's address with is_default=True → 404
+    resp = await client.put(f"/api/addresses/{addr_a_id}", json={
+        "full_name": "Hacked", "phone": "99999999999",
+        "province": "X", "city": "Y", "district": "Z", "street": "X",
+        "is_default": True,
+    }, headers=headers_b)
+    assert resp.status_code == 404
+
+    # User B's default address must still be default (not affected)
+    list_b = await client.get("/api/addresses", headers=headers_b)
+    assert len(list_b.json()) == 1
+    assert list_b.json()[0]["is_default"] is True
+
+    # User A's address is unchanged
+    list_a = await client.get("/api/addresses", headers=headers_a)
+    assert list_a.json()[0]["full_name"] == "AddrA"
+    assert list_a.json()[0]["is_default"] is False
+
+
 # ── 404 on non-existent resources ────────────────────────────────────
 
 async def test_update_nonexistent_address(client, auth_headers):
