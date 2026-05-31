@@ -45,13 +45,28 @@ Implement the feature following the architecture:
 - Frontend: WXML pages, JS logic, API calls
 - Ensure WeChat compatibility (no `?.`, no `??`)
 
-**Phase 5 — Code Review (Reviewer)**
-→ Output: `docs/stories/<story-key>/5-review.md`
+**Phase 5 — Testing (Test Engineer)** 🆕
+→ Output: `docs/stories/<story-key>/5-tests.md`
+Write and execute tests BEFORE review:
+- pytest unit tests for all affected endpoints
+- API simulation script (httpx) — full user flow
+- Run tests: `cd backend && pytest --tb=short -v`
+- If FAIL → fix code → re-run → loop until ALL PASS
+- Generate test report with pass/fail/skip counts
+- GATE: Tests must ALL PASS before proceeding to Review
+
+**Phase 6 — Code Review (Reviewer)**
+→ Output: `docs/stories/<story-key>/6-review.md`
 Critical review with:
 - Correctness bugs found
 - Security issues found
 - WeChat compatibility check
-- Recommendations
+- Test coverage assessment
+- After fixes applied → RE-RUN Phase 5 tests → verify all still pass
+
+**Phase 7 — Fix & Re-test Loop** 🆕
+→ Reviewer findings → Dev fixes → Test Engineer re-runs → Reviewer re-checks
+→ Loop until: 0 open findings + all tests pass
 
 **Phase 6 — Documentation (Tech Writer)**
 → Output: `docs/stories/<story-key>/README.md`
