@@ -1,0 +1,9 @@
+# Story Artifacts Directory
+
+Each story creates a subfolder with:
+  SHOP-XXX/
+    1-urs.md          ← Business Analyst output
+    2-story.md         ← Product Manager breakdown
+    3-architecture.md  ← Architect design
+    5-review.md        ← Code Reviewer report
+    README.md          ← Final summary
