@@ -62,9 +62,8 @@ async def test_update_cart_quantity(client, auth_headers):
     cart2 = await client.get("/api/cart", headers=headers)
     assert cart2.json()["items"][0]["quantity"] == 5
     # subtotal = price * quantity = 49.99 * 5
-    # The code rounds subtotals to 2 decimal places (main.py line 414),
-    # so the result is exactly 249.95
-    assert cart2.json()["items"][0]["subtotal"] == 249.95
+    # Use approx for float comparison safety
+    assert cart2.json()["items"][0]["subtotal"] == pytest.approx(249.95, rel=1e-6)
 
 
 async def test_remove_from_cart(client, auth_headers):
@@ -157,7 +156,7 @@ async def test_cart_with_multiple_products(client, auth_headers):
     data = cart.json()
     assert len(data["items"]) == 2
     # total = 99.98 + 89.00 = 188.98
-    assert data["total"] == 188.98
+    assert data["total"] == pytest.approx(188.98, rel=1e-6)
 
 
 # ── Negative tests ────────────────────────────────────────────────────
@@ -344,6 +343,43 @@ async def test_cart_cross_user_delete_isolation(client, auth_headers):
 
 
 # ── PUT quantity validation edge cases ────────────────────────────────
+
+async def test_update_quantity_exceeds_stock(client, auth_headers):
+    """PUT /api/cart/items/{id} with quantity > product.stock → 400.
+    Reduce product 1 stock to 5, then attempt update to 10."""
+    headers = await auth_headers(code="cart_upd_exceeds_stock")
+
+    # Add product 1 with quantity 1
+    await client.post("/api/cart/items", json={
+        "product_id": 1, "quantity": 1,
+    }, headers=headers)
+    cart = await client.get("/api/cart", headers=headers)
+    item_id = cart.json()["items"][0]["id"]
+
+    # Reduce stock to 5 via direct DB access
+    from app.db import SessionLocal
+    from app.models import Product
+    db = SessionLocal()
+    try:
+        product = db.query(Product).filter(Product.id == 1).first()
+        product.stock = 5
+        db.commit()
+    finally:
+        db.close()
+
+    # Attempt to update quantity to 10 (exceeds stock of 5, but within 1-99)
+    resp = await client.put(
+        f"/api/cart/items/{item_id}",
+        params={"quantity": 10},
+        headers=headers,
+    )
+    assert resp.status_code == 400
+    assert "stock" in resp.json()["detail"].lower()
+
+    # Verify the quantity was NOT changed
+    cart2 = await client.get("/api/cart", headers=headers)
+    assert cart2.json()["items"][0]["quantity"] == 1
+
 
 async def test_update_cart_quantity_zero(client, auth_headers):
     """PUT /api/cart/items/{id}?quantity=0 → 422 (below minimum 1)."""

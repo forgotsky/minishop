@@ -193,6 +193,7 @@ class OrderOut(BaseModel):
     payment_amount: float
     status: OrderStatus
     payment_method: Optional[str] = None
+    remark: Optional[str] = None
     created_at: Optional[str] = None
     items: List[OrderItemOut] = []
 
@@ -451,6 +452,10 @@ def update_cart_item(item_id: int, quantity: int = Query(ge=1, le=99),
     item = db.query(CartItem).filter(CartItem.id == item_id, CartItem.user_id == user.id).first()
     if not item:
         raise HTTPException(status_code=404, detail="Cart item not found")
+    # Validate stock: requested quantity must not exceed available stock
+    product = item.product
+    if product and product.stock < quantity:
+        raise HTTPException(status_code=400, detail="Insufficient stock")
     item.quantity = quantity
     db.commit()
     return {"message": "Updated"}
@@ -550,6 +555,7 @@ def create_order(payload: OrderCreateIn, user: User = Depends(require_user), db:
         payment_amount=payment_amount,
         status=OrderStatus.PENDING,
         payment_method=payload.payment_method,
+        remark=payload.remark,
     )
     db.add(order)
     db.flush()
@@ -578,6 +584,7 @@ def create_order(payload: OrderCreateIn, user: User = Depends(require_user), db:
         payment_amount=order.payment_amount,
         status=order.status,
         payment_method=order.payment_method,
+        remark=order.remark,
         created_at=order.created_at.isoformat() if order.created_at else None,
         items=[OrderItemOut.model_validate(oi) for oi in order.items],
     )
@@ -599,6 +606,7 @@ def list_orders(user: User = Depends(require_user), db: Session = Depends(get_db
         discount_amount=o.discount_amount, delivery_fee=o.delivery_fee,
         payment_amount=o.payment_amount, status=o.status,
         payment_method=o.payment_method,
+        remark=o.remark,
         created_at=o.created_at.isoformat() if o.created_at else None,
         items=[OrderItemOut.model_validate(oi) for oi in o.items],
     ) for o in orders]
@@ -614,6 +622,7 @@ def get_order(order_id: int, user: User = Depends(require_user), db: Session = D
         discount_amount=order.discount_amount, delivery_fee=order.delivery_fee,
         payment_amount=order.payment_amount, status=order.status,
         payment_method=order.payment_method,
+        remark=order.remark,
         created_at=order.created_at.isoformat() if order.created_at else None,
         items=[OrderItemOut.model_validate(oi) for oi in order.items],
     )

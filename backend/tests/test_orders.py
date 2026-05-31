@@ -394,6 +394,30 @@ async def test_create_order_deducts_stock(client, auth_headers):
     assert cart_after.json()["total"] == 0
 
 
+# ── Order fields / creation edge cases ────────────────────────────────
+
+async def test_create_order_with_remark(client, auth_headers):
+    """Order with a remark field stores the remark correctly."""
+    headers = await auth_headers(code="order_remark_test")
+
+    await client.post("/api/cart/items", json={
+        "product_id": 1, "quantity": 1,
+    }, headers=headers)
+    addr_id = await _create_address(client, headers, "Remark")
+
+    resp = await client.post("/api/orders", json={
+        "address_id": addr_id,
+        "remark": "Please gift-wrap the items",
+        "payment_method": "wechat",
+    }, headers=headers)
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["status"] == "pending"
+    assert data["payment_amount"] == 54.99
+    # Verify remark was actually persisted and returned
+    assert data["remark"] == "Please gift-wrap the items"
+
+
 # ── Negative tests ────────────────────────────────────────────────────
 
 async def test_create_order_invalid_address(client, auth_headers):
