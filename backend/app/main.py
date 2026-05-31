@@ -1,7 +1,7 @@
 import os
 import time
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
 
 from fastapi import FastAPI, HTTPException, Depends, Query
@@ -75,7 +75,7 @@ def seed_products(db: Session) -> None:
 
 
 def seed_coupons(db: Session) -> None:
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     templates = [
         CouponTemplate(name="新用户满100减20", description="新用户首单专享", type=CouponType.FULL_REDUCTION, threshold=100.0, value=20.0, total_count=500, start_time=now, end_time=now.replace(year=now.year + 1)),
         CouponTemplate(name="全场满200减30", description="全场通用", type=CouponType.FULL_REDUCTION, threshold=200.0, value=30.0, total_count=1000, start_time=now, end_time=now.replace(year=now.year + 1)),
@@ -427,7 +427,7 @@ def create_order(payload: OrderCreateIn, user: User = Depends(require_user), db:
         ).first()
         if user_coupon:
             template = user_coupon.template
-            now = datetime.utcnow()
+            now = datetime.now(timezone.utc)
             if template.start_time <= now <= template.end_time:
                 if template.type == CouponType.FULL_REDUCTION:
                     if total_amount >= template.threshold:
@@ -529,7 +529,7 @@ def pay_order(order_id: int, user: User = Depends(require_user), db: Session = D
     if order.status != OrderStatus.PENDING:
         raise HTTPException(status_code=400, detail="Order cannot be paid")
     order.status = OrderStatus.PAID
-    order.paid_at = datetime.utcnow()
+    order.paid_at = datetime.now(timezone.utc)
     db.commit()
     return {"message": "Payment successful", "order_no": order.order_no}
 
@@ -540,7 +540,7 @@ def pay_order(order_id: int, user: User = Depends(require_user), db: Session = D
 
 @app.get("/api/coupons", response_model=List[CouponOut])
 def list_available_coupons(db: Session = Depends(get_db)):
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     templates = db.query(CouponTemplate).filter(
         CouponTemplate.start_time <= now,
         CouponTemplate.end_time >= now,
@@ -559,7 +559,7 @@ def claim_coupon(template_id: int, user: User = Depends(require_user), db: Sessi
     if not template:
         raise HTTPException(status_code=404, detail="Coupon not found")
 
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     if not (template.start_time <= now <= template.end_time):
         raise HTTPException(status_code=400, detail="Coupon is not available")
     if template.used_count >= template.total_count:
@@ -583,7 +583,7 @@ def claim_coupon(template_id: int, user: User = Depends(require_user), db: Sessi
 def list_user_coupons(user: User = Depends(require_user), db: Session = Depends(get_db)):
     coupons = db.query(UserCoupon).filter(UserCoupon.user_id == user.id).all()
     result = []
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     for c in coupons:
         t = c.template
         # Auto-expire if past end time
