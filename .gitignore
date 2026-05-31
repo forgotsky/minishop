@@ -16,3 +16,4 @@ k8s/secret.yaml
 
 # Legacy folder (old implementation)
 legacy/
+tooling/
