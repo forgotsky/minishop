@@ -1,9 +1,11 @@
 import os
 import time
 import json
+import logging
 from datetime import datetime, timezone
 from typing import List, Optional
 
+import httpx
 from fastapi import FastAPI, HTTPException, Depends, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -17,6 +19,9 @@ from .models import (
     CouponTemplate, UserCoupon, CouponType, CouponStatus,
 )
 from .auth import create_access_token, require_user, get_current_user
+from .log_config import setup_logging
+
+logger = logging.getLogger("shop.main")
 
 app = FastAPI(title="WeChat Shop API", version="1.0.0")
 
@@ -43,6 +48,8 @@ DELIVERY_FEE = 5.0
 
 @app.on_event("startup")
 def on_startup() -> None:
+    setup_logging()
+    logger.info("Shop API starting up...")
     Base.metadata.create_all(bind=engine)
     db = next(get_db())
     try:
@@ -228,6 +235,24 @@ class LoginOut(BaseModel):
     nickname: Optional[str] = None
 
 
+class UserProfileOut(BaseModel):
+    id: int
+    nickname: Optional[str] = None
+    avatar: Optional[str] = None
+    phone: Optional[str] = None
+    openid: str  # masked
+    created_at: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
+class UserProfileUpdate(BaseModel):
+    nickname: Optional[str] = None
+    avatar: Optional[str] = None
+    phone: Optional[str] = None
+
+
 # ============================================================
 # Helper functions
 # ============================================================
@@ -236,25 +261,82 @@ def row2dict(obj):
     return {c.name: getattr(obj, c.name) for c in obj.__table__.columns}
 
 
+def _mask_openid(openid: str) -> str:
+    """Mask openid: show first 4 + last 4 chars, e.g. o7xK****abcd"""
+    if len(openid) <= 8:
+        return openid[:2] + "****" + openid[-2:]
+    return openid[:4] + "****" + openid[-4:]
+
+
+# ============================================================
+# Auth helpers
+# ============================================================
+
+WECHAT_CODE2SESSION_URL = "https://api.weixin.qq.com/sns/jscode2session"
+
+
+async def exchange_code_for_openid(code: str) -> str:
+    """Exchange WeChat login code for openid.
+    Dev mode: mock openid. Prod mode: call WeChat API.
+    """
+    from .auth import RUN_MODE, WECHAT_APPID, WECHAT_APP_SECRET
+
+    if RUN_MODE == "dev":
+        mock_openid = f"wx_{code}" if code else f"wx_dev_{int(time.time())}"
+        logger.info(f"[DEV] Using mock openid: {mock_openid[:8]}...")
+        return mock_openid
+
+    # Production: call WeChat jscode2session
+    params = {
+        "appid": WECHAT_APPID,
+        "secret": WECHAT_APP_SECRET,
+        "js_code": code,
+        "grant_type": "authorization_code",
+    }
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            resp = await client.get(WECHAT_CODE2SESSION_URL, params=params)
+            resp.raise_for_status()
+            # Guard against non-JSON responses (e.g. gateway error pages)
+            if not resp.headers.get("content-type", "").startswith("application/json"):
+                logger.error("WeChat API returned non-JSON response")
+                return None
+            data = resp.json()
+    except httpx.HTTPStatusError as e:
+        logger.error("WeChat API HTTP error: status=%s", e.response.status_code)
+        return None
+    except (httpx.RequestError, httpx.TimeoutException) as e:
+        logger.error("WeChat API unreachable: %s", e)
+        return None
+
+    if "errcode" in data and data["errcode"] != 0:
+        # NEVER log full response — contains session_key
+        logger.error("WeChat code2session error: errcode=%s errmsg=%s",
+                     data.get("errcode"), data.get("errmsg", "unknown"))
+        return None
+    openid = data.get("openid")
+    if not openid:
+        logger.error("WeChat code2session response missing openid")
+        return None
+    return openid
+
+
 # ============================================================
 # Auth endpoints
 # ============================================================
 
 @app.post("/api/auth/login", response_model=LoginOut)
-def wx_login(payload: WxLoginIn, db: Session = Depends(get_db)):
+async def wx_login(payload: WxLoginIn, db: Session = Depends(get_db)):
     """
     WeChat mini-program login.
     In production, exchange code for openid via WeChat API.
     For dev: use code as a mock openid.
     """
-    # TODO: In production, call WeChat API:
-    # GET https://api.weixin.qq.com/sns/jscode2session?appid=APPID&secret=SECRET&js_code=CODE&grant_type=authorization_code
-    # The response contains openid and session_key.
-    mock_openid = f"wx_{payload.code}" if payload.code else f"wx_dev_{int(time.time())}"
+    openid = await exchange_code_for_openid(payload.code)
 
-    user = db.query(User).filter(User.openid == mock_openid).first()
+    user = db.query(User).filter(User.openid == openid).first()
     if not user:
-        user = User(openid=mock_openid, nickname=payload.nickname, avatar=payload.avatar)
+        user = User(openid=openid, nickname=payload.nickname, avatar=payload.avatar)
         db.add(user)
         db.commit()
         db.refresh(user)
@@ -645,6 +727,44 @@ def delete_address(address_id: int, user: User = Depends(require_user), db: Sess
     db.delete(addr)
     db.commit()
     return {"message": "Address deleted"}
+
+
+# ============================================================
+# Profile endpoints
+# ============================================================
+
+@app.get("/api/user/profile", response_model=UserProfileOut)
+def get_profile(user: User = Depends(require_user)):
+    """Get current user profile with masked openid."""
+    return UserProfileOut(
+        id=user.id,
+        nickname=user.nickname,
+        avatar=user.avatar,
+        phone=user.phone,
+        openid=_mask_openid(user.openid),
+        created_at=user.created_at.isoformat() if user.created_at else None,
+    )
+
+
+@app.put("/api/user/profile", response_model=UserProfileOut)
+def update_profile(payload: UserProfileUpdate, user: User = Depends(require_user), db: Session = Depends(get_db)):
+    """Update current user profile (nickname, avatar, phone)."""
+    if payload.nickname is not None:
+        user.nickname = payload.nickname
+    if payload.avatar is not None:
+        user.avatar = payload.avatar
+    if payload.phone is not None:
+        user.phone = payload.phone
+    db.commit()
+    db.refresh(user)
+    return UserProfileOut(
+        id=user.id,
+        nickname=user.nickname,
+        avatar=user.avatar,
+        phone=user.phone,
+        openid=_mask_openid(user.openid),
+        created_at=user.created_at.isoformat() if user.created_at else None,
+    )
 
 
 # ============================================================

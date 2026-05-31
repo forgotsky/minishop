@@ -26,6 +26,26 @@ spec:
                   key: DB_PASSWORD
             - name: DATABASE_URL
               value: "postgresql://shop_user:$(DB_PASSWORD)@postgres:5432/shop_db"
+            - name: JWT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: shop-secret
+                  key: JWT_SECRET_KEY
+            - name: WECHAT_APPID
+              valueFrom:
+                configMapKeyRef:
+                  name: shop-config
+                  key: WECHAT_APPID
+            - name: WECHAT_APP_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: shop-secret
+                  key: WECHAT_APP_SECRET
+            - name: RUN_MODE
+              valueFrom:
+                configMapKeyRef:
+                  name: shop-config
+                  key: RUN_MODE
           resources:
             requests:
               memory: "64Mi"

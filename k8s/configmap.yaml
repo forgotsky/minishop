@@ -7,4 +7,8 @@ data:
   # 数据库连接 — 密码来自 Secret，这里只放用户名和库名
   DATABASE_URL: "postgresql://shop_user:$(DB_PASSWORD)@postgres:5432/shop_db"
   ALLOWED_ORIGINS: "*"
+  # 运行模式: dev 或 prod
+  RUN_MODE: "prod"
+  # 微信小程序 AppID（非敏感配置，可放在 ConfigMap）
+  WECHAT_APPID: "请修改为你自己的微信小程序AppID"
   # K3s 内部 DNS 自动解析 Service 名，postgres 就是 postgres-service 的地址

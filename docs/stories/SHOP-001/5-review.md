@@ -93,13 +93,23 @@ if user is None:
 
 ---
 
+## Reviewer Agent 发现（第二轮审查：代码实现后）
+
+| Severity | File | Issue | Fixed |
+|----------|------|-------|-------|
+| HIGH | main.py:296 | httpx 异常未捕获 → 500 | ✅ 添加 try/except |
+| HIGH | main.py:301 | session_key 泄露到日志 | ✅ 只记录 errcode |
+| MEDIUM | auth.py:16 | 空字符串 JWT_SECRET_KEY 未检测 | ✅ 统一检查 |
+| MEDIUM | main.py:299 | 非 JSON 响应未防护 | ✅ 检查 content-type |
+| LOW | auth.py:16 | dev 模式无醒目警告 | ✅ 添加 WARNING 日志 |
+
 ## Summary
 
 ```
 CRITICAL: 0
-HIGH:     1 (JWT 密钥硬编码)
-MEDIUM:   2 (auto_error=False 风险, mock openid)
-LOW:      2 (每次重登, 缺日志)
+HIGH:     2 (已修复全部)
+MEDIUM:   2 (已修复全部)
+LOW:      1 (已修复)
 ```
 
 **结论：代码可以合入 main，但建议在下个 Sprint 解决 HIGH 项。**
