@@ -64,7 +64,10 @@ def get_current_user(
     user_id = decode_token(credentials.credentials)
     if user_id is None:
         return None
-    return db.query(User).filter(User.id == user_id).first()
+    user = db.query(User).filter(User.id == user_id).first()
+    if user and not user.is_active:
+        return None
+    return user
 
 
 def require_user(user: Optional[User] = Depends(get_current_user)) -> User:

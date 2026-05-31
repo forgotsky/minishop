@@ -115,3 +115,31 @@ Epic: 用户认证授权
 - [x] Token 过期后自动重登
 - [x] 代码审查通过
 - [x] 部署到 K3s 生产环境
+
+---
+
+## v1.1 Change: 用户注销账号 (2026-05-31)
+
+| Story | Priority | Effort | Status |
+|-------|----------|--------|--------|
+| Story 1.5: 用户注销账号 | P1 | S | ✅ Done |
+| Story 1.6: 注销后重新登录 | P1 | S | ✅ Done |
+
+### Tasks
+
+**Backend:**
+- [x] User 模型添加 `is_active` 字段（默认 True）
+- [x] `get_current_user()` 检查 is_active，注销用户返回 None
+- [x] `DELETE /api/user/account` — 软删除（标记 is_active=False）
+- [x] `POST /api/auth/login` — 注销用户重新登录时自动激活
+
+**Frontend:**
+- [x] `api.deleteAccount()` — 调用注销接口
+
+### Files Changed (v1.1 delta only)
+| File | Change |
+|------|--------|
+| `backend/app/models.py` | +1: `is_active = Column(Boolean, default=True)` |
+| `backend/app/auth.py` | +2: `if user and not user.is_active: return None` |
+| `backend/app/main.py` | +13: `DELETE /api/user/account` + login reactivation |
+| `wechat-miniprogram/utils/api.js` | +2: `deleteAccount()` stub |

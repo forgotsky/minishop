@@ -68,6 +68,20 @@
 - 401 自动重登机制
 - 认证中间件：require_user（必须登录）、get_current_user（可选登录）
 
+### US-004: 用户注销账号 (v1.1)
+
+**As a** 已登录用户
+**I want to** 在小程序内注销我的账号
+**So that** 我的个人数据不再保留在系统中
+
+### AC-005: 账号注销流程 (v1.1)
+
+| Given | When | Then |
+|-------|------|------|
+| 用户已登录 | 点击"注销账号" | 弹出二次确认："注销后数据不可恢复" |
+| 用户确认注销 | 调用注销 API | 账号标记为已注销，Token 失效 |
+| 已注销用户 | 再次登录 | 创建全新账号（openid 不变，数据清空） |
+
 **Out:**
 - 微信手机号授权（需要企业认证小程序）
 - 微信支付（后续独立 Story）
@@ -84,3 +98,13 @@
 | HTTPS 证书 | ✅ | Let's Encrypt via cert-manager |
 | 后端 `/api/auth/login` 接口 | ✅ | 已实现 |
 | JWT 密钥 | ⚠️ | 当前用 `dev-secret-change-in-production`，生产环境应改为强随机密钥 |
+
+---
+
+## Change Log
+
+### v1.1 (2026-05-31)
+- **Added:** US-004 用户注销账号功能
+- **Added:** AC-005 账号注销流程（二次确认 + Token 失效）
+- **Scope:** 影响 main.py（新 API）+ auth.py（Token 失效）+ 小程序 profile 页面
+- **Status:** 🔄 In Progress
