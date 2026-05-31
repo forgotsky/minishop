@@ -1,5 +1,14 @@
 const BASE_URL = 'https://renewshuttle.cn'
 
+const handle401 = () => {
+  wx.removeStorageSync('token')
+  const app = getApp()
+  if (app) {
+    app.globalData.loggedIn = false
+    app.devLogin()
+  }
+}
+
 const request = (method, path, data, needAuth) => {
   return new Promise((resolve, reject) => {
     const header = { 'Content-Type': 'application/json' }
@@ -17,6 +26,7 @@ const request = (method, path, data, needAuth) => {
         if (res.statusCode >= 200 && res.statusCode < 300) {
           resolve(res.data)
         } else {
+          if (res.statusCode === 401) handle401()
           reject(res.data)
         }
       },
