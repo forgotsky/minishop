@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'MiniShop harness loaded | backend-dev · miniprogram-dev · code-reviewer · architect'"
+          }
+        ]
+      }
+    ]
+  }
+}
