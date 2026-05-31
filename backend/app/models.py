@@ -35,6 +35,7 @@ class User(Base):
     nickname = Column(String, nullable=True)
     avatar = Column(String, nullable=True)
     phone = Column(String, nullable=True)
+    is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     addresses = relationship("Address", back_populates="user", cascade="all, delete-orphan")

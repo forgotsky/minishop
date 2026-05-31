@@ -340,11 +340,19 @@ async def wx_login(payload: WxLoginIn, db: Session = Depends(get_db)):
         db.add(user)
         db.commit()
         db.refresh(user)
-    elif payload.nickname:
-        user.nickname = payload.nickname
-        user.avatar = payload.avatar
-        db.commit()
-        db.refresh(user)
+    else:
+        # Re-activate soft-deleted account on re-login
+        changed = False
+        if not user.is_active:
+            user.is_active = True
+            changed = True
+        if payload.nickname:
+            user.nickname = payload.nickname
+            user.avatar = payload.avatar
+            changed = True
+        if changed:
+            db.commit()
+            db.refresh(user)
 
     token = create_access_token(user.id)
     return LoginOut(token=token, user_id=user.id, nickname=user.nickname)
@@ -765,6 +773,18 @@ def update_profile(payload: UserProfileUpdate, user: User = Depends(require_user
         openid=_mask_openid(user.openid),
         created_at=user.created_at.isoformat() if user.created_at else None,
     )
+
+
+# ============================================================
+# Account management
+# ============================================================
+
+@app.delete("/api/user/account")
+def delete_account(user: User = Depends(require_user), db: Session = Depends(get_db)):
+    """Soft-delete the current user's account."""
+    user.is_active = False
+    db.commit()
+    return {"message": "Account deleted"}
 
 
 # ============================================================

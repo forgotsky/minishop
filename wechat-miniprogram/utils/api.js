@@ -85,6 +85,9 @@ const api = {
   // Profile
   getProfile: () => request('GET', '/api/user/profile'),
   updateProfile: (data) => request('PUT', '/api/user/profile', data),
+
+  // Account
+  deleteAccount: () => request('DELETE', '/api/user/account'),
 }
 
 const imageUrl = (path) => {
