@@ -70,7 +70,7 @@ Page({
       wx.showToast({ title: 'Select address', icon: 'none' }); return
     }
     const itemIds = this.data.items.map(i => i.id)
-    api.createOrder(this.data.selectedAddress.id, this.data.selectedCoupon?.id, 'wechat', null, itemIds).then(order => {
+    api.createOrder(this.data.selectedAddress.id, (this.data.selectedCoupon || {}).id, 'wechat', null, itemIds).then(order => {
       api.payOrder(order.id).then(() => {
         wx.showToast({ title: 'Order placed!', icon: 'success' })
         setTimeout(() => wx.redirectTo({ url: '/pages/order-detail/order-detail?id=' + order.id }), 1000)
