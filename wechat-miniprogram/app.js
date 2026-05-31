@@ -6,11 +6,6 @@ App({
   },
 
   autoLogin() {
-    const token = wx.getStorageSync('token')
-    if (token) {
-      this.globalData.loggedIn = true
-      return
-    }
     wx.login({
       success: (res) => {
         if (res.code) {
