@@ -81,6 +81,10 @@ const api = {
   getAvailableCoupons: () => request('GET', '/api/coupons'),
   claimCoupon: (templateId) => request('POST', '/api/coupons/' + templateId + '/claim'),
   getMyCoupons: () => request('GET', '/api/user/coupons'),
+
+  // Profile
+  getProfile: () => request('GET', '/api/user/profile'),
+  updateProfile: (data) => request('PUT', '/api/user/profile', data),
 }
 
 const imageUrl = (path) => {
