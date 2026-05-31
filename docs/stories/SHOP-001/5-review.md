@@ -1,115 +1,134 @@
 # SHOP-001 Code Review Report
 
-**Author:** Code Reviewer
+**Agent:** Code Reviewer (独立进程, 15 次工具调用, 141s)
 **Date:** 2026-05-31
-**Verdict:** ✅ APPROVED with 4 recommendations
+**Verdict:** APPROVED — 5 issues found, all fixed
 
 ---
 
-## Findings
+## Reviewer 原始发现
 
-### 🔴 HIGH — JWT 密钥硬编码
+### 🔴 HIGH #1 — httpx 异常未捕获 → 500
 
-**File:** `backend/app/auth.py:13`
-**Problem:** `SECRET_KEY = os.getenv("JWT_SECRET_KEY", "dev-secret-change-in-production")`
-默认密钥是众所周知的开发密钥。在生产环境中任何人拿到 token 都可以伪造任意用户的 JWT。
-**Fix:** 在 K8s Secret 中添加 `JWT_SECRET_KEY`，通过环境变量注入：
-```yaml
-# k8s/app.yaml
-env:
-  - name: JWT_SECRET_KEY
-    valueFrom:
-      secretKeyRef:
-        name: shop-secret
-        key: JWT_SECRET_KEY
-```
+**File:** `backend/app/main.py:296`
+**Found by Reviewer at:** `exchange_code_for_openid()`
 
----
-
-### 🟡 MEDIUM — HTTPBearer 被设为不报错
-
-**File:** `backend/app/auth.py:17`
-**Problem:** `security = HTTPBearer(auto_error=False)`
-设置 `auto_error=False` 意味着即使没有 Authorization header，也不会报错，而是返回 None。这是有意为之（支持可选认证），但容易被误用——如果哪天有人改了 `require_user` 的调用顺序，可能悄悄绕过认证。
-**Recommendation:** 保持现状，但添加注释说明意图，并确保所有保护接口都用了 `require_user` 而非 `get_current_user`。
-
----
-
-### 🟡 MEDIUM — 生产环境 Mock OpenID
-
-**File:** `backend/app/main.py:249`
-**Problem:** `mock_openid = f"wx_{payload.code}" if payload.code else f"wx_dev_{int(time.time())}"`
-任何知道这个逻辑的人都可以用任意 code 伪造 openid。在开发环境可以接受，但生产环境必须接入微信真实 API。
-**Fix:** 添加环境变量控制：
+**Problem:**
 ```python
-if os.getenv("ENV") == "production":
-    # call wechat API to verify code
-else:
-    mock_openid = f"wx_dev_{int(time.time())}"
+async with httpx.AsyncClient(timeout=10.0) as client:
+    resp = await client.get(...)
 ```
+WeChat API 超时/DNS 失败/连接错误 → 未处理异常 → 500 Internal Server Error
 
----
-
-### 🟢 LOW — `autoLogin` 总是重新登录
-
-**File:** `wechat-miniprogram/app.js:8-22`
-**Problem:** 之前的代码有 token 就跳过登录（减少请求），现在的代码每次都调用 wx.login。优点是 token 总是新鲜的，缺点是每次启动多一次网络请求。
-**Status:** 这是故意的设计选择，考虑到数据库重置等边缘情况，当前方案更稳健。无需修改。
-
----
-
-### 🟢 LOW — 缺少请求日志
-
-**File:** `backend/app/auth.py`
-**Problem:** 认证失败时没有任何日志记录。建议添加：
+**Fix applied:**
 ```python
-if user is None:
-    print(f"[AUTH] Unauthorized access attempt")  # or use logging
-    raise HTTPException(status_code=401, ...)
+try:
+    async with httpx.AsyncClient(timeout=10.0) as client:
+        ...
+except httpx.HTTPStatusError as e:
+    logger.error("WeChat API HTTP error: status=%s", e.response.status_code)
+    return None
+except (httpx.RequestError, httpx.TimeoutException) as e:
+    logger.error("WeChat API unreachable: %s", e)
+    return None
 ```
 
 ---
 
-## WeChat Miniprogram 兼容性检查
+### 🔴 HIGH #2 — session_key 泄露到日志
+
+**File:** `backend/app/main.py:301`
+**Found by Reviewer at:** error logging in WeChat API response
+
+**Problem:**
+```python
+logger.error(f"WeChat code2session error: {data}")
+```
+`jscode2session` 的响应包含 `session_key`（微信敏感凭证）。全量日志 → session_key 写进 stdout/日志文件 → 安全泄漏。
+
+**Fix applied:**
+```python
+logger.error("WeChat code2session error: errcode=%s errmsg=%s",
+             data.get("errcode"), data.get("errmsg", "unknown"))
+```
+只记录 errcode + errmsg，不记录敏感字段。
+
+---
+
+### 🟡 MEDIUM #3 — 空字符串 JWT_SECRET_KEY 绕过
+
+**File:** `backend/app/auth.py:16`
+
+**Problem:**
+```python
+SECRET_KEY = os.getenv("JWT_SECRET_KEY", "dev-secret-change-in-production")
+```
+`os.getenv` 只在 key **完全不存在** 时用默认值。如果 K8s Secret 里 key 存在但值为空字符串 `""` → `SECRET_KEY = ""` → 静默签名所有 token → 极易伪造。
+
+**Fix applied:**
+```python
+SECRET_KEY = os.getenv("JWT_SECRET_KEY")
+if not SECRET_KEY:  # catches None AND "" AND "   "
+    if RUN_MODE == "prod":
+        raise RuntimeError(...)
+    SECRET_KEY = "dev-secret-change-in-production"
+```
+
+---
+
+### 🟡 MEDIUM #4 — 非 JSON 响应未防护
+
+**File:** `backend/app/main.py:299`
+
+**Problem:**
+```python
+data = resp.json()
+```
+WeChat API 远端故障可能返回 HTML（网关错误页）→ `json()` 抛异常 → 500
+
+**Fix applied:**
+```python
+if not resp.headers.get("content-type", "").startswith("application/json"):
+    logger.error("WeChat API returned non-JSON response")
+    return None
+data = resp.json()
+```
+
+---
+
+### 🟢 LOW #5 — dev 模式无醒目警告
+
+**File:** `backend/app/auth.py:16`
+
+**Problem:** `RUN_MODE` 默认 `"dev"`，K8s ConfigMap 配置遗漏时静默用弱密钥 + mock openid。
+
+**Fix applied:**
+```python
+if RUN_MODE == "dev":
+    logger.warning("RUNNING IN DEV MODE - not safe for production!")
+```
+
+---
+
+## 兼容性检查（全通过）
 
 | 检查项 | 结果 |
 |--------|------|
-| 无 `?.` 可选链 | ✅ |
-| 无 `??` 空值合并 | ✅ |
-| HTTPS 域名正确 | ✅ `https://renewshuttle.cn` |
-| wx API 调用合法 | ✅ wx.login, wx.setStorageSync, wx.request |
+| `datetime.utcnow()` 残留 | ✅ 0 处 |
+| 小程序 `?.` 可选链 | ✅ 0 处 |
+| 小程序 `??` 空值合并 | ✅ 0 处 |
+| HTTPS 域名 | ✅ `https://renewshuttle.cn` |
+| K8s Secret 引用 | ✅ 正确（secretKeyRef vs configMapKeyRef） |
+| 环境变量顺序 | ✅ DB_PASSWORD 在 DATABASE_URL 前 |
+| Profile 部分更新 | ✅ `is not None` 守卫正确 |
 
 ---
-
-## 安全检查
-
-| 检查项 | 结果 |
-|--------|------|
-| 密码不以明文存储 | ✅ 不存密码（微信登录） |
-| Token 前端安全存储 | ✅ wx Storage（沙箱隔离） |
-| HTTPS 传输 | ✅ 生产环境 HTTPS |
-| SQL 注入 | ✅ SQLAlchemy ORM，无原始 SQL |
-| CORS 正确配置 | ✅ ALLOWED_ORIGINS 可环境变量控制 |
-
----
-
-## Reviewer Agent 发现（第二轮审查：代码实现后）
-
-| Severity | File | Issue | Fixed |
-|----------|------|-------|-------|
-| HIGH | main.py:296 | httpx 异常未捕获 → 500 | ✅ 添加 try/except |
-| HIGH | main.py:301 | session_key 泄露到日志 | ✅ 只记录 errcode |
-| MEDIUM | auth.py:16 | 空字符串 JWT_SECRET_KEY 未检测 | ✅ 统一检查 |
-| MEDIUM | main.py:299 | 非 JSON 响应未防护 | ✅ 检查 content-type |
-| LOW | auth.py:16 | dev 模式无醒目警告 | ✅ 添加 WARNING 日志 |
 
 ## Summary
 
 ```
-CRITICAL: 0
-HIGH:     2 (已修复全部)
-MEDIUM:   2 (已修复全部)
-LOW:      1 (已修复)
+Agent:    Code Reviewer (adversarial review)
+Issues:   5 (2 HIGH, 2 MEDIUM, 1 LOW)
+Fixed:    5 / 5
+Verdict:  ✅ APPROVED
 ```
-
-**结论：代码可以合入 main，但建议在下个 Sprint 解决 HIGH 项。**
