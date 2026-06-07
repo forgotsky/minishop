@@ -57,6 +57,14 @@ Page({
     toggleLang()
   },
 
+  refreshLang() {
+    // 语言切换后重新拉取商品数据 + 分类
+    this.loadCategories()
+    this.setData({ page: 1 })
+    this.loadProducts()
+    return {}
+  },
+
   onSwitchTheme() {
     app.cycleTheme()
     this.setData({ _theme: 'theme-' + (app.globalData.theme || 'orange') })
