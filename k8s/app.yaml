@@ -16,6 +16,7 @@ spec:
       containers:
         - name: shop-app
           image: ghcr.io/forgotsky/minishop:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8000
           env:
