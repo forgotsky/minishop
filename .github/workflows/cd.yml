@@ -111,15 +111,19 @@ jobs:
             kubectl apply -f k8s/app.yaml
             kubectl apply -f k8s/ingress.yaml
 
-            # 更新 FastAPI 应用的镜像版本
+            # 更新镜像到新 SHA
             kubectl set image deployment/shop-app \
               shop-app=ghcr.io/${{ github.repository }}:${{ github.sha }} \
               -n shop
 
-            # 强制滚动重启（确保拉取最新镜像）
-            kubectl rollout restart deployment/shop-app -n shop
+            # 缩容到 0，彻底删除旧 Pod
+            kubectl scale deployment/shop-app --replicas=0 -n shop
+            sleep 5
 
-            # 等待滚动更新完成
+            # 扩容回 2，触发全新拉取镜像
+            kubectl scale deployment/shop-app --replicas=2 -n shop
+
+            # 等待新 Pod 就绪
             kubectl rollout status deployment/shop-app -n shop --timeout=180s
 
             # ── 数据库迁移：添加新列 + 更新中文翻译 ──
