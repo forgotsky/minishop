@@ -74,6 +74,7 @@ const api = {
   },
   getOrder: (id) => request('GET', '/api/orders/' + id),
   payOrder: (id) => request('POST', '/api/orders/' + id + '/pay'),
+  wechatPay: (id) => request('POST', '/api/orders/' + id + '/wechat-pay'),
   updateOrderStatus: (id, action) => request('PATCH', '/api/orders/' + id + '/status', { action }),
   getOrderTracking: (id) => request('GET', '/api/orders/' + id + '/tracking'),
 

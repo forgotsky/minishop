@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from typing import List, Optional
 
 import httpx
-from fastapi import FastAPI, HTTPException, Depends, Query
+from fastapi import FastAPI, HTTPException, Depends, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
@@ -18,8 +18,14 @@ from .models import (
     User, Address, Product, CartItem, Order, OrderItem, OrderStatus,
     CouponTemplate, UserCoupon, CouponType, CouponStatus,
 )
-from .auth import create_access_token, require_user, get_current_user
+from .auth import create_access_token, require_user, get_current_user, RUN_MODE
 from .log_config import setup_logging
+from .wechat_pay import (
+    create_jsapi_order,
+    verify_notify_signature,
+    decrypt_notify_resource,
+    yuan_to_fen,
+)
 
 logger = logging.getLogger("shop.main")
 
@@ -826,6 +832,13 @@ def get_order_tracking(order_id: int, user: User = Depends(require_user), db: Se
 
 @app.post("/api/orders/{order_id}/pay")
 def pay_order(order_id: int, user: User = Depends(require_user), db: Session = Depends(get_db)):
+    """
+    模拟支付（仅 Dev 模式）。
+    Prod 模式下返回错误，引导使用微信支付。
+    """
+    if RUN_MODE == "prod":
+        raise HTTPException(status_code=400, detail="请使用微信支付接口 /api/orders/{id}/wechat-pay")
+
     order = db.query(Order).filter(Order.id == order_id, Order.user_id == user.id).first()
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
@@ -833,8 +846,124 @@ def pay_order(order_id: int, user: User = Depends(require_user), db: Session = D
         raise HTTPException(status_code=400, detail="Order cannot be paid")
     order.status = OrderStatus.PAID
     order.paid_at = datetime.now(timezone.utc)
+    order.transaction_id = f"dev_txn_{order.order_no}"
     db.commit()
     return {"message": "Payment successful", "order_no": order.order_no}
+
+
+@app.post("/api/orders/{order_id}/wechat-pay")
+async def wechat_pay_order(order_id: int, user: User = Depends(require_user), db: Session = Depends(get_db)):
+    """
+    微信支付 JSAPI 下单。
+    返回 wx.requestPayment() 所需的参数。
+    """
+    order = db.query(Order).filter(Order.id == order_id, Order.user_id == user.id).first()
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    if order.status != OrderStatus.PENDING:
+        raise HTTPException(status_code=400, detail="订单无法支付（状态不正确）")
+
+    openid = user.openid
+    amount_fen = yuan_to_fen(order.payment_amount)
+    description = f"MiniShop订单{order.order_no}"
+
+    try:
+        result = await create_jsapi_order(
+            openid=openid,
+            order_no=order.order_no,
+            total_amount=amount_fen,
+            description=description,
+        )
+    except RuntimeError as e:
+        logger.error(f"WeChat Pay failed for order {order.id}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+    # 保存 prepay_id
+    order.prepay_id = result.get("package", "").replace("prepay_id=", "")
+    db.commit()
+
+    return result
+
+
+@app.post("/api/wechat-pay/notify")
+async def wechat_pay_notify(request: Request, db: Session = Depends(get_db)):
+    """
+    微信支付结果通知回调。
+    无需认证，通过微信签名验证。
+    """
+    # 读取原始 body
+    body = await request.body()
+    body_str = body.decode("utf-8")
+
+    # 获取微信签名 headers
+    timestamp = request.headers.get("wechatpay-timestamp", "")
+    nonce = request.headers.get("wechatpay-nonce", "")
+    signature = request.headers.get("wechatpay-signature", "")
+    serial = request.headers.get("wechatpay-serial", "")
+
+    logger.info(f"Payment notify received: serial={serial[:8] if serial else 'N/A'}..., "
+                f"timestamp={timestamp}, nonce={nonce[:8]}...")
+
+    # 验签
+    if not verify_notify_signature(timestamp, nonce, signature, body_str):
+        logger.error("Notify signature verification failed")
+        raise HTTPException(status_code=400, detail="签名验证失败")
+
+    # 解析通知体
+    try:
+        notify_data = json.loads(body_str)
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=400, detail="Invalid JSON")
+
+    resource = notify_data.get("resource", {})
+    ciphertext = resource.get("ciphertext", "")
+    resource_nonce = resource.get("nonce", "")
+    associated_data = resource.get("associated_data", "")
+
+    # 解密 resource
+    try:
+        decrypted = decrypt_notify_resource(ciphertext, resource_nonce, associated_data)
+    except RuntimeError as e:
+        logger.error(f"Decrypt failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+    out_trade_no = decrypted.get("out_trade_no", "")
+    transaction_id = decrypted.get("transaction_id", "")
+    trade_state = decrypted.get("trade_state", "")
+
+    logger.info(f"Payment notify decrypted: out_trade_no={out_trade_no}, "
+                f"transaction_id={transaction_id}, state={trade_state}")
+
+    if trade_state != "SUCCESS":
+        logger.warning(f"Trade state is not SUCCESS: {trade_state}, ignoring")
+        return {"code": "SUCCESS", "message": "成功"}
+
+    # 查找订单
+    order = db.query(Order).filter(Order.order_no == out_trade_no).first()
+    if not order:
+        logger.error(f"Order not found for out_trade_no: {out_trade_no}")
+        # 仍然返回 SUCCESS 让微信停止重试
+        return {"code": "SUCCESS", "message": "成功"}
+
+    # 金额校验
+    notify_amount = decrypted.get("amount", {})
+    notify_total = notify_amount.get("total", 0)
+    if notify_total and yuan_to_fen(order.payment_amount) != notify_total:
+        logger.error(f"Amount mismatch: order={order.payment_amount}, notify={notify_total / 100}")
+        return {"code": "FAIL", "message": "金额不匹配"}
+
+    # 更新订单状态
+    if order.status == OrderStatus.PENDING:
+        order.status = OrderStatus.PAID
+        order.transaction_id = transaction_id
+        order.paid_at = datetime.now(timezone.utc)
+        db.commit()
+        logger.info(f"Order {order.order_no} paid via notify, txn={transaction_id}")
+    else:
+        logger.info(f"Order {order.order_no} already in status {order.status}, skipping")
+
+    # 必须返回此格式让微信停止重试
+    return {"code": "SUCCESS", "message": "成功"}
 
 
 # ============================================================

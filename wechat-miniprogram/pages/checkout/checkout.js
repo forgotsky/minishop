@@ -71,13 +71,15 @@ Page({
     if (!this.data.selectedAddress) {
       wx.showToast({ title: t('checkout.selectAddress'), icon: 'none' }); return
     }
-    const itemIds = this.data.items.map(i => i.id)
-    api.createOrder(this.data.selectedAddress.id, (this.data.selectedCoupon || {}).id, 'wechat', null, itemIds).then(order => {
-      api.payOrder(order.id).then(() => {
-        wx.showToast({ title: t('checkout.orderPlaced'), icon: 'success' })
-        setTimeout(() => wx.redirectTo({ url: '/pages/order-detail/order-detail?id=' + order.id }), 1000)
-      })
-    }).catch(err => {
+    var self = this
+    var itemIds = this.data.items.map(function (i) { return i.id })
+    api.createOrder(self.data.selectedAddress.id, (self.data.selectedCoupon || {}).id, 'wechat', null, itemIds).then(function (order) {
+      wx.showToast({ title: t('checkout.orderPlaced'), icon: 'success' })
+      // 跳转到订单详情页，用户在那里进行微信支付
+      setTimeout(function () {
+        wx.redirectTo({ url: '/pages/order-detail/order-detail?id=' + order.id })
+      }, 1000)
+    }).catch(function (err) {
       wx.showToast({ title: (err && err.detail) || t('checkout.failed'), icon: 'none' })
     })
   }

@@ -11,4 +11,10 @@ data:
   RUN_MODE: "prod"
   # 微信小程序 AppID（非敏感配置，可放在 ConfigMap）
   WECHAT_APPID: "请修改为你自己的微信小程序AppID"
+  # 微信支付 — 商户号（非敏感）
+  WECHAT_MCHID: "请修改为你自己的微信支付商户号"
+  # 微信支付 — 证书序列号（非敏感）
+  WECHAT_PAY_CERT_SERIAL: "请修改为你自己的商户证书序列号"
+  # 微信支付回调 URL
+  WECHAT_PAY_NOTIFY_URL: "https://renewshuttle.cn/api/wechat-pay/notify"
   # K3s 内部 DNS 自动解析 Service 名，postgres 就是 postgres-service 的地址

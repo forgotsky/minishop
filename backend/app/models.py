@@ -117,6 +117,8 @@ class Order(Base):
     cancel_reason = Column(Text, nullable=True)
     tracking_number = Column(String(50), nullable=True)
     tracking_company = Column(String(50), nullable=True)
+    transaction_id = Column(String(64), nullable=True)   # 微信支付交易单号
+    prepay_id = Column(String(64), nullable=True)        # 微信支付预支付ID
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     user = relationship("User", back_populates="orders")

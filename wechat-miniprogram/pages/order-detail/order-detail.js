@@ -36,10 +36,39 @@ Page({
 
   onPay() {
     var self = this
-    api.payOrder(this.data.order.id).then(() => {
-      wx.showToast({ title: t('orderDetail.paySuccess'), icon: 'success' })
-      self.loadOrder(self.data.order.id)
-    }).catch(err => {
+    wx.showLoading({ title: t('orderDetail.paying') })
+
+    // 调用后端获取微信支付参数
+    api.wechatPay(this.data.order.id).then(function (payParams) {
+      wx.hideLoading()
+
+      // 调起微信支付
+      wx.requestPayment({
+        timeStamp: payParams.timeStamp,
+        nonceStr: payParams.nonceStr,
+        package: payParams.package,
+        signType: payParams.signType || 'RSA',
+        paySign: payParams.paySign,
+        success: function () {
+          wx.showToast({ title: t('orderDetail.paySuccess'), icon: 'success' })
+          // 刷新订单，显示已支付状态
+          setTimeout(function () {
+            self.loadOrder(self.data.order.id)
+          }, 1200)
+        },
+        fail: function (payErr) {
+          // 用户取消或其他错误
+          if (payErr.errMsg && payErr.errMsg.indexOf('cancel') !== -1) {
+            wx.showToast({ title: t('orderDetail.payCancelled'), icon: 'none' })
+          } else {
+            wx.showToast({ title: t('orderDetail.payFailed'), icon: 'none' })
+            console.error('WeChat payment failed:', payErr)
+          }
+        }
+      })
+    }).catch(function (err) {
+      wx.hideLoading()
+      // 如果是 prod 模式下 /pay 接口返回的 400，降级使用旧接口
       wx.showToast({ title: (err && err.detail) || t('orderDetail.payFailed'), icon: 'none' })
     })
   },
