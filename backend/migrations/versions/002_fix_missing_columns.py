@@ -1,12 +1,13 @@
 """Fix missing columns on existing tables
 
-Add columns that exist in models.py but may be missing from the
-production database that was created before these columns existed:
+Add columns that exist in models.py but are missing from the
+production database (created before these columns were added to the model):
   - users.is_active
   - products.name_zh, products.description_zh
-  - orders.transaction_id, orders.prepay_id
+  - orders.remark, cancel_reason, tracking_number, tracking_company,
+    transaction_id, prepay_id
 
-Uses IF NOT EXISTS so it's safe to re-run.
+All use IF NOT EXISTS — safe to re-run.
 
 Revision ID: 002
 Revises: 001
@@ -23,18 +24,30 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    # users.is_active — required for login
+    # --- users ---
     op.execute(
         "ALTER TABLE users ADD COLUMN IF NOT EXISTS is_active BOOLEAN NOT NULL DEFAULT true"
     )
-    # products.name_zh / description_zh — Chinese product names
+    # --- products ---
     op.execute(
         "ALTER TABLE products ADD COLUMN IF NOT EXISTS name_zh VARCHAR"
     )
     op.execute(
         "ALTER TABLE products ADD COLUMN IF NOT EXISTS description_zh TEXT"
     )
-    # orders.transaction_id / prepay_id — WeChat Pay fields
+    # --- orders ---
+    op.execute(
+        "ALTER TABLE orders ADD COLUMN IF NOT EXISTS remark VARCHAR"
+    )
+    op.execute(
+        "ALTER TABLE orders ADD COLUMN IF NOT EXISTS cancel_reason TEXT"
+    )
+    op.execute(
+        "ALTER TABLE orders ADD COLUMN IF NOT EXISTS tracking_number VARCHAR(50)"
+    )
+    op.execute(
+        "ALTER TABLE orders ADD COLUMN IF NOT EXISTS tracking_company VARCHAR(50)"
+    )
     op.execute(
         "ALTER TABLE orders ADD COLUMN IF NOT EXISTS transaction_id VARCHAR(64)"
     )
@@ -47,5 +60,9 @@ def downgrade() -> None:
     op.execute("ALTER TABLE users DROP COLUMN IF EXISTS is_active")
     op.execute("ALTER TABLE products DROP COLUMN IF EXISTS name_zh")
     op.execute("ALTER TABLE products DROP COLUMN IF EXISTS description_zh")
+    op.execute("ALTER TABLE orders DROP COLUMN IF EXISTS remark")
+    op.execute("ALTER TABLE orders DROP COLUMN IF EXISTS cancel_reason")
+    op.execute("ALTER TABLE orders DROP COLUMN IF EXISTS tracking_number")
+    op.execute("ALTER TABLE orders DROP COLUMN IF EXISTS tracking_company")
     op.execute("ALTER TABLE orders DROP COLUMN IF EXISTS transaction_id")
     op.execute("ALTER TABLE orders DROP COLUMN IF EXISTS prepay_id")
