@@ -1,13 +1,13 @@
 <view class="container">
   <view class="card">
-    <view class="form-item"><text class="label">Full Name *</text><input value="{{full_name}}" data-field="full_name" bindinput="onInput" placeholder="Recipient name"/></view>
-    <view class="form-item"><text class="label">Phone *</text><input value="{{phone}}" data-field="phone" bindinput="onInput" type="number" placeholder="Phone number"/></view>
-    <view class="form-item"><text class="label">Province *</text><input value="{{province}}" data-field="province" bindinput="onInput" placeholder="Province"/></view>
-    <view class="form-item"><text class="label">City *</text><input value="{{city}}" data-field="city" bindinput="onInput" placeholder="City"/></view>
-    <view class="form-item"><text class="label">District *</text><input value="{{district}}" data-field="district" bindinput="onInput" placeholder="District"/></view>
-    <view class="form-item"><text class="label">Street *</text><input value="{{street}}" data-field="street" bindinput="onInput" placeholder="Street address"/></view>
-    <view class="form-item"><text class="label">Zip Code</text><input value="{{zip_code}}" data-field="zip_code" bindinput="onInput" placeholder="Zip code"/></view>
-    <view class="form-item"><text class="label">Default</text><switch checked="{{is_default}}" bindchange="onDefaultChange"/></view>
+    <view class="form-item"><text class="label">{{t['addressEdit.fullName']}}</text><input value="{{full_name}}" data-field="full_name" bindinput="onInput" placeholder="{{t['addressEdit.namePlaceholder']}}"/></view>
+    <view class="form-item"><text class="label">{{t['addressEdit.phone']}}</text><input value="{{phone}}" data-field="phone" bindinput="onInput" type="number" placeholder="{{t['addressEdit.phonePlaceholder']}}"/></view>
+    <view class="form-item"><text class="label">{{t['addressEdit.province']}}</text><input value="{{province}}" data-field="province" bindinput="onInput" placeholder="{{t['addressEdit.provincePlaceholder']}}"/></view>
+    <view class="form-item"><text class="label">{{t['addressEdit.city']}}</text><input value="{{city}}" data-field="city" bindinput="onInput" placeholder="{{t['addressEdit.cityPlaceholder']}}"/></view>
+    <view class="form-item"><text class="label">{{t['addressEdit.district']}}</text><input value="{{district}}" data-field="district" bindinput="onInput" placeholder="{{t['addressEdit.districtPlaceholder']}}"/></view>
+    <view class="form-item"><text class="label">{{t['addressEdit.street']}}</text><input value="{{street}}" data-field="street" bindinput="onInput" placeholder="{{t['addressEdit.streetPlaceholder']}}"/></view>
+    <view class="form-item"><text class="label">{{t['addressEdit.zipCode']}}</text><input value="{{zip_code}}" data-field="zip_code" bindinput="onInput" placeholder="{{t['addressEdit.zipPlaceholder']}}"/></view>
+    <view class="form-item"><text class="label">{{t['addressEdit.isDefault']}}</text><switch checked="{{is_default}}" bindchange="onDefaultChange"/></view>
   </view>
-  <button class="btn" style="width:100%;margin-top:30rpx" bindtap="onSubmit">{{id ? 'Update' : 'Save'}} Address</button>
+  <button class="btn" style="width:100%;margin-top:30rpx" bindtap="onSubmit">{{id ? t['addressEdit.update'] : t['addressEdit.save']}}</button>
 </view>

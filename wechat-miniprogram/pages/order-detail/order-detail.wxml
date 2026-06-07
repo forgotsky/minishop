@@ -3,15 +3,15 @@
   <view class="status-card">
     <text class="status-text status-{{order.status}}">{{STATUS_LABELS[order.status]}}</text>
     <view class="order-info">
-      <text>订单号：{{order.order_no}}</text>
-      <text>下单时间：{{order.created_at}}</text>
-      <text wx:if="{{order.paid_at}}">支付时间：{{order.paid_at}}</text>
+      <text>{{t['orderDetail.orderNo']}}{{order.order_no}}</text>
+      <text>{{t['orderDetail.createTime']}}{{order.created_at}}</text>
+      <text wx:if="{{order.paid_at}}">{{t['orderDetail.payTime']}}{{order.paid_at}}</text>
     </view>
   </view>
 
   <!-- Shipping Address -->
   <view class="card" wx:if="{{order.shipping_address}}">
-    <view class="card-title">收货地址</view>
+    <view class="card-title">{{t['orderDetail.shippingAddress']}}</view>
     <view class="address-info">
       <view class="address-name">{{order.shipping_address.full_name}} {{order.shipping_address.phone}}</view>
       <view class="address-detail">{{order.shipping_address.province}}{{order.shipping_address.city}}{{order.shipping_address.district}}{{order.shipping_address.street}}</view>
@@ -20,7 +20,7 @@
 
   <!-- Items -->
   <view class="card">
-    <view class="card-title">商品清单</view>
+    <view class="card-title">{{t['orderDetail.items']}}</view>
     <view wx:for="{{order.items}}" wx:key="id" class="item-row">
       <image class="item-img" src="{{item.product_image || '/images/placeholder.png'}}" mode="aspectFill"/>
       <view class="item-detail">
@@ -33,33 +33,33 @@
 
   <!-- Price Summary -->
   <view class="card">
-    <view class="card-title">价格明细</view>
-    <view class="price-row"><text>商品总额</text><text>¥{{order.total_amount}}</text></view>
+    <view class="card-title">{{t['orderDetail.priceDetail']}}</view>
+    <view class="price-row"><text>{{t['orderDetail.subtotal']}}</text><text>¥{{order.total_amount}}</text></view>
     <view class="price-row" wx:if="{{order.discount_amount > 0}}">
-      <text>优惠</text><text class="discount">-¥{{order.discount_amount}}</text>
+      <text>{{t['orderDetail.discount']}}</text><text class="discount">-¥{{order.discount_amount}}</text>
     </view>
-    <view class="price-row"><text>运费</text><text>¥{{order.delivery_fee}}</text></view>
+    <view class="price-row"><text>{{t['orderDetail.delivery']}}</text><text>¥{{order.delivery_fee}}</text></view>
     <view class="price-row total-row">
-      <text>实付金额</text><text class="total-price">¥{{order.payment_amount}}</text>
+      <text>{{t['orderDetail.paymentAmount']}}</text><text class="total-price">¥{{order.payment_amount}}</text>
     </view>
   </view>
 
   <!-- Tracking -->
   <view class="card" wx:if="{{order.tracking}}" bindtap="onViewTracking">
-    <view class="card-title">物流信息</view>
+    <view class="card-title">{{t['orderDetail.tracking']}}</view>
     <view class="tracking-info">
       <text class="tracking-company">{{order.tracking.company}}</text>
       <text class="tracking-number">{{order.tracking.number}}</text>
     </view>
-    <view class="tracking-tip">点击查看物流详情</view>
+    <view class="tracking-tip">{{t['orderDetail.trackingTip']}}</view>
   </view>
 
   <!-- Actions -->
   <view class="action-bar">
-    <button wx:if="{{order.status === 'pending'}}" class="btn-primary" bindtap="onPay">立即支付</button>
-    <button wx:if="{{order.status === 'pending' || order.status === 'paid'}}" class="btn-danger" bindtap="onCancel">取消订单</button>
-    <button wx:if="{{order.status === 'delivered'}}" class="btn-primary" bindtap="onConfirmReceive">确认收货</button>
-    <button wx:if="{{order.tracking}}" class="btn-default" bindtap="onViewTracking">查看物流</button>
+    <button wx:if="{{order.status === 'pending'}}" class="btn-primary" bindtap="onPay">{{t['orderDetail.payNow']}}</button>
+    <button wx:if="{{order.status === 'pending' || order.status === 'paid'}}" class="btn-danger" bindtap="onCancel">{{t['orderDetail.cancelOrder']}}</button>
+    <button wx:if="{{order.status === 'delivered'}}" class="btn-primary" bindtap="onConfirmReceive">{{t['orderDetail.confirmReceive']}}</button>
+    <button wx:if="{{order.tracking}}" class="btn-default" bindtap="onViewTracking">{{t['orderDetail.viewTracking']}}</button>
   </view>
 </view>
-<view wx:else class="loading">加载中...</view>
+<view wx:else class="loading">{{t['common.loading']}}</view>

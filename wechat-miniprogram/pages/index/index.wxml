@@ -1,15 +1,16 @@
 <view class="container">
   <view class="search-bar">
-    <input placeholder="Search products..." value="{{search}}" bindinput="onSearchInput" bindconfirm="onSearch" confirm-type="search"/>
-    <button class="btn" size="mini" bindtap="onSearch">Search</button>
+    <input placeholder="{{t['search.placeholder']}}" value="{{search}}" bindinput="onSearchInput" bindconfirm="onSearch" confirm-type="search"/>
+    <button class="btn" size="mini" bindtap="onSearch">{{t['search.btn']}}</button>
+    <button class="btn-outline lang-btn" size="mini" bindtap="onSwitchLang">{{t['common.switchLang']}}</button>
   </view>
 
   <scroll-view scroll-x class="cat-scroll">
-    <view class="cat-tag {{activeCategory === '' ? 'active' : ''}}" bindtap="onCategoryTap" data-category="">All</view>
+    <view class="cat-tag {{activeCategory === '' ? 'active' : ''}}" bindtap="onCategoryTap" data-category="">{{t['index.all']}}</view>
     <view wx:for="{{categories}}" wx:key="*this" class="cat-tag {{activeCategory === item ? 'active' : ''}}" bindtap="onCategoryTap" data-category="{{item}}">{{item}}</view>
   </scroll-view>
 
-  <view wx:if="{{loading}}" class="loading">Loading...</view>
+  <view wx:if="{{loading}}" class="loading">{{t['index.loading']}}</view>
 
   <view wx:else class="product-grid">
     <view wx:for="{{products}}" wx:key="id" class="product-card card" bindtap="onProductTap" data-id="{{item.id}}">
@@ -19,15 +20,15 @@
         <view class="price">{{item.price}}</view>
         <view class="flex-between mt-10">
           <text class="tag tag-gray">{{item.category}}</text>
-          <text style="font-size:22rpx;color:#999">{{item.sales_count}} sold</text>
+          <text style="font-size:22rpx;color:#999">{{item.sales_count}}{{t['index.sold']}}</text>
         </view>
       </view>
     </view>
   </view>
 
   <view wx:if="{{products.length < total}}" class="load-more" bindtap="onLoadMore">
-    <button class="btn-outline" size="mini">Load more</button>
+    <button class="btn-outline" size="mini">{{t['index.loadMore']}}</button>
   </view>
 
-  <view wx:if="{{!loading && products.length === 0}}" class="empty">No products found</view>
+  <view wx:if="{{!loading && products.length === 0}}" class="empty">{{t['index.empty']}}</view>
 </view>

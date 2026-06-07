@@ -1,8 +1,17 @@
 const { api } = require('./utils/api')
+const { getLang, setLang } = require('./utils/i18n')
 
 App({
   onLaunch() {
+    // Init language
+    this.globalData.lang = getLang()
     this.autoLogin()
+  },
+
+  /** Switch app language */
+  setAppLang(lang) {
+    setLang(lang)
+    this.globalData.lang = lang
   },
 
   autoLogin() {

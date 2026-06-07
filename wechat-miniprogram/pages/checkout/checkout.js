@@ -1,4 +1,5 @@
 const { api } = require('../../utils/api')
+const { t, getAllTexts } = require('../../utils/i18n')
 const app = getApp()
 
 function couponDiscount(coupon, subtotal) {
@@ -21,13 +22,14 @@ Page({
     addresses: [], selectedAddress: null,
     coupons: [], selectedCoupon: null, couponIndex: 0,
     items: [], subtotal: 0, delivery: 5, discount: 0, total: 0,
+    t: {}
   },
 
   goAddAddress() {
     wx.navigateTo({ url: '/pages/address-edit/address-edit' })
   },
 
-  onShow() { this.loadData() },
+  onShow() { this.setData({ t: getAllTexts() }); this.loadData() },
 
   loadData() {
     const checkedIds = new Set(app.globalData.checkoutItemIds || [])
@@ -67,16 +69,16 @@ Page({
 
   onPlaceOrder() {
     if (!this.data.selectedAddress) {
-      wx.showToast({ title: 'Select address', icon: 'none' }); return
+      wx.showToast({ title: t('checkout.selectAddress'), icon: 'none' }); return
     }
     const itemIds = this.data.items.map(i => i.id)
     api.createOrder(this.data.selectedAddress.id, (this.data.selectedCoupon || {}).id, 'wechat', null, itemIds).then(order => {
       api.payOrder(order.id).then(() => {
-        wx.showToast({ title: 'Order placed!', icon: 'success' })
+        wx.showToast({ title: t('checkout.orderPlaced'), icon: 'success' })
         setTimeout(() => wx.redirectTo({ url: '/pages/order-detail/order-detail?id=' + order.id }), 1000)
       })
     }).catch(err => {
-      wx.showToast({ title: err.detail || 'Failed', icon: 'none' })
+      wx.showToast({ title: (err && err.detail) || t('checkout.failed'), icon: 'none' })
     })
   }
 })

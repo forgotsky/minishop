@@ -1,11 +1,14 @@
 const { api } = require('../../utils/api')
+const { t, getAllTexts } = require('../../utils/i18n')
 
 Page({
-  data: { addresses: [] },
+  data: { addresses: [], t: {} },
 
   onShow() {
+    this.setData({ t: getAllTexts() })
+    var self = this
     api.getAddresses().then(data => {
-      this.setData({ addresses: data })
+      self.setData({ addresses: data })
     })
   },
 
@@ -18,11 +21,13 @@ Page({
   },
 
   onDelete(e) {
+    var id = e.currentTarget.dataset.id
+    var self = this
     wx.showModal({
-      title: 'Delete this address?',
+      title: t('address.deleteTitle'),
       success: (res) => {
         if (res.confirm) {
-          api.deleteAddress(e.currentTarget.dataset.id).then(() => this.onShow())
+          api.deleteAddress(id).then(() => self.onShow())
         }
       }
     })

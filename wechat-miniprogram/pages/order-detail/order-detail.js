@@ -1,79 +1,96 @@
 const { api } = require('../../utils/api')
+const { t, getAllTexts } = require('../../utils/i18n')
 
-const STATUS_LABELS = {
-  pending: '待付款', paid: '待发货', shipped: '待收货',
-  delivered: '待收货', completed: '已完成', cancelled: '已取消'
+function getStatusLabels() {
+  return {
+    pending: t('orderDetail.status.pending'),
+    paid: t('orderDetail.status.paid'),
+    shipped: t('orderDetail.status.shipped'),
+    delivered: t('orderDetail.status.delivered'),
+    completed: t('orderDetail.status.completed'),
+    cancelled: t('orderDetail.status.cancelled')
+  }
 }
 
 Page({
   data: {
     order: null,
-    STATUS_LABELS: STATUS_LABELS,
+    STATUS_LABELS: {},
+    t: {}
   },
 
   onLoad(options) {
+    this.setData({ t: getAllTexts(), STATUS_LABELS: getStatusLabels() })
     this.loadOrder(options.id)
   },
 
   loadOrder(id) {
+    var self = this
     api.getOrder(id).then(order => {
-      this.setData({ order })
+      self.setData({ order })
     }).catch(() => {
-      wx.showToast({ title: '加载失败', icon: 'none' })
+      wx.showToast({ title: t('orderDetail.loadFailed'), icon: 'none' })
     })
   },
 
   onPay() {
+    var self = this
     api.payOrder(this.data.order.id).then(() => {
-      wx.showToast({ title: '支付成功', icon: 'success' })
-      this.loadOrder(this.data.order.id)
+      wx.showToast({ title: t('orderDetail.paySuccess'), icon: 'success' })
+      self.loadOrder(self.data.order.id)
     }).catch(err => {
-      wx.showToast({ title: (err.detail || '支付失败'), icon: 'none' })
+      wx.showToast({ title: (err && err.detail) || t('orderDetail.payFailed'), icon: 'none' })
     })
   },
 
   onCancel() {
+    var self = this
     wx.showModal({
-      title: '确认取消',
-      content: '确定要取消此订单吗？',
+      title: t('orderDetail.cancelTitle'),
+      content: t('orderDetail.cancelContent'),
       success: res => {
         if (!res.confirm) return
-        api.updateOrderStatus(this.data.order.id, 'cancel').then(() => {
-          wx.showToast({ title: '已取消', icon: 'success' })
-          this.loadOrder(this.data.order.id)
+        api.updateOrderStatus(self.data.order.id, 'cancel').then(() => {
+          wx.showToast({ title: t('orderDetail.cancelled'), icon: 'success' })
+          self.loadOrder(self.data.order.id)
         }).catch(err => {
-          wx.showToast({ title: (err.detail || '取消失败'), icon: 'none' })
+          wx.showToast({ title: (err && err.detail) || t('orderDetail.cancelFailed'), icon: 'none' })
         })
       }
     })
   },
 
   onConfirmReceive() {
+    var self = this
     wx.showModal({
-      title: '确认收货',
-      content: '确认已收到货物？',
+      title: t('orderDetail.receiveTitle'),
+      content: t('orderDetail.receiveContent'),
       success: res => {
         if (!res.confirm) return
-        api.updateOrderStatus(this.data.order.id, 'complete').then(() => {
-          wx.showToast({ title: '已确认收货', icon: 'success' })
-          this.loadOrder(this.data.order.id)
+        api.updateOrderStatus(self.data.order.id, 'complete').then(() => {
+          wx.showToast({ title: t('orderDetail.received'), icon: 'success' })
+          self.loadOrder(self.data.order.id)
         }).catch(err => {
-          wx.showToast({ title: (err.detail || '操作失败'), icon: 'none' })
+          wx.showToast({ title: (err && err.detail) || t('orderDetail.opFailed'), icon: 'none' })
         })
       }
     })
   },
 
   onViewTracking() {
-    const order = this.data.order
+    var order = this.data.order
     if (!order.tracking) {
-      wx.showToast({ title: '暂无物流信息', icon: 'none' })
+      wx.showToast({ title: t('orderDetail.trackingNoInfo'), icon: 'none' })
       return
     }
     wx.showModal({
-      title: '物流信息',
-      content: '快递公司：' + (order.tracking.company || '未知') + '\n运单号：' + (order.tracking.number || '未知'),
+      title: t('orderDetail.tracking'),
+      content: t('orderDetail.courier') + ((order.tracking.company) || t('orderDetail.unknown')) + '\n' + t('orderDetail.trackingNo') + ((order.tracking.number) || t('orderDetail.unknown')),
       showCancel: false,
     })
+  },
+
+  refreshLang() {
+    return { STATUS_LABELS: getStatusLabels() }
   },
 })

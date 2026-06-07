@@ -1,5 +1,5 @@
 <view class="container">
-  <view wx:if="{{items.length === 0}}" class="empty">Your cart is empty</view>
+  <view wx:if="{{items.length === 0}}" class="empty">{{t['cart.empty']}}</view>
 
   <view wx:else>
     <view wx:for="{{items}}" wx:key="id" class="cart-item card">
@@ -16,7 +16,7 @@
         <text style="font-size:32rpx;font-weight:bold;margin:8rpx 0">{{item.quantity}}</text>
         <view wx:if="{{item.quantity > 1}}" class="qty-btn" bindtap="onQtyChange" data-id="{{item.id}}" data-qty="{{item.quantity - 1}}">-</view>
         <view wx:else class="qty-btn qty-btn--disabled">-</view>
-        <view class="remove-btn" bindtap="onRemove" data-id="{{item.id}}">Del</view>
+        <view class="remove-btn" bindtap="onRemove" data-id="{{item.id}}">{{t['cart.del']}}</view>
       </view>
     </view>
   </view>
@@ -25,10 +25,10 @@
     <view class="cb-box {{allChecked ? 'cb-box--on' : ''}}" bindtap="onToggleAll" hover-class="cb-box-hover">
       <text wx:if="{{allChecked}}" class="cb-tick">✓</text>
     </view>
-    <text style="margin-left:12rpx">All</text>
+    <text style="margin-left:12rpx">{{t['cart.all']}}</text>
     <view class="flex-1" style="text-align:right;padding-right:20rpx">
-      <text>Total: </text><text class="price" style="font-size:36rpx">{{selectedTotal}}</text>
+      <text>{{t['cart.total']}}</text><text class="price" style="font-size:36rpx">{{selectedTotal}}</text>
     </view>
-    <button class="btn" bindtap="onCheckout">Checkout</button>
+    <button class="btn" bindtap="onCheckout">{{t['cart.checkout']}}</button>
   </view>
 </view>
