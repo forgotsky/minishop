@@ -6,6 +6,7 @@ Page({
 
   onShow() {
     this.setData({ t: getAllTexts(), _theme: 'theme-' + (getApp().globalData.theme || 'orange') })
+    wx.setNavigationBarTitle({ title: t('nav.title.address') })
     var self = this
     api.getAddresses().then(data => {
       self.setData({ addresses: data })

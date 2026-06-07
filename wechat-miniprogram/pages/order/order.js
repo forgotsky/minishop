@@ -30,6 +30,7 @@ Page({
 
   onShow() {
     this.setData({ t: getAllTexts(), STATUS_LABELS: getStatusLabels(), _theme: 'theme-' + (getApp().globalData.theme || 'orange') })
+    wx.setNavigationBarTitle({ title: t('nav.title.orders') })
     this.setData({ orders: [], page: 1, hasMore: true })
     this.loadOrders()
   },

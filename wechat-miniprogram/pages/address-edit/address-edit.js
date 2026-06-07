@@ -10,6 +10,7 @@ Page({
 
   onLoad(options) {
     this.setData({ t: getAllTexts(), _theme: 'theme-' + (getApp().globalData.theme || 'orange') })
+    wx.setNavigationBarTitle({ title: t('nav.title.addressEdit') })
     if (options.id) {
       var self = this
       api.getAddresses().then(addresses => {

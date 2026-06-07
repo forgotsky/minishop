@@ -1,4 +1,5 @@
 const BASE_URL = 'https://renewshuttle.cn'
+const { t } = require('./i18n')
 
 const handle401 = () => {
   wx.removeStorageSync('token')
@@ -31,7 +32,7 @@ const request = (method, path, data, needAuth) => {
         }
       },
       fail(err) {
-        wx.showToast({ title: 'Network error', icon: 'none' })
+        wx.showToast({ title: t('toast.networkError'), icon: 'none' })
         reject(err)
       }
     })

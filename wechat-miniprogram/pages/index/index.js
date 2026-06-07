@@ -17,6 +17,7 @@ Page({
 
   onShow() {
     this.setData({ t: getAllTexts(), _theme: 'theme-' + (app.globalData.theme || 'orange') })
+    wx.setNavigationBarTitle({ title: t('nav.title.shop') })
     this.loadCategories()
     this.loadProducts()
     app.refreshCartCount()

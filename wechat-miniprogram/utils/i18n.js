@@ -164,6 +164,23 @@ var texts = {
     'addressEdit.streetPlaceholder': '详细地址',
     'addressEdit.zipPlaceholder': '邮政编码',
 
+    // ---- NavBar ----
+    'nav.title.shop': 'Shop',
+    'nav.title.cart': '购物车',
+    'nav.title.orders': '订单',
+    'nav.title.coupons': '优惠券',
+    'nav.title.product': '商品详情',
+    'nav.title.checkout': '确认订单',
+    'nav.title.orderDetail': '订单详情',
+    'nav.title.address': '我的地址',
+    'nav.title.addressEdit': '编辑地址',
+
+    // ---- TabBar ----
+    'tab.home': '首页',
+    'tab.cart': '购物车',
+    'tab.orders': '订单',
+    'tab.coupons': '优惠券',
+
     // ---- Toast ----
     'toast.addedToCart': '已加入购物车',
     'toast.networkError': '网络错误',
@@ -338,6 +355,23 @@ var texts = {
     'addressEdit.streetPlaceholder': 'Street address',
     'addressEdit.zipPlaceholder': 'Zip code',
 
+    // ---- NavBar ----
+    'nav.title.shop': 'Shop',
+    'nav.title.cart': 'Cart',
+    'nav.title.orders': 'Orders',
+    'nav.title.coupons': 'Coupons',
+    'nav.title.product': 'Product Detail',
+    'nav.title.checkout': 'Checkout',
+    'nav.title.orderDetail': 'Order Detail',
+    'nav.title.address': 'My Addresses',
+    'nav.title.addressEdit': 'Edit Address',
+
+    // ---- TabBar ----
+    'tab.home': 'Home',
+    'tab.cart': 'Cart',
+    'tab.orders': 'Orders',
+    'tab.coupons': 'Coupons',
+
     // ---- Toast ----
     'toast.addedToCart': 'Added to cart',
     'toast.networkError': 'Network error',
@@ -390,6 +424,50 @@ function setLang(lang) {
   }
 }
 
+/** Map page route to nav title i18n key */
+function _getNavTitleKey(route) {
+  var map = {
+    'pages/index/index': 'nav.title.shop',
+    'pages/cart/cart': 'nav.title.cart',
+    'pages/order/order': 'nav.title.orders',
+    'pages/coupon/coupon': 'nav.title.coupons',
+    'pages/product/product': 'nav.title.product',
+    'pages/checkout/checkout': 'nav.title.checkout',
+    'pages/order-detail/order-detail': 'nav.title.orderDetail',
+    'pages/address/address': 'nav.title.address',
+    'pages/address-edit/address-edit': 'nav.title.addressEdit',
+  }
+  return map[route] || null
+}
+
+/** Update TabBar item texts to current language */
+function _updateTabBar() {
+  var tabItems = [
+    { index: 0, key: 'tab.home' },
+    { index: 1, key: 'tab.cart' },
+    { index: 2, key: 'tab.orders' },
+    { index: 3, key: 'tab.coupons' },
+  ]
+  for (var i = 0; i < tabItems.length; i++) {
+    wx.setTabBarItem({
+      index: tabItems[i].index,
+      text: t(tabItems[i].key),
+    })
+  }
+}
+
+/** Update navigation bar title for current page */
+function _updateNavBar() {
+  var pages = getCurrentPages()
+  if (pages.length === 0) return
+  var currentPage = pages[pages.length - 1]
+  if (!currentPage || !currentPage.route) return
+  var titleKey = _getNavTitleKey(currentPage.route)
+  if (titleKey) {
+    wx.setNavigationBarTitle({ title: t(titleKey) })
+  }
+}
+
 /**
  * Refresh all pages in the navigation stack with new language
  */
@@ -414,6 +492,9 @@ function refreshAllPages() {
       page.setData(updateData)
     }
   }
+  // Update system UI
+  _updateTabBar()
+  _updateNavBar()
 }
 
 /**

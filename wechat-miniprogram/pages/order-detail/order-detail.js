@@ -22,6 +22,7 @@ Page({
 
   onLoad(options) {
     this.setData({ t: getAllTexts(), STATUS_LABELS: getStatusLabels(), _theme: 'theme-' + (getApp().globalData.theme || 'orange') })
+    wx.setNavigationBarTitle({ title: t('nav.title.orderDetail') })
     this.loadOrder(options.id)
   },
 

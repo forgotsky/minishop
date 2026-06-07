@@ -29,7 +29,7 @@ Page({
     wx.navigateTo({ url: '/pages/address-edit/address-edit' })
   },
 
-  onShow() { this.setData({ t: getAllTexts(), _theme: 'theme-' + (app.globalData.theme || 'orange') }); this.loadData() },
+  onShow() { this.setData({ t: getAllTexts(), _theme: 'theme-' + (app.globalData.theme || 'orange') }); wx.setNavigationBarTitle({ title: t('nav.title.checkout') }); this.loadData() },
 
   loadData() {
     const checkedIds = new Set(app.globalData.checkoutItemIds || [])

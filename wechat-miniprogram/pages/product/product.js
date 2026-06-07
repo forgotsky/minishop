@@ -6,6 +6,7 @@ Page({
   data: { product: null, t: {}, _theme: '' },
   onLoad(options) {
     this.setData({ t: getAllTexts(), _theme: 'theme-' + (app.globalData.theme || 'orange') })
+    wx.setNavigationBarTitle({ title: t('nav.title.product') })
     api.getProduct(options.id).then(product => {
       product.image_url = imageUrl(product.image_url)
       this.setData({ product })
