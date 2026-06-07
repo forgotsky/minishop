@@ -400,17 +400,37 @@ def get_lang(request: Request) -> str:
 
 
 def localize_product(product, lang: str) -> dict:
-    """根据语言返回商品数据的本地化版本"""
-    if lang == "zh" and product.name_zh:
+    """根据语言返回商品数据的本地化版本。
+    优先使用数据库字段 (name_zh/description_zh)，
+    如果为 NULL 则使用代码内置的翻译映射。
+    """
+    if lang != "zh":
         return {
-            "name": product.name_zh,
-            "description": product.description_zh or product.description,
-            "category": CATEGORY_ZH.get(product.category, product.category),
+            "name": product.name,
+            "description": product.description,
+            "category": CATEGORY_EN.get(product.category, product.category),
         }
+
+    # 中文翻译：优先数据库，fallback 到代码映射
+    translations = {
+        "Wireless Headphones": ("无线耳机", "高级降噪无线耳机，续航30小时"),
+        "Smart Watch": ("智能手表", "心率监测运动手表，内置GPS定位"),
+        "Bluetooth Speaker": ("蓝牙音箱", "便携防水蓝牙音箱，重低音震撼"),
+        "Backpack": ("双肩背包", "轻量防水旅行背包，大容量收纳"),
+        "Running Shoes": ("跑步鞋", "透气网面跑步鞋，缓震鞋底舒适耐穿"),
+        "Power Bank": ("充电宝", "20000毫安大容量快充充电宝，Type-C接口"),
+        "Coffee Mug": ("咖啡杯", "不锈钢保温咖啡杯，容量500ml"),
+        "Desk Lamp": ("台灯", "LED护眼台灯，亮度可调节"),
+    }
+
+    tr = translations.get(product.name)
+    name_zh = product.name_zh or (tr[0] if tr else product.name)
+    desc_zh = product.description_zh or (tr[1] if tr else product.description)
+
     return {
-        "name": product.name,
-        "description": product.description,
-        "category": CATEGORY_EN.get(product.category, product.category),
+        "name": name_zh,
+        "description": desc_zh,
+        "category": CATEGORY_ZH.get(product.category, product.category),
     }
 
 
