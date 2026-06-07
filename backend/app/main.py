@@ -71,20 +71,38 @@ def on_startup() -> None:
 # Seed data
 # ============================================================
 
+PRODUCT_SEED_DATA = [
+    {"name": "Wireless Headphones", "name_zh": "无线耳机", "description": "Premium noise-cancelling wireless headphones with 30hr battery life.", "description_zh": "高级降噪无线耳机，续航30小时", "price": 49.99, "image_url": "/images/headphones.jpg", "stock": 120, "category": "electronics", "sales_count": 56},
+    {"name": "Smart Watch", "name_zh": "智能手表", "description": "Fitness tracker with heart rate monitor and GPS.", "description_zh": "心率监测运动手表，内置GPS定位", "price": 89.00, "image_url": "/images/watch.jpg", "stock": 80, "category": "electronics", "sales_count": 34},
+    {"name": "Bluetooth Speaker", "name_zh": "蓝牙音箱", "description": "Portable waterproof speaker with deep bass.", "description_zh": "便携防水蓝牙音箱，重低音震撼", "price": 35.50, "image_url": "/images/speaker.jpg", "stock": 200, "category": "electronics", "sales_count": 78},
+    {"name": "Backpack", "name_zh": "双肩背包", "description": "Lightweight travel backpack, water-resistant.", "description_zh": "轻量防水旅行背包，大容量收纳", "price": 28.75, "image_url": "/images/backpack.jpg", "stock": 150, "category": "accessories", "sales_count": 22},
+    {"name": "Running Shoes", "name_zh": "跑步鞋", "description": "Breathable mesh running shoes with cushioned sole.", "description_zh": "透气网面跑步鞋，缓震鞋底舒适耐穿", "price": 64.20, "image_url": "/images/shoes.jpg", "stock": 60, "category": "sports", "sales_count": 91},
+    {"name": "Power Bank", "name_zh": "充电宝", "description": "20000mAh fast-charging power bank with USB-C.", "description_zh": "20000毫安大容量快充充电宝，Type-C接口", "price": 22.99, "image_url": "/images/powerbank.jpg", "stock": 180, "category": "electronics", "sales_count": 110},
+    {"name": "Coffee Mug", "name_zh": "咖啡杯", "description": "Insulated stainless steel mug, 500ml.", "description_zh": "不锈钢保温咖啡杯，容量500ml", "price": 15.99, "image_url": "/images/mug.jpg", "stock": 300, "category": "kitchen", "sales_count": 45},
+    {"name": "Desk Lamp", "name_zh": "台灯", "description": "LED desk lamp with adjustable brightness.", "description_zh": "LED护眼台灯，亮度可调节", "price": 19.99, "image_url": "/images/lamp.jpg", "stock": 90, "category": "home", "sales_count": 67},
+]
+
+
 def seed_products(db: Session) -> None:
-    products = [
-        Product(name="Wireless Headphones", name_zh="无线耳机", description="Premium noise-cancelling wireless headphones with 30hr battery life.", description_zh="高级降噪无线耳机，续航30小时", price=49.99, image_url="/images/headphones.jpg", stock=120, category="electronics", sales_count=56),
-        Product(name="Smart Watch", name_zh="智能手表", description="Fitness tracker with heart rate monitor and GPS.", description_zh="心率监测运动手表，内置GPS定位", price=89.00, image_url="/images/watch.jpg", stock=80, category="electronics", sales_count=34),
-        Product(name="Bluetooth Speaker", name_zh="蓝牙音箱", description="Portable waterproof speaker with deep bass.", description_zh="便携防水蓝牙音箱，重低音震撼", price=35.50, image_url="/images/speaker.jpg", stock=200, category="electronics", sales_count=78),
-        Product(name="Backpack", name_zh="双肩背包", description="Lightweight travel backpack, water-resistant.", description_zh="轻量防水旅行背包，大容量收纳", price=28.75, image_url="/images/backpack.jpg", stock=150, category="accessories", sales_count=22),
-        Product(name="Running Shoes", name_zh="跑步鞋", description="Breathable mesh running shoes with cushioned sole.", description_zh="透气网面跑步鞋，缓震鞋底舒适耐穿", price=64.20, image_url="/images/shoes.jpg", stock=60, category="sports", sales_count=91),
-        Product(name="Power Bank", name_zh="充电宝", description="20000mAh fast-charging power bank with USB-C.", description_zh="20000毫安大容量快充充电宝，Type-C接口", price=22.99, image_url="/images/powerbank.jpg", stock=180, category="electronics", sales_count=110),
-        Product(name="Coffee Mug", name_zh="咖啡杯", description="Insulated stainless steel mug, 500ml.", description_zh="不锈钢保温咖啡杯，容量500ml", price=15.99, image_url="/images/mug.jpg", stock=300, category="kitchen", sales_count=45),
-        Product(name="Desk Lamp", name_zh="台灯", description="LED desk lamp with adjustable brightness.", description_zh="LED护眼台灯，亮度可调节", price=19.99, image_url="/images/lamp.jpg", stock=90, category="home", sales_count=67),
-    ]
-    for p in products:
-        db.add(p)
-    db.commit()
+    """Seed products if empty, or update existing with Chinese translations."""
+    count = db.query(Product).count()
+    if count == 0:
+        for d in PRODUCT_SEED_DATA:
+            db.add(Product(**d))
+        db.commit()
+        logger.info(f"Seeded {len(PRODUCT_SEED_DATA)} products")
+    else:
+        # Update existing products with Chinese names if missing
+        updated = 0
+        for d in PRODUCT_SEED_DATA:
+            p = db.query(Product).filter(Product.name == d["name"]).first()
+            if p and (not p.name_zh or not p.description_zh):
+                p.name_zh = d["name_zh"]
+                p.description_zh = d["description_zh"]
+                updated += 1
+        if updated > 0:
+            db.commit()
+            logger.info(f"Updated {updated} products with Chinese translations")
 
 # 品类名翻译映射
 CATEGORY_ZH = {
