@@ -12,6 +12,7 @@ class OrderStatus(str, enum.Enum):
     PAID = "paid"
     SHIPPED = "shipped"
     DELIVERED = "delivered"
+    COMPLETED = "completed"
     CANCELLED = "cancelled"
 
 
@@ -110,6 +111,12 @@ class Order(Base):
     payment_method = Column(String, nullable=True)
     remark = Column(String, nullable=True)
     paid_at = Column(DateTime(timezone=True), nullable=True)
+    shipped_at = Column(DateTime(timezone=True), nullable=True)
+    delivered_at = Column(DateTime(timezone=True), nullable=True)
+    cancelled_at = Column(DateTime(timezone=True), nullable=True)
+    cancel_reason = Column(Text, nullable=True)
+    tracking_number = Column(String(50), nullable=True)
+    tracking_company = Column(String(50), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     user = relationship("User", back_populates="orders")

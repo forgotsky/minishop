@@ -98,7 +98,7 @@ async def test_create_order_with_multiple_products(client, auth_headers):
 
 
 async def test_list_orders(client, auth_headers):
-    """GET /api/orders returns a list of the user's orders."""
+    """GET /api/orders returns OrderListOut with orders array and pagination info."""
     headers = await auth_headers(code="order_list_test")
 
     # Create an order first
@@ -111,13 +111,17 @@ async def test_list_orders(client, auth_headers):
     resp = await client.get("/api/orders", headers=headers)
     assert resp.status_code == 200
     data = resp.json()
-    assert isinstance(data, list)
-    assert len(data) >= 1
-    assert data[0]["order_no"].startswith("ORD")
+    assert "orders" in data
+    assert "total" in data
+    assert "page" in data
+    assert "pages" in data
+    assert isinstance(data["orders"], list)
+    assert len(data["orders"]) >= 1
+    assert data["orders"][0]["order_no"].startswith("ORD")
 
 
 async def test_get_order_detail(client, auth_headers):
-    """GET /api/orders/{id} returns full order detail with items."""
+    """GET /api/orders/{id} returns full order detail with items and address snapshot."""
     headers = await auth_headers(code="order_detail_test")
 
     await client.post("/api/cart/items", json={
@@ -142,6 +146,10 @@ async def test_get_order_detail(client, auth_headers):
     assert data["items"][0]["product_name"] == "Wireless Headphones"
     assert data["items"][0]["quantity"] == 2
     assert data["items"][0]["product_price"] == 49.99
+    # shipping_address is a snapshot object
+    assert "shipping_address" in data
+    assert data["shipping_address"] is not None
+    assert data["shipping_address"]["full_name"] == "TestDetail"
 
 
 # ── Payment flow ──────────────────────────────────────────────────────
@@ -589,11 +597,11 @@ async def test_list_orders_cross_user_isolation(client, auth_headers):
     # User B's order list is empty
     orders_b = await client.get("/api/orders", headers=headers_b)
     assert orders_b.status_code == 200
-    assert orders_b.json() == []
+    assert orders_b.json()["orders"] == []
 
     # User A's order list shows the order
     orders_a = await client.get("/api/orders", headers=headers_a)
-    assert len(orders_a.json()) == 1
+    assert len(orders_a.json()["orders"]) == 1
 
 
 # ── Pagination tests ─────────────────────────────────────────────────
@@ -618,19 +626,22 @@ async def test_list_orders_pagination(client, auth_headers):
         "page": 1, "page_size": 2,
     })
     assert resp.status_code == 200
-    assert len(resp.json()) == 2
+    data = resp.json()
+    assert len(data["orders"]) == 2
+    assert data["total"] == 3
+    assert data["pages"] == 2
 
     # Page 2, size 2 → 1 item
     resp = await client.get("/api/orders", headers=headers, params={
         "page": 2, "page_size": 2,
     })
     assert resp.status_code == 200
-    assert len(resp.json()) == 1
+    assert len(resp.json()["orders"]) == 1
 
     # Default pagination returns all (page=1, page_size=10)
     resp = await client.get("/api/orders", headers=headers)
     assert resp.status_code == 200
-    assert len(resp.json()) == 3
+    assert len(resp.json()["orders"]) == 3
 
 
 async def test_list_orders_pagination_page_size_one(client, auth_headers):
@@ -653,7 +664,7 @@ async def test_list_orders_pagination_page_size_one(client, auth_headers):
         "page": 1, "page_size": 1,
     })
     assert resp.status_code == 200
-    assert len(resp.json()) == 1
+    assert len(resp.json()["orders"]) == 1
 
 
 async def test_list_orders_pagination_invalid_page(client, auth_headers):
@@ -681,6 +692,190 @@ async def test_list_orders_pagination_invalid_page_size_51(client, auth_headers)
         "page_size": 51,
     })
     assert resp.status_code == 422
+
+
+# ── Status filter ─────────────────────────────────────────────────────
+
+async def test_list_orders_filter_by_status(client, auth_headers):
+    """GET /api/orders?status=pending returns only pending orders."""
+    headers = await auth_headers(code="order_filter_test")
+
+    await client.post("/api/cart/items", json={"product_id": 1, "quantity": 1}, headers=headers)
+    addr_id = await _create_address(client, headers, "FilterPending")
+    create_resp = await client.post("/api/orders", json={"address_id": addr_id}, headers=headers)
+    pending_id = create_resp.json()["id"]
+
+    await client.post(f"/api/orders/{pending_id}/pay", headers=headers)
+
+    resp = await client.get("/api/orders?status=pending", headers=headers)
+    assert resp.status_code == 200
+    assert resp.json()["orders"] == []
+
+    resp = await client.get("/api/orders?status=paid", headers=headers)
+    assert resp.status_code == 200
+    assert len(resp.json()["orders"]) == 1
+    assert resp.json()["orders"][0]["status"] == "paid"
+
+
+# ── Cancel order ─────────────────────────────────────────────────────
+
+async def test_cancel_order_pending(client, auth_headers):
+    """PATCH action=cancel on pending order → cancelled."""
+    headers = await auth_headers(code="order_cancel_test")
+    await client.post("/api/cart/items", json={"product_id": 1, "quantity": 1}, headers=headers)
+    addr_id = await _create_address(client, headers, "Cancel")
+    create_resp = await client.post("/api/orders", json={"address_id": addr_id}, headers=headers)
+    order_id = create_resp.json()["id"]
+
+    resp = await client.patch(f"/api/orders/{order_id}/status", json={"action": "cancel"}, headers=headers)
+    assert resp.status_code == 200
+    assert resp.json()["status"] == "cancelled"
+    assert resp.json()["cancelled_at"] is not None
+
+
+async def test_cancel_order_paid(client, auth_headers):
+    """PATCH action=cancel on paid order → cancelled."""
+    headers = await auth_headers(code="order_cancel_paid_test")
+    await client.post("/api/cart/items", json={"product_id": 1, "quantity": 1}, headers=headers)
+    addr_id = await _create_address(client, headers, "CancelPaid")
+    create_resp = await client.post("/api/orders", json={"address_id": addr_id}, headers=headers)
+    order_id = create_resp.json()["id"]
+    await client.post(f"/api/orders/{order_id}/pay", headers=headers)
+
+    resp = await client.patch(f"/api/orders/{order_id}/status", json={"action": "cancel"}, headers=headers)
+    assert resp.status_code == 200
+    assert resp.json()["status"] == "cancelled"
+
+
+async def test_cancel_order_not_allowed_when_shipped(client, auth_headers):
+    """Cancel on shipped order → 400."""
+    headers = await auth_headers(code="order_cancel_shipped_test")
+    await client.post("/api/cart/items", json={"product_id": 1, "quantity": 1}, headers=headers)
+    addr_id = await _create_address(client, headers, "CancelShipped")
+    create_resp = await client.post("/api/orders", json={"address_id": addr_id}, headers=headers)
+    order_id = create_resp.json()["id"]
+    await client.post(f"/api/orders/{order_id}/pay", headers=headers)
+
+    from app.models import Order, OrderStatus
+    from app.db import SessionLocal
+    db = SessionLocal()
+    order = db.query(Order).filter(Order.id == order_id).first()
+    order.status = OrderStatus.SHIPPED
+    db.commit()
+    db.close()
+
+    resp = await client.patch(f"/api/orders/{order_id}/status", json={"action": "cancel"}, headers=headers)
+    assert resp.status_code == 400
+
+
+async def test_cancel_order_cross_user(client, auth_headers):
+    """User B cannot cancel User A's order."""
+    headers_a = await auth_headers(code="order_cancel_iso_a")
+    headers_b = await auth_headers(code="order_cancel_iso_b")
+    await client.post("/api/cart/items", json={"product_id": 1, "quantity": 1}, headers=headers_a)
+    addr_id = await _create_address(client, headers_a, "CancelIsoA")
+    create_resp = await client.post("/api/orders", json={"address_id": addr_id}, headers=headers_a)
+    order_id = create_resp.json()["id"]
+
+    resp = await client.patch(f"/api/orders/{order_id}/status", json={"action": "cancel"}, headers=headers_b)
+    assert resp.status_code == 404
+
+
+# ── Complete order ───────────────────────────────────────────────────
+
+async def test_complete_order_delivered(client, auth_headers):
+    """PATCH action=complete on delivered order → completed."""
+    headers = await auth_headers(code="order_complete_test")
+    await client.post("/api/cart/items", json={"product_id": 1, "quantity": 1}, headers=headers)
+    addr_id = await _create_address(client, headers, "Complete")
+    create_resp = await client.post("/api/orders", json={"address_id": addr_id}, headers=headers)
+    order_id = create_resp.json()["id"]
+
+    from app.models import Order, OrderStatus
+    from app.db import SessionLocal
+    db = SessionLocal()
+    order = db.query(Order).filter(Order.id == order_id).first()
+    order.status = OrderStatus.DELIVERED
+    db.commit()
+    db.close()
+
+    resp = await client.patch(f"/api/orders/{order_id}/status", json={"action": "complete"}, headers=headers)
+    assert resp.status_code == 200
+    assert resp.json()["status"] == "completed"
+    assert resp.json()["delivered_at"] is not None
+
+
+async def test_complete_order_not_allowed_when_pending(client, auth_headers):
+    """Complete on pending order → 400."""
+    headers = await auth_headers(code="order_complete_pending_test")
+    await client.post("/api/cart/items", json={"product_id": 1, "quantity": 1}, headers=headers)
+    addr_id = await _create_address(client, headers, "CompletePending")
+    create_resp = await client.post("/api/orders", json={"address_id": addr_id}, headers=headers)
+    order_id = create_resp.json()["id"]
+
+    resp = await client.patch(f"/api/orders/{order_id}/status", json={"action": "complete"}, headers=headers)
+    assert resp.status_code == 400
+
+
+# ── Tracking ─────────────────────────────────────────────────────────
+
+async def test_get_tracking_no_info(client, auth_headers):
+    """GET /api/orders/{id}/tracking when no tracking number → 404."""
+    headers = await auth_headers(code="order_tracking_none_test")
+    await client.post("/api/cart/items", json={"product_id": 1, "quantity": 1}, headers=headers)
+    addr_id = await _create_address(client, headers, "TrackNone")
+    create_resp = await client.post("/api/orders", json={"address_id": addr_id}, headers=headers)
+    order_id = create_resp.json()["id"]
+
+    resp = await client.get(f"/api/orders/{order_id}/tracking", headers=headers)
+    assert resp.status_code == 404
+
+
+async def test_get_tracking_with_info(client, auth_headers):
+    """GET /api/orders/{id}/tracking returns tracking info when available."""
+    headers = await auth_headers(code="order_tracking_test")
+    await client.post("/api/cart/items", json={"product_id": 1, "quantity": 1}, headers=headers)
+    addr_id = await _create_address(client, headers, "Track")
+    create_resp = await client.post("/api/orders", json={"address_id": addr_id}, headers=headers)
+    order_id = create_resp.json()["id"]
+
+    from app.models import Order, OrderStatus
+    from app.db import SessionLocal
+    db = SessionLocal()
+    order = db.query(Order).filter(Order.id == order_id).first()
+    order.tracking_company = "顺丰速运"
+    order.tracking_number = "SF1234567890"
+    order.status = OrderStatus.SHIPPED
+    db.commit()
+    db.close()
+
+    resp = await client.get(f"/api/orders/{order_id}/tracking", headers=headers)
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["company"] == "顺丰速运"
+    assert data["number"] == "SF1234567890"
+
+
+async def test_get_tracking_cross_user(client, auth_headers):
+    """User B cannot get User A's tracking."""
+    headers_a = await auth_headers(code="order_track_iso_a")
+    headers_b = await auth_headers(code="order_track_iso_b")
+    await client.post("/api/cart/items", json={"product_id": 1, "quantity": 1}, headers=headers_a)
+    addr_id = await _create_address(client, headers_a, "TrackIsoA")
+    create_resp = await client.post("/api/orders", json={"address_id": addr_id}, headers=headers_a)
+    order_id = create_resp.json()["id"]
+
+    from app.models import Order
+    from app.db import SessionLocal
+    db = SessionLocal()
+    order = db.query(Order).filter(Order.id == order_id).first()
+    order.tracking_company = "顺丰"
+    order.tracking_number = "SF999"
+    db.commit()
+    db.close()
+
+    resp = await client.get(f"/api/orders/{order_id}/tracking", headers=headers_b)
+    assert resp.status_code == 404
 
 
 # ── Entry point ───────────────────────────────────────────────────────

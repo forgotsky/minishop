@@ -184,6 +184,66 @@ class OrderItemOut(BaseModel):
         from_attributes = True
 
 
+class AddressSnapshot(BaseModel):
+    full_name: str
+    phone: str
+    province: str
+    city: str
+    district: str
+    street: str
+
+
+class TrackingInfo(BaseModel):
+    company: Optional[str] = None
+    number: Optional[str] = None
+    status: Optional[str] = None
+    updated_at: Optional[str] = None
+    traces: list = []
+
+
+class OrderListItem(BaseModel):
+    id: int
+    order_no: str
+    status: OrderStatus
+    total_amount: float
+    payment_amount: float
+    created_at: Optional[str] = None
+    items_count: int
+    first_item: Optional[dict] = None
+
+
+class OrderListOut(BaseModel):
+    orders: List[OrderListItem]
+    total: int
+    page: int
+    pages: int
+
+
+class OrderDetailOut(BaseModel):
+    id: int
+    order_no: str
+    status: OrderStatus
+    created_at: Optional[str] = None
+    paid_at: Optional[str] = None
+    shipped_at: Optional[str] = None
+    delivered_at: Optional[str] = None
+    cancelled_at: Optional[str] = None
+    cancel_reason: Optional[str] = None
+    total_amount: float
+    discount_amount: float
+    delivery_fee: float
+    payment_amount: float
+    payment_method: Optional[str] = None
+    remark: Optional[str] = None
+    items: List[OrderItemOut]
+    shipping_address: Optional[AddressSnapshot] = None
+    tracking: Optional[TrackingInfo] = None
+
+
+class OrderStatusUpdateIn(BaseModel):
+    action: str  # "cancel" | "complete"
+
+
 class OrderOut(BaseModel):
     id: int
     order_no: str
@@ -590,41 +650,177 @@ def create_order(payload: OrderCreateIn, user: User = Depends(require_user), db:
     )
 
 
-@app.get("/api/orders", response_model=List[OrderOut])
-def list_orders(user: User = Depends(require_user), db: Session = Depends(get_db),
-                page: int = Query(1, ge=1), page_size: int = Query(10, ge=1, le=50)):
-    orders = (
-        db.query(Order)
-        .filter(Order.user_id == user.id)
-        .order_by(Order.created_at.desc())
-        .offset((page - 1) * page_size)
-        .limit(page_size)
-        .all()
-    )
-    return [OrderOut(
-        id=o.id, order_no=o.order_no, total_amount=o.total_amount,
-        discount_amount=o.discount_amount, delivery_fee=o.delivery_fee,
-        payment_amount=o.payment_amount, status=o.status,
-        payment_method=o.payment_method,
-        remark=o.remark,
-        created_at=o.created_at.isoformat() if o.created_at else None,
-        items=[OrderItemOut.model_validate(oi) for oi in o.items],
-    ) for o in orders]
+@app.get("/api/orders", response_model=OrderListOut)
+def list_orders(
+    user: User = Depends(require_user),
+    db: Session = Depends(get_db),
+    status: Optional[str] = Query(None),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(10, ge=1, le=50),
+):
+    """获取订单列表，支持状态筛选和分页"""
+    q = db.query(Order).filter(Order.user_id == user.id)
+    if status:
+        try:
+            status_enum = OrderStatus(status)
+            q = q.filter(Order.status == status_enum)
+        except ValueError:
+            pass  # ignore invalid status
+
+    total = q.count()
+    orders = q.order_by(Order.created_at.desc()).offset((page - 1) * page_size).limit(page_size).all()
+
+    result = []
+    for o in orders:
+        first_item = None
+        if o.items:
+            first = o.items[0]
+            first_item = {"name": first.product_name, "image": first.product_image}
+
+        result.append(OrderListItem(
+            id=o.id,
+            order_no=o.order_no,
+            status=o.status,
+            total_amount=o.total_amount,
+            payment_amount=o.payment_amount,
+            created_at=o.created_at.isoformat() if o.created_at else None,
+            items_count=len(o.items),
+            first_item=first_item,
+        ))
+
+    pages = (total + page_size - 1) // page_size if total > 0 else 1
+    return OrderListOut(orders=result, total=total, page=page, pages=pages)
 
 
-@app.get("/api/orders/{order_id}", response_model=OrderOut)
+@app.get("/api/orders/{order_id}", response_model=OrderDetailOut)
 def get_order(order_id: int, user: User = Depends(require_user), db: Session = Depends(get_db)):
+    """获取订单详情（含地址快照、物流信息）"""
     order = db.query(Order).filter(Order.id == order_id, Order.user_id == user.id).first()
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
-    return OrderOut(
-        id=order.id, order_no=order.order_no, total_amount=order.total_amount,
-        discount_amount=order.discount_amount, delivery_fee=order.delivery_fee,
-        payment_amount=order.payment_amount, status=order.status,
+
+    address_snapshot = None
+    if order.address_snapshot:
+        try:
+            address_snapshot = AddressSnapshot(**json.loads(order.address_snapshot))
+        except Exception:
+            pass
+
+    tracking = None
+    if order.tracking_number:
+        tracking = TrackingInfo(
+            company=order.tracking_company,
+            number=order.tracking_number,
+            status=order.status.value if order.status else None,
+            updated_at=order.shipped_at.isoformat() if order.shipped_at else None,
+            traces=[],
+        )
+
+    return OrderDetailOut(
+        id=order.id,
+        order_no=order.order_no,
+        status=order.status,
+        created_at=order.created_at.isoformat() if order.created_at else None,
+        paid_at=order.paid_at.isoformat() if order.paid_at else None,
+        shipped_at=order.shipped_at.isoformat() if order.shipped_at else None,
+        delivered_at=order.delivered_at.isoformat() if order.delivered_at else None,
+        cancelled_at=order.cancelled_at.isoformat() if order.cancelled_at else None,
+        cancel_reason=order.cancel_reason,
+        total_amount=order.total_amount,
+        discount_amount=order.discount_amount,
+        delivery_fee=order.delivery_fee,
+        payment_amount=order.payment_amount,
         payment_method=order.payment_method,
         remark=order.remark,
-        created_at=order.created_at.isoformat() if order.created_at else None,
         items=[OrderItemOut.model_validate(oi) for oi in order.items],
+        shipping_address=address_snapshot,
+        tracking=tracking,
+    )
+
+
+@app.patch("/api/orders/{order_id}/status", response_model=OrderDetailOut)
+def update_order_status(
+    order_id: int,
+    payload: OrderStatusUpdateIn,
+    user: User = Depends(require_user),
+    db: Session = Depends(get_db),
+):
+    """更新订单状态：取消(cancel) 或确认收货(complete)"""
+    order = db.query(Order).filter(Order.id == order_id, Order.user_id == user.id).first()
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    now = datetime.now(timezone.utc)
+
+    if payload.action == "cancel":
+        if order.status not in (OrderStatus.PENDING, OrderStatus.PAID):
+            raise HTTPException(status_code=400, detail="当前状态不允许取消")
+        order.status = OrderStatus.CANCELLED
+        order.cancelled_at = now
+    elif payload.action == "complete":
+        if order.status != OrderStatus.DELIVERED:
+            raise HTTPException(status_code=400, detail="当前状态不允许确认收货")
+        order.status = OrderStatus.COMPLETED
+        order.delivered_at = now
+    else:
+        raise HTTPException(status_code=400, detail="Invalid action")
+
+    db.commit()
+    db.refresh(order)
+
+    # 返回完整详情（同 get_order）
+    address_snapshot = None
+    if order.address_snapshot:
+        try:
+            address_snapshot = AddressSnapshot(**json.loads(order.address_snapshot))
+        except Exception:
+            pass
+
+    tracking = None
+    if order.tracking_number:
+        tracking = TrackingInfo(
+            company=order.tracking_company,
+            number=order.tracking_number,
+            status=order.status.value if order.status else None,
+            updated_at=order.shipped_at.isoformat() if order.shipped_at else None,
+            traces=[],
+        )
+
+    return OrderDetailOut(
+        id=order.id, order_no=order.order_no, status=order.status,
+        created_at=order.created_at.isoformat() if order.created_at else None,
+        paid_at=order.paid_at.isoformat() if order.paid_at else None,
+        shipped_at=order.shipped_at.isoformat() if order.shipped_at else None,
+        delivered_at=order.delivered_at.isoformat() if order.delivered_at else None,
+        cancelled_at=order.cancelled_at.isoformat() if order.cancelled_at else None,
+        cancel_reason=order.cancel_reason,
+        total_amount=order.total_amount, discount_amount=order.discount_amount,
+        delivery_fee=order.delivery_fee, payment_amount=order.payment_amount,
+        payment_method=order.payment_method, remark=order.remark,
+        items=[OrderItemOut.model_validate(oi) for oi in order.items],
+        shipping_address=address_snapshot, tracking=tracking,
+    )
+
+
+@app.get("/api/orders/{order_id}/tracking", response_model=TrackingInfo)
+def get_order_tracking(order_id: int, user: User = Depends(require_user), db: Session = Depends(get_db)):
+    """获取物流信息"""
+    order = db.query(Order).filter(Order.id == order_id, Order.user_id == user.id).first()
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    if not order.tracking_number:
+        raise HTTPException(status_code=404, detail="暂无物流信息")
+
+    return TrackingInfo(
+        company=order.tracking_company,
+        number=order.tracking_number,
+        status=order.status.value if order.status else None,
+        updated_at=order.shipped_at.isoformat() if order.shipped_at else None,
+        traces=[
+            {"time": order.shipped_at.isoformat() if order.shipped_at else None,
+             "location": order.tracking_company or "快递公司",
+             "description": "快件已发出"},
+        ],
     )
 
 
