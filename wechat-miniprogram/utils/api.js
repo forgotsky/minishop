@@ -1,5 +1,5 @@
 const BASE_URL = 'https://renewshuttle.cn'
-const { t } = require('./i18n')
+const { t, getLang } = require('./i18n')
 
 const handle401 = () => {
   wx.removeStorageSync('token')
@@ -13,6 +13,9 @@ const handle401 = () => {
 const request = (method, path, data, needAuth) => {
   return new Promise((resolve, reject) => {
     const header = { 'Content-Type': 'application/json' }
+    // 传递语言偏好给后端
+    var lang = getLang()
+    header['Accept-Language'] = lang === 'zh' ? 'zh-CN' : 'en'
     if (needAuth !== false) {
       const token = wx.getStorageSync('token')
       if (token) header['Authorization'] = 'Bearer ' + token

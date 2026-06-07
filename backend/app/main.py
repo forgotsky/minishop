@@ -73,18 +73,34 @@ def on_startup() -> None:
 
 def seed_products(db: Session) -> None:
     products = [
-        Product(name="Wireless Headphones", description="Premium noise-cancelling wireless headphones with 30hr battery life.", price=49.99, image_url="/images/headphones.jpg", stock=120, category="electronics", sales_count=56),
-        Product(name="Smart Watch", description="Fitness tracker with heart rate monitor and GPS.", price=89.00, image_url="/images/watch.jpg", stock=80, category="electronics", sales_count=34),
-        Product(name="Bluetooth Speaker", description="Portable waterproof speaker with deep bass.", price=35.50, image_url="/images/speaker.jpg", stock=200, category="electronics", sales_count=78),
-        Product(name="Backpack", description="Lightweight travel backpack, water-resistant.", price=28.75, image_url="/images/backpack.jpg", stock=150, category="accessories", sales_count=22),
-        Product(name="Running Shoes", description="Breathable mesh running shoes with cushioned sole.", price=64.20, image_url="/images/shoes.jpg", stock=60, category="sports", sales_count=91),
-        Product(name="Power Bank", description="20000mAh fast-charging power bank with USB-C.", price=22.99, image_url="/images/powerbank.jpg", stock=180, category="electronics", sales_count=110),
-        Product(name="Coffee Mug", description="Insulated stainless steel mug, 500ml.", price=15.99, image_url="/images/mug.jpg", stock=300, category="kitchen", sales_count=45),
-        Product(name="Desk Lamp", description="LED desk lamp with adjustable brightness.", price=19.99, image_url="/images/lamp.jpg", stock=90, category="home", sales_count=67),
+        Product(name="Wireless Headphones", name_zh="无线耳机", description="Premium noise-cancelling wireless headphones with 30hr battery life.", description_zh="高级降噪无线耳机，续航30小时", price=49.99, image_url="/images/headphones.jpg", stock=120, category="electronics", sales_count=56),
+        Product(name="Smart Watch", name_zh="智能手表", description="Fitness tracker with heart rate monitor and GPS.", description_zh="心率监测运动手表，内置GPS定位", price=89.00, image_url="/images/watch.jpg", stock=80, category="electronics", sales_count=34),
+        Product(name="Bluetooth Speaker", name_zh="蓝牙音箱", description="Portable waterproof speaker with deep bass.", description_zh="便携防水蓝牙音箱，重低音震撼", price=35.50, image_url="/images/speaker.jpg", stock=200, category="electronics", sales_count=78),
+        Product(name="Backpack", name_zh="双肩背包", description="Lightweight travel backpack, water-resistant.", description_zh="轻量防水旅行背包，大容量收纳", price=28.75, image_url="/images/backpack.jpg", stock=150, category="accessories", sales_count=22),
+        Product(name="Running Shoes", name_zh="跑步鞋", description="Breathable mesh running shoes with cushioned sole.", description_zh="透气网面跑步鞋，缓震鞋底舒适耐穿", price=64.20, image_url="/images/shoes.jpg", stock=60, category="sports", sales_count=91),
+        Product(name="Power Bank", name_zh="充电宝", description="20000mAh fast-charging power bank with USB-C.", description_zh="20000毫安大容量快充充电宝，Type-C接口", price=22.99, image_url="/images/powerbank.jpg", stock=180, category="electronics", sales_count=110),
+        Product(name="Coffee Mug", name_zh="咖啡杯", description="Insulated stainless steel mug, 500ml.", description_zh="不锈钢保温咖啡杯，容量500ml", price=15.99, image_url="/images/mug.jpg", stock=300, category="kitchen", sales_count=45),
+        Product(name="Desk Lamp", name_zh="台灯", description="LED desk lamp with adjustable brightness.", description_zh="LED护眼台灯，亮度可调节", price=19.99, image_url="/images/lamp.jpg", stock=90, category="home", sales_count=67),
     ]
     for p in products:
         db.add(p)
     db.commit()
+
+# 品类名翻译映射
+CATEGORY_ZH = {
+    "electronics": "电子产品",
+    "accessories": "服饰配件",
+    "sports": "运动户外",
+    "kitchen": "厨房用品",
+    "home": "家居生活",
+}
+CATEGORY_EN = {
+    "electronics": "Electronics",
+    "accessories": "Accessories",
+    "sports": "Sports",
+    "kitchen": "Kitchen",
+    "home": "Home",
+}
 
 
 def seed_coupons(db: Session) -> None:
@@ -335,6 +351,27 @@ def _mask_openid(openid: str) -> str:
     return openid[:4] + "****" + openid[-4:]
 
 
+def get_lang(request: Request) -> str:
+    """从请求头读取语言偏好，返回 'zh' 或 'en'"""
+    lang = request.headers.get("accept-language", "en")
+    return "zh" if lang.startswith("zh") else "en"
+
+
+def localize_product(product, lang: str) -> dict:
+    """根据语言返回商品数据的本地化版本"""
+    if lang == "zh" and product.name_zh:
+        return {
+            "name": product.name_zh,
+            "description": product.description_zh or product.description,
+            "category": CATEGORY_ZH.get(product.category, product.category),
+        }
+    return {
+        "name": product.name,
+        "description": product.description,
+        "category": CATEGORY_EN.get(product.category, product.category),
+    }
+
+
 # ============================================================
 # Auth helpers
 # ============================================================
@@ -435,36 +472,83 @@ async def wx_login(payload: WxLoginIn, db: Session = Depends(get_db)):
 
 @app.get("/api/products", response_model=ProductListOut)
 def list_products(
+    request: Request,
     category: Optional[str] = Query(None),
     search: Optional[str] = Query(None),
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1, le=50),
     db: Session = Depends(get_db),
 ):
+    lang = get_lang(request)
     q = db.query(Product).filter(Product.is_on_sale == True)
     if category:
         q = q.filter(Product.category == category)
     if search:
-        q = q.filter(Product.name.ilike(f"%{search}%"))
+        if lang == "zh":
+            q = q.filter(
+                (Product.name.ilike(f"%{search}%")) |
+                (Product.name_zh.ilike(f"%{search}%"))
+            )
+        else:
+            q = q.filter(Product.name.ilike(f"%{search}%"))
 
     total = q.count()
     products = q.order_by(Product.sales_count.desc()).offset((page - 1) * page_size).limit(page_size).all()
 
-    return ProductListOut(products=[ProductOut.model_validate(p) for p in products], total=total)
+    # Localize product names/categories
+    result = []
+    for p in products:
+        loc = localize_product(p, lang)
+        result.append(ProductOut(
+            id=p.id,
+            name=loc["name"],
+            description=loc["description"],
+            price=p.price,
+            image_url=p.image_url,
+            images=p.images,
+            stock=p.stock,
+            category=loc["category"],
+            is_on_sale=p.is_on_sale,
+            sales_count=p.sales_count,
+        ))
+
+    return ProductListOut(products=result, total=total)
 
 
 @app.get("/api/products/{product_id}", response_model=ProductOut)
-def get_product(product_id: int, db: Session = Depends(get_db)):
+def get_product(product_id: int, request: Request, db: Session = Depends(get_db)):
+    lang = get_lang(request)
     product = db.query(Product).filter(Product.id == product_id).first()
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
-    return ProductOut.model_validate(product)
+
+    loc = localize_product(product, lang)
+    return ProductOut(
+        id=product.id,
+        name=loc["name"],
+        description=loc["description"],
+        price=product.price,
+        image_url=product.image_url,
+        images=product.images,
+        stock=product.stock,
+        category=loc["category"],
+        is_on_sale=product.is_on_sale,
+        sales_count=product.sales_count,
+    )
 
 
 @app.get("/api/categories")
-def list_categories(db: Session = Depends(get_db)):
-    categories = db.query(Product.category).filter(Product.is_on_sale == True).distinct().all()
-    return {"categories": [c[0] for c in categories]}
+def list_categories(request: Request, db: Session = Depends(get_db)):
+    lang = get_lang(request)
+    cats = db.query(Product.category).filter(Product.is_on_sale == True).distinct().all()
+    result = []
+    for c in cats:
+        cat_key = c[0]
+        if lang == "zh":
+            result.append(CATEGORY_ZH.get(cat_key, cat_key))
+        else:
+            result.append(CATEGORY_EN.get(cat_key, cat_key))
+    return {"categories": result}
 
 
 # ============================================================
@@ -549,11 +633,13 @@ def clear_cart(user: User = Depends(require_user), db: Session = Depends(get_db)
 # ============================================================
 
 @app.post("/api/orders", response_model=OrderOut)
-def create_order(payload: OrderCreateIn, user: User = Depends(require_user), db: Session = Depends(get_db)):
+def create_order(payload: OrderCreateIn, request: Request, user: User = Depends(require_user), db: Session = Depends(get_db)):
     # Validate address
     address = db.query(Address).filter(Address.id == payload.address_id, Address.user_id == user.id).first()
     if not address:
         raise HTTPException(status_code=400, detail="Address not found")
+
+    lang = get_lang(request)
 
     # Get cart items (filter by item_ids if specified)
     cart_items = db.query(CartItem).filter(CartItem.user_id == user.id)
@@ -568,15 +654,16 @@ def create_order(payload: OrderCreateIn, user: User = Depends(require_user), db:
     order_items = []
     for ci in cart_items:
         product = ci.product
+        product_name = product.name_zh if (lang == "zh" and product.name_zh) else product.name
         if not product or not product.is_on_sale:
             raise HTTPException(status_code=400, detail=f"Product {ci.product_id} is no longer available")
         if product.stock < ci.quantity:
-            raise HTTPException(status_code=400, detail=f"Insufficient stock for {product.name}")
+            raise HTTPException(status_code=400, detail=f"Insufficient stock for {product_name}")
 
         total_amount += product.price * ci.quantity
         order_items.append({
             "product_id": product.id,
-            "product_name": product.name,
+            "product_name": product_name,
             "product_image": product.image_url,
             "product_price": product.price,
             "quantity": ci.quantity,

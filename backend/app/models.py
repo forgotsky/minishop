@@ -68,8 +68,10 @@ class Product(Base):
     __tablename__ = "products"
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, nullable=False)
-    description = Column(Text, nullable=True)
+    name = Column(String, nullable=False)              # English name
+    name_zh = Column(String, nullable=True)            # Chinese name
+    description = Column(Text, nullable=True)           # English description
+    description_zh = Column(Text, nullable=True)        # Chinese description
     price = Column(Float, nullable=False)
     image_url = Column(String, nullable=True)
     images = Column(String, nullable=True)  # comma-separated URLs

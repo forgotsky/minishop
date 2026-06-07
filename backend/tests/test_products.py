@@ -35,7 +35,7 @@ async def test_get_product_by_id(client):
     assert data["id"] == 1
     assert data["name"] == "Wireless Headphones"
     assert data["price"] == 49.99
-    assert data["category"] == "electronics"
+    assert data["category"] == "Electronics"
 
 
 async def test_get_product_404(client):
@@ -157,7 +157,7 @@ async def test_filter_by_category_electronics(client):
     data = resp.json()
     assert data["total"] == 4
     for p in data["products"]:
-        assert p["category"] == "electronics"
+        assert p["category"] == "Electronics"
 
 
 async def test_filter_by_category_sports(client):
@@ -226,7 +226,7 @@ async def test_filter_category_with_pagination(client):
     assert data["total"] == 4  # 4 electronics total
     assert len(data["products"]) == 2  # page 2 of 2-per-page = 2 items
     for p in data["products"]:
-        assert p["category"] == "electronics"
+        assert p["category"] == "Electronics"
 
 
 # ── Search ──────────────────────────────────────────────────────────
@@ -329,7 +329,7 @@ async def test_list_categories(client):
     assert resp.status_code == 200
     data = resp.json()
     assert "categories" in data
-    expected = {"electronics", "accessories", "sports", "kitchen", "home"}
+    expected = {"Electronics", "Accessories", "Sports", "Kitchen", "Home"}
     assert set(data["categories"]) == expected
 
 
