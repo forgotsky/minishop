@@ -111,19 +111,11 @@ jobs:
             kubectl apply -f k8s/app.yaml
             kubectl apply -f k8s/ingress.yaml
 
-            # 更新镜像到新 SHA
+            # 更新镜像 + 滚动重启
             kubectl set image deployment/shop-app \
               shop-app=ghcr.io/${{ github.repository }}:${{ github.sha }} \
               -n shop
-
-            # 缩容到 0，彻底删除旧 Pod
-            kubectl scale deployment/shop-app --replicas=0 -n shop
-            sleep 5
-
-            # 扩容回 2，触发全新拉取镜像
-            kubectl scale deployment/shop-app --replicas=2 -n shop
-
-            # 等待新 Pod 就绪
+            kubectl rollout restart deployment/shop-app -n shop
             kubectl rollout status deployment/shop-app -n shop --timeout=180s
 
             # ── 数据库迁移：添加新列 + 更新中文翻译 ──
@@ -150,13 +142,6 @@ jobs:
 
             echo "DB migration complete"
 
-            # 显示当前 Pod 状态和镜像版本
-            echo "=== Pods ==="
+            # 显示当前 Pod 状态
             kubectl get pods -n shop
-            echo "=== Image ==="
-            kubectl get deployment shop-app -n shop -o jsonpath='{.spec.template.spec.containers[0].image}' && echo ""
-            echo "=== ImagePullSecrets ==="
-            kubectl get deployment shop-app -n shop -o jsonpath='{.spec.template.spec.imagePullSecrets}' && echo ""
-            echo "=== Recent Events ==="
-            kubectl get events -n shop --sort-by='.lastTimestamp' | tail -10
 
