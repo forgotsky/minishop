@@ -13,6 +13,8 @@ spec:
       labels:
         app: shop-app
     spec:
+      imagePullSecrets:
+        - name: ghcr-secret
       containers:
         - name: shop-app
           image: ghcr.io/forgotsky/minishop:latest
