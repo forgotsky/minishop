@@ -5,12 +5,22 @@ const app = getApp()
 Page({
   data: { product: null, t: {}, _theme: '' },
   onLoad(options) {
+    this._productId = options.id
     this.setData({ t: getAllTexts(), _theme: 'theme-' + (app.globalData.theme || 'orange') })
     wx.setNavigationBarTitle({ title: t('nav.title.product') })
-    api.getProduct(options.id).then(product => {
+    this._loadProduct()
+  },
+  _loadProduct() {
+    if (!this._productId) return
+    var self = this
+    api.getProduct(this._productId).then(function (product) {
       product.image_url = imageUrl(product.image_url)
-      this.setData({ product })
+      self.setData({ product: product })
     })
+  },
+  refreshLang() {
+    this._loadProduct()
+    return {}
   },
   addToCart() {
     const p = this.data.product
