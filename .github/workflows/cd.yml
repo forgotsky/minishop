@@ -104,14 +104,6 @@ jobs:
             # 拉取最新 k8s 配置
             git pull origin main
 
-            # ── 创建 GHCR 拉取凭证 ──
-            kubectl create secret docker-registry ghcr-secret \
-              --docker-server=ghcr.io \
-              --docker-username=${{ github.actor }} \
-              --docker-password=${{ secrets.GHCR_PAT }} \
-              -n shop \
-              --dry-run=client -o yaml | kubectl apply -f -
-
             # 逐个应用 k8s 清单
             kubectl apply -f k8s/namespace.yaml
             kubectl apply -f k8s/configmap.yaml
