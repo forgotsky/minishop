@@ -57,10 +57,34 @@ def on_startup() -> None:
     setup_logging()
     logger.info("Shop API starting up...")
     Base.metadata.create_all(bind=engine)
+
+    # Auto-migration: add new columns to existing tables
+    from sqlalchemy import inspect, text
+    inspector = inspect(engine)
+    with engine.connect() as conn:
+        # Add name_zh / description_zh to products if missing
+        existing_cols = {c["name"] for c in inspector.get_columns("products")} if "products" in inspector.get_table_names() else set()
+        if "products" in inspector.get_table_names():
+            if "name_zh" not in existing_cols:
+                conn.execute(text("ALTER TABLE products ADD COLUMN name_zh VARCHAR"))
+                logger.info("Migration: added products.name_zh")
+            if "description_zh" not in existing_cols:
+                conn.execute(text("ALTER TABLE products ADD COLUMN description_zh TEXT"))
+                logger.info("Migration: added products.description_zh")
+            # Add transaction_id / prepay_id to orders if missing
+            if "orders" in inspector.get_table_names():
+                order_cols = {c["name"] for c in inspector.get_columns("orders")}
+                if "transaction_id" not in order_cols:
+                    conn.execute(text("ALTER TABLE orders ADD COLUMN transaction_id VARCHAR(64)"))
+                    logger.info("Migration: added orders.transaction_id")
+                if "prepay_id" not in order_cols:
+                    conn.execute(text("ALTER TABLE orders ADD COLUMN prepay_id VARCHAR(64)"))
+                    logger.info("Migration: added orders.prepay_id")
+            conn.commit()
+
     db = next(get_db())
     try:
-        if db.query(Product).count() == 0:
-            seed_products(db)
+        seed_products(db)
         if db.query(CouponTemplate).count() == 0:
             seed_coupons(db)
     finally:
