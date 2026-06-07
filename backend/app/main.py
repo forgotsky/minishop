@@ -1284,24 +1284,7 @@ def delete_account(user: User = Depends(require_user), db: Session = Depends(get
 
 @app.get("/api/health")
 def health():
-    return {"status": "ok", "version": "v5-scale-restart"}
-
-@app.get("/api/admin/db-check")
-def db_check(db: Session = Depends(get_db)):
-    """临时：查看数据库 products 表结构"""
-    from sqlalchemy import inspect, text
-    inspector = inspect(engine)
-    cols = {c["name"]: str(c["type"]) for c in inspector.get_columns("products")} if "products" in inspector.get_table_names() else {}
-    products = db.query(Product).limit(3).all()
-    data = []
-    for p in products:
-        data.append({
-            "id": p.id,
-            "name": p.name,
-            "name_zh": p.name_zh,
-            "description_zh": (p.description_zh or "")[:40] if p.description_zh else None,
-        })
-    return {"columns": cols, "sample": data}
+    return {"status": "ok"}
 
 
 @app.get("/api/hello")
