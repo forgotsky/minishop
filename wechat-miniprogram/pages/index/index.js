@@ -1,5 +1,5 @@
 const { api, imageUrl } = require('../../utils/api')
-const { getAllTexts, toggleLang } = require('../../utils/i18n')
+const { getAllTexts, toggleLang, t } = require('../../utils/i18n')
 const app = getApp()
 
 Page({
