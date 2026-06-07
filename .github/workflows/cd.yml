@@ -154,6 +154,13 @@ jobs:
 
             echo "DB migration complete"
 
-            # 显示当前 Pod 状态
+            # 显示当前 Pod 状态和镜像版本
+            echo "=== Pods ==="
             kubectl get pods -n shop
+            echo "=== Image ==="
+            kubectl get deployment shop-app -n shop -o jsonpath='{.spec.template.spec.containers[0].image}' && echo ""
+            echo "=== ImagePullSecrets ==="
+            kubectl get deployment shop-app -n shop -o jsonpath='{.spec.template.spec.imagePullSecrets}' && echo ""
+            echo "=== Recent Events ==="
+            kubectl get events -n shop --sort-by='.lastTimestamp' | tail -10
 
