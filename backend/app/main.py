@@ -1264,7 +1264,7 @@ def delete_account(user: User = Depends(require_user), db: Session = Depends(get
 
 @app.get("/api/health")
 def health():
-    return {"status": "ok", "version": "2026-06-08-v2", "migrations": True}
+    return {"status": "ok", "version": "2026-06-08-v3"}
 
 
 @app.get("/api/hello")
