@@ -1,17 +1,17 @@
-<view class="container" wx:if="{{product}}">
+<view class="container {{_theme}}" wx:if="{{product}}">
   <image class="detail-img" src="{{product.image_url}}" mode="aspectFill"/>
   <view class="card">
     <view class="price" style="font-size:44rpx">{{product.price}}</view>
     <view class="product-name" style="font-size:36rpx;font-weight:bold;margin-top:12rpx">{{product.name}}</view>
     <view class="flex-between mt-20">
       <text class="tag tag-gray">{{product.category}}</text>
-      <text style="color:#999">{{product.sales_count}} sold | Stock: {{product.stock}}</text>
+      <text style="color:#999">{{product.sales_count}}{{t['product.sold']}} | {{t['product.stock']}}{{product.stock}}</text>
     </view>
     <view class="mt-20" style="color:#666;line-height:1.8">{{product.description}}</view>
   </view>
   <view class="bottom-bar">
-    <button class="btn-outline flex-1" bindtap="addToCart">Add to Cart</button>
-    <button class="btn flex-1" bindtap="buyNow">Buy Now</button>
+    <button class="btn-outline flex-1" bindtap="addToCart">{{t['product.addToCart']}}</button>
+    <button class="btn flex-1" bindtap="buyNow">{{t['product.buyNow']}}</button>
   </view>
 </view>
-<view wx:else class="loading">Loading...</view>
+<view wx:else class="loading">{{t['product.loading']}}</view>

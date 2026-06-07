@@ -1,8 +1,8 @@
-<view class="container" style="padding-bottom:120rpx">
+<view class="container {{_theme}}" style="padding-bottom:120rpx">
   <!-- Address -->
   <view class="card">
-    <view class="flex-between mb-20"><text style="font-weight:bold">Delivery Address</text>
-      <text style="color:#ff5500;font-size:24rpx" bindtap="goAddAddress">+ New</text>
+    <view class="flex-between mb-20"><text style="font-weight:bold">{{t['checkout.address']}}</text>
+      <text style="color:#ff5500;font-size:24rpx" bindtap="goAddAddress">{{t['checkout.newAddress']}}</text>
     </view>
     <picker wx:if="{{addresses.length}}" mode="selector" range="{{addresses}}" range-key="full_name" bindchange="onSelectAddress">
       <view wx:if="{{selectedAddress}}" class="address-item">
@@ -10,12 +10,12 @@
         <view style="color:#666;margin-top:6rpx">{{selectedAddress.province}} {{selectedAddress.city}} {{selectedAddress.district}} {{selectedAddress.street}}</view>
       </view>
     </picker>
-    <view wx:else style="color:#999">No address - <text style="color:#ff5500" bindtap="goAddAddress">add one</text></view>
+    <view wx:else style="color:#999">{{t['checkout.noAddress']}} - <text style="color:#ff5500" bindtap="goAddAddress">{{t['checkout.addOne']}}</text></view>
   </view>
 
   <!-- Items -->
   <view class="card">
-    <view style="font-weight:bold;margin-bottom:16rpx">Items</view>
+    <view style="font-weight:bold;margin-bottom:16rpx">{{t['checkout.items']}}</view>
     <view wx:for="{{items}}" wx:key="id" class="flex-between mt-10" style="padding:8rpx 0">
       <text class="flex-1 ellipsis">{{item.product_name}} x{{item.quantity}}</text>
       <text class="price">{{item.subtotal}}</text>
@@ -24,30 +24,30 @@
 
   <!-- Coupon -->
   <view class="card">
-    <view style="font-weight:bold;margin-bottom:16rpx">Coupon</view>
+    <view style="font-weight:bold;margin-bottom:16rpx">{{t['checkout.coupon']}}</view>
     <picker wx:if="{{coupons.length}}" mode="selector" range="{{coupons}}" range-key="template.name" value="{{couponIndex}}" bindchange="onSelectCoupon">
       <view wx:if="{{selectedCoupon}}" class="tag tag-green">
         {{selectedCoupon.template.name}} (-${{discount}})
       </view>
-      <view wx:else style="color:#999">Tap to select coupon</view>
+      <view wx:else style="color:#999">{{t['checkout.tapSelectCoupon']}}</view>
     </picker>
-    <view wx:else style="color:#999">No coupons available</view>
+    <view wx:else style="color:#999">{{t['checkout.noCoupons']}}</view>
   </view>
 
   <!-- Summary -->
   <view class="card">
-    <view style="font-weight:bold;margin-bottom:16rpx">Order Summary</view>
-    <view class="flex-between mt-10"><text>Subtotal</text><text class="price">{{subtotal}}</text></view>
-    <view wx:if="{{discount > 0}}" class="flex-between mt-10"><text>Discount</text><text style="color:#07c160">-${{discount}}</text></view>
-    <view class="flex-between mt-10"><text>Delivery</text><text class="price">{{delivery}}</text></view>
+    <view style="font-weight:bold;margin-bottom:16rpx">{{t['checkout.orderSummary']}}</view>
+    <view class="flex-between mt-10"><text>{{t['checkout.subtotal']}}</text><text class="price">{{subtotal}}</text></view>
+    <view wx:if="{{discount > 0}}" class="flex-between mt-10"><text>{{t['checkout.discount']}}</text><text style="color:#07c160">-${{discount}}</text></view>
+    <view class="flex-between mt-10"><text>{{t['checkout.delivery']}}</text><text class="price">{{delivery}}</text></view>
     <view class="flex-between mt-20" style="border-top:2rpx solid #eee;padding-top:16rpx">
-      <text style="font-weight:bold;font-size:32rpx">Total</text>
+      <text style="font-weight:bold;font-size:32rpx">{{t['checkout.total']}}</text>
       <text class="price" style="font-size:40rpx">{{total}}</text>
     </view>
   </view>
 
   <view class="bottom-bar">
-    <text class="flex-1">Total: <text class="price" style="font-size:36rpx">{{total}}</text></text>
-    <button class="btn" bindtap="onPlaceOrder">Place Order</button>
+    <text class="flex-1">{{t['checkout.total']}}: <text class="price" style="font-size:36rpx">{{total}}</text></text>
+    <button class="btn" bindtap="onPlaceOrder">{{t['checkout.placeOrder']}}</button>
   </view>
 </view>

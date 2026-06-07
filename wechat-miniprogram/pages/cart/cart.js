@@ -1,10 +1,12 @@
 const { api, imageUrl } = require('../../utils/api')
+const { t, getAllTexts } = require('../../utils/i18n')
 const app = getApp()
 
 Page({
-  data: { items: [], total: 0, selectedTotal: 0, allChecked: false },
+  data: { items: [], total: 0, selectedTotal: 0, allChecked: false, t: {}, _theme: '' },
 
   onShow() {
+    this.setData({ t: getAllTexts(), _theme: 'theme-' + (app.globalData.theme || 'orange') })
     this.loadCart()
   },
 
@@ -58,7 +60,7 @@ Page({
   onRemove(e) {
     const id = e.currentTarget.dataset.id
     wx.showModal({
-      title: 'Remove item?',
+      title: t('cart.removeTitle'),
       success: (res) => {
         if (res.confirm) api.removeCartItem(id).then(() => this.loadCart())
       }
@@ -68,7 +70,7 @@ Page({
   onCheckout() {
     const checked = this.data.items.filter(i => i._checked)
     if (!checked.length) {
-      wx.showToast({ title: 'Please select items first', icon: 'none' })
+      wx.showToast({ title: t('cart.selectFirst'), icon: 'none' })
       return
     }
     app.globalData.checkoutItemIds = checked.map(i => i.id)

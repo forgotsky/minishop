@@ -1,4 +1,5 @@
 const { api, imageUrl } = require('../../utils/api')
+const { getAllTexts, toggleLang } = require('../../utils/i18n')
 const app = getApp()
 
 Page({
@@ -9,10 +10,13 @@ Page({
     search: '',
     page: 1,
     total: 0,
-    loading: false
+    loading: false,
+    t: {},
+    _theme: ''
   },
 
   onShow() {
+    this.setData({ t: getAllTexts(), _theme: 'theme-' + (app.globalData.theme || 'orange') })
     this.loadCategories()
     this.loadProducts()
     app.refreshCartCount()
@@ -46,6 +50,15 @@ Page({
 
   onProductTap(e) {
     wx.navigateTo({ url: '/pages/product/product?id=' + e.currentTarget.dataset.id })
+  },
+
+  onSwitchLang() {
+    toggleLang()
+  },
+
+  onSwitchTheme() {
+    app.cycleTheme()
+    this.setData({ _theme: 'theme-' + (app.globalData.theme || 'orange') })
   },
 
   onLoadMore() {

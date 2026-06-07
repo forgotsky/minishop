@@ -1,1 +1,63 @@
-/* order styles */
+.tabs {
+  background: var(--color-card);
+  white-space: nowrap;
+  padding: 0 24rpx;
+}
+.tab-list { display: flex; align-items: center; }
+.tab {
+  display: inline-block;
+  padding: 24rpx 20rpx;
+  font-size: 28rpx;
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+}
+.tab.active {
+  color: var(--color-tab-active);
+  font-weight: bold;
+  border-bottom: 4rpx solid var(--color-tab-active);
+}
+
+.container {
+  padding: 24rpx;
+  background: var(--color-bg);
+  min-height: 100vh;
+}
+
+.card {
+  background: var(--color-card);
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.flex-between { display: flex; justify-content: space-between; align-items: center; }
+
+.order-no { font-size: 24rpx; color: var(--color-text-muted); }
+
+.status-tag { font-size: 24rpx; padding: 4rpx 16rpx; border-radius: 8rpx; }
+.status-pending { background: var(--color-status-pending-bg); color: var(--color-status-pending-text); }
+.status-paid { background: var(--color-status-paid-bg); color: var(--color-status-paid-text); }
+.status-shipped { background: var(--color-status-shipped-bg); color: var(--color-status-shipped-text); }
+.status-delivered { background: var(--color-status-completed-bg); color: var(--color-status-completed-text); }
+.status-completed { background: var(--color-status-completed-bg); color: var(--color-status-completed-text); }
+.status-cancelled { background: var(--color-status-cancelled-bg); color: var(--color-status-cancelled-text); }
+
+.item-preview {
+  display: flex; align-items: center;
+  margin-top: 20rpx; padding: 16rpx;
+  background: var(--color-input-bg);
+  border-radius: 12rpx;
+}
+.item-img { width: 120rpx; height: 120rpx; border-radius: 8rpx; background: var(--color-border); flex-shrink: 0; }
+.item-info { margin-left: 20rpx; flex: 1; }
+.item-name {
+  font-size: 28rpx; color: var(--color-text); display: block;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 400rpx;
+}
+.item-count { font-size: 24rpx; color: var(--color-text-muted); margin-top: 8rpx; display: block; }
+.order-time { font-size: 24rpx; color: var(--color-text-muted); }
+
+.price { font-size: 32rpx; font-weight: bold; color: var(--color-text); }
+
+.empty { text-align: center; padding: 100rpx 0; color: var(--color-text-muted); font-size: 28rpx; }
+.loading, .no-more { text-align: center; padding: 30rpx; color: var(--color-text-muted); font-size: 24rpx; }

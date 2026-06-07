@@ -1,31 +1,190 @@
-page { background: #f5f5f5; font-size: 28rpx; color: #333; }
+/* ============================================================
+   MiniShop Theme System — 4 themes via CSS Custom Properties
+   Works with WeChat mini-programs (base library 2.9.0+)
+   Theme class goes on each page's root <view> element
+   ============================================================ */
 
-.container { padding: 20rpx; }
+/* ---- Default: Classic Orange (经典橙) — no class needed ---- */
+page {
+  --color-primary:       #ff5500;
+  --color-primary-light: #fff0f0;
+  --color-bg:            #f5f5f5;
+  --color-card:          #ffffff;
+  --color-text:          #333333;
+  --color-text-secondary:#666666;
+  --color-text-muted:    #999999;
+  --color-border:        #eeeeee;
+  --color-border-light:  #f0f0f0;
+  --color-danger:        #ff4d4f;
+  --color-success:       #07c160;
+  --color-navbar-bg:     #ff5500;
+  --color-tab-active:    #ff5500;
+  --color-tab-inactive:  #999999;
+  --color-input-bg:      #f5f5f5;
+  --color-coupon-border: #ff5500;
+  --color-shadow:        rgba(0,0,0,0.06);
+  /* status tag colors */
+  --color-status-pending-bg:   #fff7e6;
+  --color-status-pending-text: #fa8c16;
+  --color-status-paid-bg:      #e6f7ff;
+  --color-status-paid-text:    #1890ff;
+  --color-status-shipped-bg:   #f0f5ff;
+  --color-status-shipped-text: #597ef7;
+  --color-status-completed-bg: #f6ffed;
+  --color-status-completed-text:#52c41a;
+  --color-status-cancelled-bg: #f5f5f5;
+  --color-status-cancelled-text:#999999;
+}
+
+/* ---- Blue Theme (深海蓝) ---- */
+.theme-blue {
+  --color-primary:       #1989fa;
+  --color-primary-light: #e6f7ff;
+  --color-bg:            #f5f7fa;
+  --color-card:          #ffffff;
+  --color-text:          #333333;
+  --color-text-secondary:#666666;
+  --color-text-muted:    #999999;
+  --color-border:        #e8e8e8;
+  --color-border-light:  #f0f0f0;
+  --color-danger:        #ff4d4f;
+  --color-success:       #07c160;
+  --color-navbar-bg:     #1989fa;
+  --color-tab-active:    #1989fa;
+  --color-tab-inactive:  #999999;
+  --color-input-bg:      #f5f7fa;
+  --color-coupon-border: #1989fa;
+  --color-shadow:        rgba(0,0,0,0.06);
+  --color-status-pending-bg:   #fff7e6;
+  --color-status-pending-text: #fa8c16;
+  --color-status-paid-bg:      #e6f7ff;
+  --color-status-paid-text:    #1890ff;
+  --color-status-shipped-bg:   #f0f5ff;
+  --color-status-shipped-text: #597ef7;
+  --color-status-completed-bg: #f6ffed;
+  --color-status-completed-text:#52c41a;
+  --color-status-cancelled-bg: #f5f5f5;
+  --color-status-cancelled-text:#999999;
+}
+
+/* ---- Green Theme (自然绿) ---- */
+.theme-green {
+  --color-primary:       #07c160;
+  --color-primary-light: #f0fff0;
+  --color-bg:            #f5faf5;
+  --color-card:          #ffffff;
+  --color-text:          #333333;
+  --color-text-secondary:#666666;
+  --color-text-muted:    #999999;
+  --color-border:        #e8e8e8;
+  --color-border-light:  #f0f0f0;
+  --color-danger:        #ff4d4f;
+  --color-success:       #07c160;
+  --color-navbar-bg:     #07c160;
+  --color-tab-active:    #07c160;
+  --color-tab-inactive:  #999999;
+  --color-input-bg:      #f5faf5;
+  --color-coupon-border: #07c160;
+  --color-shadow:        rgba(0,0,0,0.06);
+  --color-status-pending-bg:   #fff7e6;
+  --color-status-pending-text: #fa8c16;
+  --color-status-paid-bg:      #e6f7ff;
+  --color-status-paid-text:    #1890ff;
+  --color-status-shipped-bg:   #f0f5ff;
+  --color-status-shipped-text: #597ef7;
+  --color-status-completed-bg: #f6ffed;
+  --color-status-completed-text:#52c41a;
+  --color-status-cancelled-bg: #f5f5f5;
+  --color-status-cancelled-text:#999999;
+}
+
+/* ---- Dark Theme (暗夜黑) ---- */
+.theme-dark {
+  --color-primary:       #d4a853;
+  --color-primary-light: #3a3020;
+  --color-bg:            #1a1a2e;
+  --color-card:          #252540;
+  --color-text:          #e8e8e8;
+  --color-text-secondary:#aaaaaa;
+  --color-text-muted:    #777777;
+  --color-border:        #333344;
+  --color-border-light:  #2a2a3a;
+  --color-danger:        #ff6b6b;
+  --color-success:       #52c41a;
+  --color-navbar-bg:     #1a1a2e;
+  --color-tab-active:    #d4a853;
+  --color-tab-inactive:  #777777;
+  --color-input-bg:      #1e1e32;
+  --color-coupon-border: #d4a853;
+  --color-shadow:        rgba(0,0,0,0.30);
+  --color-status-pending-bg:   #3a3020;
+  --color-status-pending-text: #d4a853;
+  --color-status-paid-bg:      #1a2a3a;
+  --color-status-paid-text:    #5ba0d0;
+  --color-status-shipped-bg:   #2a2a3a;
+  --color-status-shipped-text: #8a9af0;
+  --color-status-completed-bg: #1a2a1a;
+  --color-status-completed-text:#52c41a;
+  --color-status-cancelled-bg: #2a2a2a;
+  --color-status-cancelled-text:#777777;
+}
+
+/* ============================================================
+   Brand-color navbar for light themes: force white text
+   ============================================================ */
+.theme-orange-page, .theme-blue-page, .theme-green-page {
+  --nav-text-style: #ffffff;
+}
+.theme-dark-page {
+  --nav-text-style: #e8e8e8;
+}
+
+/* ============================================================
+   Global Styles — ALL use CSS variables
+   ============================================================ */
+
+page {
+  background: var(--color-bg);
+  font-size: 28rpx;
+  color: var(--color-text);
+}
+
+.container {
+  padding: 20rpx;
+}
 
 .card {
-  background: #fff;
+  background: var(--color-card);
   border-radius: 16rpx;
   padding: 24rpx;
   margin-bottom: 20rpx;
-  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.06);
+  box-shadow: 0 2rpx 12rpx var(--color-shadow);
 }
 
-.price { color: #ff5500; font-weight: bold; }
-.price::before { content: '$'; font-size: 24rpx; }
+.price {
+  color: var(--color-primary);
+  font-weight: bold;
+}
+.price::before {
+  content: '$';
+  font-size: 24rpx;
+}
 
 .btn {
-  background: #ff5500;
+  background: var(--color-primary);
   color: #fff;
   border: none;
   border-radius: 12rpx;
   font-size: 28rpx;
 }
-.btn[disabled] { background: #ccc; }
+.btn[disabled] {
+  background: #ccc;
+}
 
 .btn-outline {
-  background: #fff;
-  color: #ff5500;
-  border: 2rpx solid #ff5500;
+  background: var(--color-card);
+  color: var(--color-primary);
+  border: 2rpx solid var(--color-primary);
   border-radius: 12rpx;
   font-size: 28rpx;
 }
@@ -36,19 +195,50 @@ page { background: #f5f5f5; font-size: 28rpx; color: #333; }
   border-radius: 8rpx;
   font-size: 22rpx;
 }
-.tag-red { background: #fff0f0; color: #ff5500; }
-.tag-green { background: #f0fff0; color: #07c160; }
-.tag-gray { background: #f0f0f0; color: #999; }
+.tag-red {
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
+.tag-green {
+  background: #f0fff0;
+  color: var(--color-success);
+}
+.tag-gray {
+  background: var(--color-border-light);
+  color: var(--color-text-muted);
+}
 
-.flex-row { display: flex; align-items: center; }
-.flex-between { display: flex; justify-content: space-between; align-items: center; }
-.flex-1 { flex: 1; }
+.flex-row {
+  display: flex;
+  align-items: center;
+}
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.flex-1 {
+  flex: 1;
+}
 
 .mt-10 { margin-top: 10rpx; }
 .mt-20 { margin-top: 20rpx; }
 .mb-20 { margin-bottom: 20rpx; }
 
-.ellipsis { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
-.loading { text-align: center; padding: 40rpx; color: #999; }
-.empty { text-align: center; padding: 80rpx; color: #999; font-size: 28rpx; }
+.loading {
+  text-align: center;
+  padding: 40rpx;
+  color: var(--color-text-muted);
+}
+.empty {
+  text-align: center;
+  padding: 80rpx;
+  color: var(--color-text-muted);
+  font-size: 28rpx;
+}

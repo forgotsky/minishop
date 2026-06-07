@@ -27,6 +27,11 @@ if RUN_MODE == "dev":
 WECHAT_APPID = os.getenv("WECHAT_APPID", "")
 WECHAT_APP_SECRET = os.getenv("WECHAT_APP_SECRET", "")
 
+# 微信支付配置（提供给 wechat_pay 模块使用）
+WECHAT_MCHID = os.getenv("WECHAT_MCHID", "")
+WECHAT_PAY_API_V3_KEY = os.getenv("WECHAT_PAY_API_V3_KEY", "")
+WECHAT_PAY_CERT_SERIAL = os.getenv("WECHAT_PAY_CERT_SERIAL", "")
+
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_HOURS = 720  # 30 days
 

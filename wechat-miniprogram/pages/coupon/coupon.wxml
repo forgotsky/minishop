@@ -1,21 +1,21 @@
-<view class="container">
+<view class="container {{_theme}}">
   <view class="flex-row" style="margin-bottom:20rpx">
-    <view class="tab {{tab === 'mine' ? 'active' : ''}}" bindtap="setTab" data-tab="mine">My Coupons</view>
-    <view class="tab {{tab === 'available' ? 'active' : ''}}" bindtap="setTab" data-tab="available">Get More</view>
+    <view class="tab {{tab === 'mine' ? 'active' : ''}}" bindtap="setTab" data-tab="mine">{{t['coupon.myCoupons']}}</view>
+    <view class="tab {{tab === 'available' ? 'active' : ''}}" bindtap="setTab" data-tab="available">{{t['coupon.getMore']}}</view>
   </view>
 
   <!-- My coupons -->
   <block wx:if="{{tab === 'mine'}}">
-    <view wx:if="{{myCoupons.length === 0}}" class="empty">No coupons yet</view>
+    <view wx:if="{{myCoupons.length === 0}}" class="empty">{{t['coupon.noCoupons']}}</view>
     <view wx:for="{{myCoupons}}" wx:key="id" class="coupon-card card">
       <view class="flex-between">
         <view>
-          <view style="font-size:32rpx;font-weight:bold" class="price">{{item.template.value}}{{item.template.type === 'discount' ? '% Off' : ''}}</view>
+          <view style="font-size:32rpx;font-weight:bold" class="price">{{item.template.value}}{{item.template.type === 'discount' ? t['coupon.percentOff'] : ''}}</view>
           <view style="font-size:24rpx;color:#666;margin-top:6rpx">{{item.template.name}}</view>
         </view>
-        <view class="tag {{item.status === 'unused' ? 'tag-green' : item.status === 'used' ? 'tag-gray' : 'tag-red'}}">{{item.status}}</view>
+        <view class="tag {{item.status === 'unused' ? 'tag-green' : item.status === 'used' ? 'tag-gray' : 'tag-red'}}">{{item._statusLabel}}</view>
       </view>
-      <view style="font-size:22rpx;color:#999;margin-top:8rpx">{{item.template.description || 'No min spend'}}</view>
+      <view style="font-size:22rpx;color:#999;margin-top:8rpx">{{item.template.description || t['coupon.noMinSpend']}}</view>
     </view>
   </block>
 
@@ -24,12 +24,12 @@
     <view wx:for="{{available}}" wx:key="id" class="coupon-card card">
       <view class="flex-between">
         <view>
-          <view style="font-size:32rpx;font-weight:bold" class="price">{{item.value}}{{item.type === 'discount' ? '% Off' : ''}}</view>
+          <view style="font-size:32rpx;font-weight:bold" class="price">{{item.value}}{{item.type === 'discount' ? t['coupon.percentOff'] : ''}}</view>
           <view style="font-size:24rpx;color:#666;margin-top:6rpx">{{item.name}}</view>
         </view>
-        <button class="btn" size="mini" bindtap="onClaim" data-id="{{item.id}}">Claim</button>
+        <button class="btn" size="mini" bindtap="onClaim" data-id="{{item.id}}">{{t['coupon.claim']}}</button>
       </view>
-      <view style="font-size:22rpx;color:#999;margin-top:8rpx">{{item.description || 'No min spend'}}</view>
+      <view style="font-size:22rpx;color:#999;margin-top:8rpx">{{item.description || t['coupon.noMinSpend']}}</view>
     </view>
   </block>
 </view>

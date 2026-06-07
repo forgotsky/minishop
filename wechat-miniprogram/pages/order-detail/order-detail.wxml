@@ -1,28 +1,65 @@
-<view class="container" wx:if="{{order}}">
-  <view class="card" style="text-align:center">
-    <text class="tag {{order.status === 'paid' ? 'tag-green' : 'tag-red'}}" style="font-size:28rpx;padding:8rpx 24rpx">{{order.status}}</text>
-    <view style="font-size:44rpx;font-weight:bold;margin-top:16rpx" class="price">{{order.payment_amount}}</view>
-    <view style="font-size:24rpx;color:#999;margin-top:8rpx">Order: {{order.order_no}}</view>
-  </view>
-
-  <view class="card">
-    <view style="font-weight:bold;margin-bottom:16rpx">Items</view>
-    <view wx:for="{{order.items}}" wx:key="id" class="flex-between mt-10">
-      <text>{{item.product_name}} x{{item.quantity}}</text>
-      <text class="price">{{item.product_price * item.quantity}}</text>
+<view class="container {{_theme}}" wx:if="{{order}}">
+  <!-- Status Header -->
+  <view class="status-card">
+    <text class="status-text status-{{order.status}}">{{STATUS_LABELS[order.status]}}</text>
+    <view class="order-info">
+      <text>{{t['orderDetail.orderNo']}}{{order.order_no}}</text>
+      <text>{{t['orderDetail.createTime']}}{{order.created_at}}</text>
+      <text wx:if="{{order.paid_at}}">{{t['orderDetail.payTime']}}{{order.paid_at}}</text>
     </view>
   </view>
 
-  <view class="card">
-    <view style="font-weight:bold;margin-bottom:16rpx">Price Details</view>
-    <view class="flex-between mt-10"><text>Subtotal</text><text class="price">{{order.total_amount}}</text></view>
-    <view class="flex-between mt-10"><text>Discount</text><text style="color:#07c160">-${{order.discount_amount}}</text></view>
-    <view class="flex-between mt-10"><text>Delivery</text><text class="price">{{order.delivery_fee}}</text></view>
-    <view class="flex-between mt-10" style="border-top:2rpx solid #eee;padding-top:16rpx;font-weight:bold">
-      <text>Paid</text><text class="price" style="font-size:32rpx">{{order.payment_amount}}</text>
+  <!-- Shipping Address -->
+  <view class="card" wx:if="{{order.shipping_address}}">
+    <view class="card-title">{{t['orderDetail.shippingAddress']}}</view>
+    <view class="address-info">
+      <view class="address-name">{{order.shipping_address.full_name}} {{order.shipping_address.phone}}</view>
+      <view class="address-detail">{{order.shipping_address.province}}{{order.shipping_address.city}}{{order.shipping_address.district}}{{order.shipping_address.street}}</view>
     </view>
   </view>
 
-  <button wx:if="{{order.status === 'pending'}}" class="btn" style="width:100%;margin-top:20rpx" bindtap="onPay">Pay Now</button>
+  <!-- Items -->
+  <view class="card">
+    <view class="card-title">{{t['orderDetail.items']}}</view>
+    <view wx:for="{{order.items}}" wx:key="id" class="item-row">
+      <image class="item-img" src="{{item.product_image || '/images/placeholder.png'}}" mode="aspectFill"/>
+      <view class="item-detail">
+        <text class="item-name">{{item.product_name}}</text>
+        <text class="item-meta">x{{item.quantity}}  ¥{{item.product_price}}</text>
+      </view>
+      <text class="item-subtotal">¥{{item.product_price * item.quantity}}</text>
+    </view>
+  </view>
+
+  <!-- Price Summary -->
+  <view class="card">
+    <view class="card-title">{{t['orderDetail.priceDetail']}}</view>
+    <view class="price-row"><text>{{t['orderDetail.subtotal']}}</text><text>¥{{order.total_amount}}</text></view>
+    <view class="price-row" wx:if="{{order.discount_amount > 0}}">
+      <text>{{t['orderDetail.discount']}}</text><text class="discount">-¥{{order.discount_amount}}</text>
+    </view>
+    <view class="price-row"><text>{{t['orderDetail.delivery']}}</text><text>¥{{order.delivery_fee}}</text></view>
+    <view class="price-row total-row">
+      <text>{{t['orderDetail.paymentAmount']}}</text><text class="total-price">¥{{order.payment_amount}}</text>
+    </view>
+  </view>
+
+  <!-- Tracking -->
+  <view class="card" wx:if="{{order.tracking}}" bindtap="onViewTracking">
+    <view class="card-title">{{t['orderDetail.tracking']}}</view>
+    <view class="tracking-info">
+      <text class="tracking-company">{{order.tracking.company}}</text>
+      <text class="tracking-number">{{order.tracking.number}}</text>
+    </view>
+    <view class="tracking-tip">{{t['orderDetail.trackingTip']}}</view>
+  </view>
+
+  <!-- Actions -->
+  <view class="action-bar">
+    <button wx:if="{{order.status === 'pending'}}" class="btn-primary" bindtap="onPay">{{t['orderDetail.payNow']}}</button>
+    <button wx:if="{{order.status === 'pending' || order.status === 'paid'}}" class="btn-danger" bindtap="onCancel">{{t['orderDetail.cancelOrder']}}</button>
+    <button wx:if="{{order.status === 'delivered'}}" class="btn-primary" bindtap="onConfirmReceive">{{t['orderDetail.confirmReceive']}}</button>
+    <button wx:if="{{order.tracking}}" class="btn-default" bindtap="onViewTracking">{{t['orderDetail.viewTracking']}}</button>
+  </view>
 </view>
-<view wx:else class="loading">Loading...</view>
+<view wx:else class="loading">{{t['common.loading']}}</view>

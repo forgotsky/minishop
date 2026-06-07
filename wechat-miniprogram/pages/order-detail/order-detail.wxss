@@ -1,1 +1,91 @@
-/* order-detail styles */
+.container {
+  padding: 24rpx;
+  background: var(--color-bg);
+  min-height: 100vh;
+}
+
+.status-card {
+  background: linear-gradient(135deg, var(--color-success), #10b980);
+  color: #fff;
+  border-radius: 16rpx;
+  padding: 40rpx 24rpx;
+  margin-bottom: 20rpx;
+}
+.status-text { font-size: 40rpx; font-weight: bold; }
+.order-info { margin-top: 20rpx; display: flex; flex-direction: column; gap: 8rpx; }
+.order-info text { font-size: 24rpx; color: rgba(255,255,255,0.8); }
+
+.card {
+  background: var(--color-card);
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+}
+.card-title {
+  font-size: 28rpx; font-weight: bold; color: var(--color-text); margin-bottom: 16rpx;
+}
+
+.address-info { display: flex; flex-direction: column; gap: 8rpx; }
+.address-name { font-size: 28rpx; color: var(--color-text); font-weight: 500; }
+.address-detail { font-size: 26rpx; color: var(--color-text-secondary); margin-top: 8rpx; }
+
+.item-row {
+  display: flex; align-items: center; padding: 16rpx 0;
+  border-bottom: 2rpx solid var(--color-border-light);
+}
+.item-img { width: 120rpx; height: 120rpx; border-radius: 8rpx; background: var(--color-border); flex-shrink: 0; }
+.item-detail { flex: 1; margin-left: 20rpx; }
+.item-name {
+  font-size: 28rpx; color: var(--color-text); display: block;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 360rpx;
+}
+.item-meta { font-size: 24rpx; color: var(--color-text-muted); margin-top: 6rpx; display: block; }
+.item-subtotal { font-size: 28rpx; color: var(--color-text); font-weight: 500; }
+
+.price-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12rpx 0; font-size: 26rpx; color: var(--color-text-secondary);
+}
+.discount { color: var(--color-success); }
+.total-row {
+  border-top: 2rpx solid var(--color-border);
+  margin-top: 8rpx; padding-top: 16rpx;
+  font-weight: bold; color: var(--color-text);
+}
+.total-price { font-size: 36rpx; color: var(--color-danger); font-weight: bold; }
+
+.tracking-info { display: flex; align-items: center; gap: 16rpx; margin-bottom: 12rpx; }
+.tracking-company { font-size: 28rpx; color: var(--color-text); }
+.tracking-number { font-size: 24rpx; color: var(--color-text-muted); }
+.tracking-tip { font-size: 24rpx; color: var(--color-success); }
+
+.action-bar { display: flex; flex-wrap: wrap; gap: 16rpx; padding: 20rpx 0; }
+.btn-primary {
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: 40rpx;
+  padding: 0 48rpx;
+  height: 80rpx; line-height: 80rpx;
+  font-size: 28rpx;
+}
+.btn-danger {
+  background: var(--color-card);
+  color: var(--color-danger);
+  border: 2rpx solid var(--color-danger);
+  border-radius: 40rpx;
+  padding: 0 48rpx;
+  height: 80rpx; line-height: 80rpx;
+  font-size: 28rpx;
+}
+.btn-default {
+  background: var(--color-card);
+  color: var(--color-text-secondary);
+  border: 2rpx solid var(--color-border);
+  border-radius: 40rpx;
+  padding: 0 48rpx;
+  height: 80rpx; line-height: 80rpx;
+  font-size: 28rpx;
+}
+
+.loading { text-align: center; padding: 100rpx; color: var(--color-text-muted); font-size: 28rpx; }

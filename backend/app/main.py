@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from typing import List, Optional
 
 import httpx
-from fastapi import FastAPI, HTTPException, Depends, Query
+from fastapi import FastAPI, HTTPException, Depends, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
@@ -18,8 +18,14 @@ from .models import (
     User, Address, Product, CartItem, Order, OrderItem, OrderStatus,
     CouponTemplate, UserCoupon, CouponType, CouponStatus,
 )
-from .auth import create_access_token, require_user, get_current_user
+from .auth import create_access_token, require_user, get_current_user, RUN_MODE
 from .log_config import setup_logging
+from .wechat_pay import (
+    create_jsapi_order,
+    verify_notify_signature,
+    decrypt_notify_resource,
+    yuan_to_fen,
+)
 
 logger = logging.getLogger("shop.main")
 
@@ -184,6 +190,66 @@ class OrderItemOut(BaseModel):
         from_attributes = True
 
 
+class AddressSnapshot(BaseModel):
+    full_name: str
+    phone: str
+    province: str
+    city: str
+    district: str
+    street: str
+
+
+class TrackingInfo(BaseModel):
+    company: Optional[str] = None
+    number: Optional[str] = None
+    status: Optional[str] = None
+    updated_at: Optional[str] = None
+    traces: list = []
+
+
+class OrderListItem(BaseModel):
+    id: int
+    order_no: str
+    status: OrderStatus
+    total_amount: float
+    payment_amount: float
+    created_at: Optional[str] = None
+    items_count: int
+    first_item: Optional[dict] = None
+
+
+class OrderListOut(BaseModel):
+    orders: List[OrderListItem]
+    total: int
+    page: int
+    pages: int
+
+
+class OrderDetailOut(BaseModel):
+    id: int
+    order_no: str
+    status: OrderStatus
+    created_at: Optional[str] = None
+    paid_at: Optional[str] = None
+    shipped_at: Optional[str] = None
+    delivered_at: Optional[str] = None
+    cancelled_at: Optional[str] = None
+    cancel_reason: Optional[str] = None
+    total_amount: float
+    discount_amount: float
+    delivery_fee: float
+    payment_amount: float
+    payment_method: Optional[str] = None
+    remark: Optional[str] = None
+    items: List[OrderItemOut]
+    shipping_address: Optional[AddressSnapshot] = None
+    tracking: Optional[TrackingInfo] = None
+
+
+class OrderStatusUpdateIn(BaseModel):
+    action: str  # "cancel" | "complete"
+
+
 class OrderOut(BaseModel):
     id: int
     order_no: str
@@ -193,6 +259,7 @@ class OrderOut(BaseModel):
     payment_amount: float
     status: OrderStatus
     payment_method: Optional[str] = None
+    remark: Optional[str] = None
     created_at: Optional[str] = None
     items: List[OrderItemOut] = []
 
@@ -451,6 +518,10 @@ def update_cart_item(item_id: int, quantity: int = Query(ge=1, le=99),
     item = db.query(CartItem).filter(CartItem.id == item_id, CartItem.user_id == user.id).first()
     if not item:
         raise HTTPException(status_code=404, detail="Cart item not found")
+    # Validate stock: requested quantity must not exceed available stock
+    product = item.product
+    if product and product.stock < quantity:
+        raise HTTPException(status_code=400, detail="Insufficient stock")
     item.quantity = quantity
     db.commit()
     return {"message": "Updated"}
@@ -523,14 +594,18 @@ def create_order(payload: OrderCreateIn, user: User = Depends(require_user), db:
             template = user_coupon.template
             now = datetime.now(timezone.utc)
             if template.start_time <= now <= template.end_time:
+                coupon_applied = False
                 if template.type == CouponType.FULL_REDUCTION:
                     if total_amount >= template.threshold:
                         discount_amount = template.value
+                        coupon_applied = True
                 elif template.type == CouponType.DISCOUNT:
                     discount_amount = round(total_amount * (1 - template.value / 100), 2)
-                user_coupon.status = CouponStatus.USED
-                user_coupon.used_at = now
-                db.add(user_coupon)
+                    coupon_applied = True
+                if coupon_applied:
+                    user_coupon.status = CouponStatus.USED
+                    user_coupon.used_at = now
+                    db.add(user_coupon)
 
     payment_amount = round(total_amount - discount_amount + DELIVERY_FEE, 2)
     order_no = f"ORD{int(time.time() * 1000)}"
@@ -546,6 +621,7 @@ def create_order(payload: OrderCreateIn, user: User = Depends(require_user), db:
         payment_amount=payment_amount,
         status=OrderStatus.PENDING,
         payment_method=payload.payment_method,
+        remark=payload.remark,
     )
     db.add(order)
     db.flush()
@@ -574,49 +650,195 @@ def create_order(payload: OrderCreateIn, user: User = Depends(require_user), db:
         payment_amount=order.payment_amount,
         status=order.status,
         payment_method=order.payment_method,
+        remark=order.remark,
         created_at=order.created_at.isoformat() if order.created_at else None,
         items=[OrderItemOut.model_validate(oi) for oi in order.items],
     )
 
 
-@app.get("/api/orders", response_model=List[OrderOut])
-def list_orders(user: User = Depends(require_user), db: Session = Depends(get_db),
-                page: int = Query(1, ge=1), page_size: int = Query(10, ge=1, le=50)):
-    orders = (
-        db.query(Order)
-        .filter(Order.user_id == user.id)
-        .order_by(Order.created_at.desc())
-        .offset((page - 1) * page_size)
-        .limit(page_size)
-        .all()
-    )
-    return [OrderOut(
-        id=o.id, order_no=o.order_no, total_amount=o.total_amount,
-        discount_amount=o.discount_amount, delivery_fee=o.delivery_fee,
-        payment_amount=o.payment_amount, status=o.status,
-        payment_method=o.payment_method,
-        created_at=o.created_at.isoformat() if o.created_at else None,
-        items=[OrderItemOut.model_validate(oi) for oi in o.items],
-    ) for o in orders]
+@app.get("/api/orders", response_model=OrderListOut)
+def list_orders(
+    user: User = Depends(require_user),
+    db: Session = Depends(get_db),
+    status: Optional[str] = Query(None),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(10, ge=1, le=50),
+):
+    """获取订单列表，支持状态筛选和分页"""
+    q = db.query(Order).filter(Order.user_id == user.id)
+    if status:
+        try:
+            status_enum = OrderStatus(status)
+            q = q.filter(Order.status == status_enum)
+        except ValueError:
+            pass  # ignore invalid status
+
+    total = q.count()
+    orders = q.order_by(Order.created_at.desc()).offset((page - 1) * page_size).limit(page_size).all()
+
+    result = []
+    for o in orders:
+        first_item = None
+        if o.items:
+            first = o.items[0]
+            first_item = {"name": first.product_name, "image": first.product_image}
+
+        result.append(OrderListItem(
+            id=o.id,
+            order_no=o.order_no,
+            status=o.status,
+            total_amount=o.total_amount,
+            payment_amount=o.payment_amount,
+            created_at=o.created_at.isoformat() if o.created_at else None,
+            items_count=len(o.items),
+            first_item=first_item,
+        ))
+
+    pages = (total + page_size - 1) // page_size if total > 0 else 1
+    return OrderListOut(orders=result, total=total, page=page, pages=pages)
 
 
-@app.get("/api/orders/{order_id}", response_model=OrderOut)
+@app.get("/api/orders/{order_id}", response_model=OrderDetailOut)
 def get_order(order_id: int, user: User = Depends(require_user), db: Session = Depends(get_db)):
+    """获取订单详情（含地址快照、物流信息）"""
     order = db.query(Order).filter(Order.id == order_id, Order.user_id == user.id).first()
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
-    return OrderOut(
-        id=order.id, order_no=order.order_no, total_amount=order.total_amount,
-        discount_amount=order.discount_amount, delivery_fee=order.delivery_fee,
-        payment_amount=order.payment_amount, status=order.status,
-        payment_method=order.payment_method,
+
+    address_snapshot = None
+    if order.address_snapshot:
+        try:
+            address_snapshot = AddressSnapshot(**json.loads(order.address_snapshot))
+        except Exception:
+            pass
+
+    tracking = None
+    if order.tracking_number:
+        tracking = TrackingInfo(
+            company=order.tracking_company,
+            number=order.tracking_number,
+            status=order.status.value if order.status else None,
+            updated_at=order.shipped_at.isoformat() if order.shipped_at else None,
+            traces=[],
+        )
+
+    return OrderDetailOut(
+        id=order.id,
+        order_no=order.order_no,
+        status=order.status,
         created_at=order.created_at.isoformat() if order.created_at else None,
+        paid_at=order.paid_at.isoformat() if order.paid_at else None,
+        shipped_at=order.shipped_at.isoformat() if order.shipped_at else None,
+        delivered_at=order.delivered_at.isoformat() if order.delivered_at else None,
+        cancelled_at=order.cancelled_at.isoformat() if order.cancelled_at else None,
+        cancel_reason=order.cancel_reason,
+        total_amount=order.total_amount,
+        discount_amount=order.discount_amount,
+        delivery_fee=order.delivery_fee,
+        payment_amount=order.payment_amount,
+        payment_method=order.payment_method,
+        remark=order.remark,
         items=[OrderItemOut.model_validate(oi) for oi in order.items],
+        shipping_address=address_snapshot,
+        tracking=tracking,
+    )
+
+
+@app.patch("/api/orders/{order_id}/status", response_model=OrderDetailOut)
+def update_order_status(
+    order_id: int,
+    payload: OrderStatusUpdateIn,
+    user: User = Depends(require_user),
+    db: Session = Depends(get_db),
+):
+    """更新订单状态：取消(cancel) 或确认收货(complete)"""
+    order = db.query(Order).filter(Order.id == order_id, Order.user_id == user.id).first()
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+
+    now = datetime.now(timezone.utc)
+
+    if payload.action == "cancel":
+        if order.status not in (OrderStatus.PENDING, OrderStatus.PAID):
+            raise HTTPException(status_code=400, detail="当前状态不允许取消")
+        order.status = OrderStatus.CANCELLED
+        order.cancelled_at = now
+    elif payload.action == "complete":
+        if order.status != OrderStatus.DELIVERED:
+            raise HTTPException(status_code=400, detail="当前状态不允许确认收货")
+        order.status = OrderStatus.COMPLETED
+        order.delivered_at = now
+    else:
+        raise HTTPException(status_code=400, detail="Invalid action")
+
+    db.commit()
+    db.refresh(order)
+
+    # 返回完整详情（同 get_order）
+    address_snapshot = None
+    if order.address_snapshot:
+        try:
+            address_snapshot = AddressSnapshot(**json.loads(order.address_snapshot))
+        except Exception:
+            pass
+
+    tracking = None
+    if order.tracking_number:
+        tracking = TrackingInfo(
+            company=order.tracking_company,
+            number=order.tracking_number,
+            status=order.status.value if order.status else None,
+            updated_at=order.shipped_at.isoformat() if order.shipped_at else None,
+            traces=[],
+        )
+
+    return OrderDetailOut(
+        id=order.id, order_no=order.order_no, status=order.status,
+        created_at=order.created_at.isoformat() if order.created_at else None,
+        paid_at=order.paid_at.isoformat() if order.paid_at else None,
+        shipped_at=order.shipped_at.isoformat() if order.shipped_at else None,
+        delivered_at=order.delivered_at.isoformat() if order.delivered_at else None,
+        cancelled_at=order.cancelled_at.isoformat() if order.cancelled_at else None,
+        cancel_reason=order.cancel_reason,
+        total_amount=order.total_amount, discount_amount=order.discount_amount,
+        delivery_fee=order.delivery_fee, payment_amount=order.payment_amount,
+        payment_method=order.payment_method, remark=order.remark,
+        items=[OrderItemOut.model_validate(oi) for oi in order.items],
+        shipping_address=address_snapshot, tracking=tracking,
+    )
+
+
+@app.get("/api/orders/{order_id}/tracking", response_model=TrackingInfo)
+def get_order_tracking(order_id: int, user: User = Depends(require_user), db: Session = Depends(get_db)):
+    """获取物流信息"""
+    order = db.query(Order).filter(Order.id == order_id, Order.user_id == user.id).first()
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    if not order.tracking_number:
+        raise HTTPException(status_code=404, detail="暂无物流信息")
+
+    return TrackingInfo(
+        company=order.tracking_company,
+        number=order.tracking_number,
+        status=order.status.value if order.status else None,
+        updated_at=order.shipped_at.isoformat() if order.shipped_at else None,
+        traces=[
+            {"time": order.shipped_at.isoformat() if order.shipped_at else None,
+             "location": order.tracking_company or "快递公司",
+             "description": "快件已发出"},
+        ],
     )
 
 
 @app.post("/api/orders/{order_id}/pay")
 def pay_order(order_id: int, user: User = Depends(require_user), db: Session = Depends(get_db)):
+    """
+    模拟支付（仅 Dev 模式）。
+    Prod 模式下返回错误，引导使用微信支付。
+    """
+    if RUN_MODE == "prod":
+        raise HTTPException(status_code=400, detail="请使用微信支付接口 /api/orders/{id}/wechat-pay")
+
     order = db.query(Order).filter(Order.id == order_id, Order.user_id == user.id).first()
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
@@ -624,8 +846,124 @@ def pay_order(order_id: int, user: User = Depends(require_user), db: Session = D
         raise HTTPException(status_code=400, detail="Order cannot be paid")
     order.status = OrderStatus.PAID
     order.paid_at = datetime.now(timezone.utc)
+    order.transaction_id = f"dev_txn_{order.order_no}"
     db.commit()
     return {"message": "Payment successful", "order_no": order.order_no}
+
+
+@app.post("/api/orders/{order_id}/wechat-pay")
+async def wechat_pay_order(order_id: int, user: User = Depends(require_user), db: Session = Depends(get_db)):
+    """
+    微信支付 JSAPI 下单。
+    返回 wx.requestPayment() 所需的参数。
+    """
+    order = db.query(Order).filter(Order.id == order_id, Order.user_id == user.id).first()
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    if order.status != OrderStatus.PENDING:
+        raise HTTPException(status_code=400, detail="订单无法支付（状态不正确）")
+
+    openid = user.openid
+    amount_fen = yuan_to_fen(order.payment_amount)
+    description = f"MiniShop订单{order.order_no}"
+
+    try:
+        result = await create_jsapi_order(
+            openid=openid,
+            order_no=order.order_no,
+            total_amount=amount_fen,
+            description=description,
+        )
+    except RuntimeError as e:
+        logger.error(f"WeChat Pay failed for order {order.id}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+    # 保存 prepay_id
+    order.prepay_id = result.get("package", "").replace("prepay_id=", "")
+    db.commit()
+
+    return result
+
+
+@app.post("/api/wechat-pay/notify")
+async def wechat_pay_notify(request: Request, db: Session = Depends(get_db)):
+    """
+    微信支付结果通知回调。
+    无需认证，通过微信签名验证。
+    """
+    # 读取原始 body
+    body = await request.body()
+    body_str = body.decode("utf-8")
+
+    # 获取微信签名 headers
+    timestamp = request.headers.get("wechatpay-timestamp", "")
+    nonce = request.headers.get("wechatpay-nonce", "")
+    signature = request.headers.get("wechatpay-signature", "")
+    serial = request.headers.get("wechatpay-serial", "")
+
+    logger.info(f"Payment notify received: serial={serial[:8] if serial else 'N/A'}..., "
+                f"timestamp={timestamp}, nonce={nonce[:8]}...")
+
+    # 验签
+    if not verify_notify_signature(timestamp, nonce, signature, body_str):
+        logger.error("Notify signature verification failed")
+        raise HTTPException(status_code=400, detail="签名验证失败")
+
+    # 解析通知体
+    try:
+        notify_data = json.loads(body_str)
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=400, detail="Invalid JSON")
+
+    resource = notify_data.get("resource", {})
+    ciphertext = resource.get("ciphertext", "")
+    resource_nonce = resource.get("nonce", "")
+    associated_data = resource.get("associated_data", "")
+
+    # 解密 resource
+    try:
+        decrypted = decrypt_notify_resource(ciphertext, resource_nonce, associated_data)
+    except RuntimeError as e:
+        logger.error(f"Decrypt failed: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+    out_trade_no = decrypted.get("out_trade_no", "")
+    transaction_id = decrypted.get("transaction_id", "")
+    trade_state = decrypted.get("trade_state", "")
+
+    logger.info(f"Payment notify decrypted: out_trade_no={out_trade_no}, "
+                f"transaction_id={transaction_id}, state={trade_state}")
+
+    if trade_state != "SUCCESS":
+        logger.warning(f"Trade state is not SUCCESS: {trade_state}, ignoring")
+        return {"code": "SUCCESS", "message": "成功"}
+
+    # 查找订单
+    order = db.query(Order).filter(Order.order_no == out_trade_no).first()
+    if not order:
+        logger.error(f"Order not found for out_trade_no: {out_trade_no}")
+        # 仍然返回 SUCCESS 让微信停止重试
+        return {"code": "SUCCESS", "message": "成功"}
+
+    # 金额校验
+    notify_amount = decrypted.get("amount", {})
+    notify_total = notify_amount.get("total", 0)
+    if notify_total and yuan_to_fen(order.payment_amount) != notify_total:
+        logger.error(f"Amount mismatch: order={order.payment_amount}, notify={notify_total / 100}")
+        return {"code": "FAIL", "message": "金额不匹配"}
+
+    # 更新订单状态
+    if order.status == OrderStatus.PENDING:
+        order.status = OrderStatus.PAID
+        order.transaction_id = transaction_id
+        order.paid_at = datetime.now(timezone.utc)
+        db.commit()
+        logger.info(f"Order {order.order_no} paid via notify, txn={transaction_id}")
+    else:
+        logger.info(f"Order {order.order_no} already in status {order.status}, skipping")
+
+    # 必须返回此格式让微信停止重试
+    return {"code": "SUCCESS", "message": "成功"}
 
 
 # ============================================================

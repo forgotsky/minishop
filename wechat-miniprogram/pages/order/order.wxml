@@ -1,18 +1,36 @@
-<view class="container">
-  <view wx:if="{{orders.length === 0}}" class="empty">No orders yet</view>
+<view class="container {{_theme}}">
+  <!-- Tabs -->
+  <scroll-view scroll-x class="tabs">
+    <view class="tab-list">
+      <view wx:for="{{tabs}}" wx:key="*this" class="tab {{currentTab === item ? 'active' : ''}}" data-value="{{item}}" bindtap="onTabTap">{{STATUS_LABELS[item]}}</view>
+    </view>
+  </scroll-view>
+
+  <!-- Empty -->
+  <view wx:if="{{orders.length === 0 && !loading}}" class="empty">{{t['order.empty']}}</view>
+
+  <!-- Order List -->
   <block wx:for="{{orders}}" wx:key="id">
     <view class="card" bindtap="onOrderTap" data-id="{{item.id}}">
       <view class="flex-between">
-        <text style="font-size:24rpx;color:#999">{{item.created_at}}</text>
-        <text class="tag {{item.status === 'paid' ? 'tag-green' : item.status === 'cancelled' ? 'tag-gray' : 'tag-red'}}">{{item.status}}</text>
+        <text class="order-no">{{item.order_no}}</text>
+        <text class="status-tag status-{{item.status}}">{{STATUS_LABELS[item.status]}}</text>
       </view>
-      <view class="mt-10" wx:for="{{item.items}}" wx:for-item="oi" wx:key="id" style="color:#666;font-size:26rpx">
-        {{oi.product_name}} x{{oi.quantity}}
+      <view class="item-preview" wx:if="{{item.first_item}}">
+        <image class="item-img" src="{{item.first_item.image || '/images/placeholder.png'}}" mode="aspectFill"/>
+        <view class="item-info">
+          <text class="item-name">{{item.first_item.name}}</text>
+          <text class="item-count">{{item._itemCountText}}</text>
+        </view>
       </view>
-      <view class="flex-between mt-20" style="border-top:2rpx solid #f0f0f0;padding-top:14rpx">
-        <text>Total {{item.items.length}} item(s)</text>
-        <text class="price" style="font-size:36rpx">{{item.payment_amount}}</text>
+      <view class="flex-between" style="margin-top:16rpx;padding-top:16rpx;border-top:2rpx solid #f5f5f5">
+        <text class="order-time">{{item.created_at}}</text>
+        <text class="price">¥{{item.payment_amount}}</text>
       </view>
     </view>
   </block>
+
+  <!-- Loading -->
+  <view wx:if="{{loading}}" class="loading">{{t['order.loading']}}</view>
+  <view wx:if="{{!hasMore && orders.length > 0}}" class="no-more">{{t['order.noMore']}}</view>
 </view>

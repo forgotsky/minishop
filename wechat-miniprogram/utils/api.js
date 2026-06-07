@@ -67,9 +67,16 @@ const api = {
   // Orders
   createOrder: (addressId, couponId, paymentMethod, remark, itemIds) =>
     request('POST', '/api/orders', { address_id: addressId, coupon_id: couponId || null, payment_method: paymentMethod || 'wechat', remark, item_ids: itemIds }),
-  getOrders: (page) => request('GET', '/api/orders?page=' + (page || 1)),
+  getOrders: (page, status) => {
+    let path = '/api/orders?page=' + (page || 1)
+    if (status) path += '&status=' + status
+    return request('GET', path)
+  },
   getOrder: (id) => request('GET', '/api/orders/' + id),
   payOrder: (id) => request('POST', '/api/orders/' + id + '/pay'),
+  wechatPay: (id) => request('POST', '/api/orders/' + id + '/wechat-pay'),
+  updateOrderStatus: (id, action) => request('PATCH', '/api/orders/' + id + '/status', { action }),
+  getOrderTracking: (id) => request('GET', '/api/orders/' + id + '/tracking'),
 
   // Addresses
   getAddresses: () => request('GET', '/api/addresses'),
