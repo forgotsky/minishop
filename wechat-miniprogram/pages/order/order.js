@@ -24,11 +24,12 @@ Page({
     page: 1,
     hasMore: true,
     loading: false,
-    t: {}
+    t: {},
+    _theme: ''
   },
 
   onShow() {
-    this.setData({ t: getAllTexts(), STATUS_LABELS: getStatusLabels() })
+    this.setData({ t: getAllTexts(), STATUS_LABELS: getStatusLabels(), _theme: 'theme-' + (getApp().globalData.theme || 'orange') })
     this.setData({ orders: [], page: 1, hasMore: true })
     this.loadOrders()
   },

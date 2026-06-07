@@ -5,11 +5,11 @@ Page({
   data: {
     id: null,
     full_name: '', phone: '', province: '', city: '', district: '', street: '', zip_code: '', is_default: false,
-    t: {}
+    t: {}, _theme: ''
   },
 
   onLoad(options) {
-    this.setData({ t: getAllTexts() })
+    this.setData({ t: getAllTexts(), _theme: 'theme-' + (getApp().globalData.theme || 'orange') })
     if (options.id) {
       var self = this
       api.getAddresses().then(addresses => {

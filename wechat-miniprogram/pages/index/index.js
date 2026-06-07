@@ -11,11 +11,12 @@ Page({
     page: 1,
     total: 0,
     loading: false,
-    t: {}
+    t: {},
+    _theme: ''
   },
 
   onShow() {
-    this.setData({ t: getAllTexts() })
+    this.setData({ t: getAllTexts(), _theme: 'theme-' + (app.globalData.theme || 'orange') })
     this.loadCategories()
     this.loadProducts()
     app.refreshCartCount()
@@ -53,6 +54,11 @@ Page({
 
   onSwitchLang() {
     toggleLang()
+  },
+
+  onSwitchTheme() {
+    app.cycleTheme()
+    this.setData({ _theme: 'theme-' + (app.globalData.theme || 'orange') })
   },
 
   onLoadMore() {

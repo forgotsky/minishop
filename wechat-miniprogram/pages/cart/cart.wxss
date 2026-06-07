@@ -1,37 +1,27 @@
 .cart-item { display: flex; align-items: center; }
-.cart-img { width: 120rpx; height: 120rpx; border-radius: 12rpx; background: #eee; }
+.cart-img { width: 120rpx; height: 120rpx; border-radius: 12rpx; background: var(--color-border); }
 
-/* 自定义勾选框 — 60rpx 方形，足够大的触摸区 */
 .cb-box {
   width: 60rpx; height: 60rpx;
-  border: 3rpx solid #ccc; border-radius: 12rpx;
+  border: 3rpx solid var(--color-text-muted); border-radius: 12rpx;
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0; margin-right: 12rpx;
   box-sizing: border-box;
 }
-.cb-tick {
-  font-size: 38rpx; font-weight: bold; color: #fff;
-}
-.cb-box--on {
-  border-color: #ff5500; background: #ff5500;
-}
-
-.cb-box-hover {
-  opacity: 0.6;
-}
+.cb-tick { font-size: 38rpx; font-weight: bold; color: #fff; }
+.cb-box--on { border-color: var(--color-primary); background: var(--color-primary); }
+.cb-box-hover { opacity: 0.6; }
 
 .qty-btn {
   width: 48rpx; height: 48rpx; line-height: 48rpx; text-align: center;
-  background: #f0f0f0; border-radius: 50%; font-size: 32rpx; font-weight: bold; color: #333;
+  background: var(--color-border-light); border-radius: 50%; font-size: 32rpx; font-weight: bold; color: var(--color-text);
 }
-.qty-btn--disabled {
-  color: #ccc;
-}
-.remove-btn { font-size: 22rpx; color: #ff5500; margin-top: 8rpx; }
+.qty-btn--disabled { color: var(--color-text-muted); }
+.remove-btn { font-size: 22rpx; color: var(--color-primary); margin-top: 8rpx; }
 .cart-footer {
   position: fixed; bottom: 0; left: 0; right: 0;
   display: flex; align-items: center;
-  padding: 20rpx 30rpx; background: #fff;
-  box-shadow: 0 -2rpx 12rpx rgba(0,0,0,0.06);
+  padding: 20rpx 30rpx; background: var(--color-card);
+  box-shadow: 0 -2rpx 12rpx var(--color-shadow);
 }
 .cart-footer button { margin: 0; }

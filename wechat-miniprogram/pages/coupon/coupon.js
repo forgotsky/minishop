@@ -9,10 +9,10 @@ function addStatusLabel(coupons) {
 }
 
 Page({
-  data: { available: [], myCoupons: [], tab: 'mine', t: {} },
+  data: { available: [], myCoupons: [], tab: 'mine', t: {}, _theme: '' },
 
   onShow() {
-    this.setData({ t: getAllTexts() })
+    this.setData({ t: getAllTexts(), _theme: 'theme-' + (getApp().globalData.theme || 'orange') })
     this.loadData()
   },
 

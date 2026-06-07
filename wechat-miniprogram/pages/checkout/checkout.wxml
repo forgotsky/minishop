@@ -1,4 +1,4 @@
-<view class="container" style="padding-bottom:120rpx">
+<view class="container {{_theme}}" style="padding-bottom:120rpx">
   <!-- Address -->
   <view class="card">
     <view class="flex-between mb-20"><text style="font-weight:bold">{{t['checkout.address']}}</text>

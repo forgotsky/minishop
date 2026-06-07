@@ -16,11 +16,12 @@ Page({
   data: {
     order: null,
     STATUS_LABELS: {},
-    t: {}
+    t: {},
+    _theme: ''
   },
 
   onLoad(options) {
-    this.setData({ t: getAllTexts(), STATUS_LABELS: getStatusLabels() })
+    this.setData({ t: getAllTexts(), STATUS_LABELS: getStatusLabels(), _theme: 'theme-' + (getApp().globalData.theme || 'orange') })
     this.loadOrder(options.id)
   },
 

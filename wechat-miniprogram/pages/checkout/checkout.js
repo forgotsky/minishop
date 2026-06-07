@@ -22,14 +22,14 @@ Page({
     addresses: [], selectedAddress: null,
     coupons: [], selectedCoupon: null, couponIndex: 0,
     items: [], subtotal: 0, delivery: 5, discount: 0, total: 0,
-    t: {}
+    t: {}, _theme: ''
   },
 
   goAddAddress() {
     wx.navigateTo({ url: '/pages/address-edit/address-edit' })
   },
 
-  onShow() { this.setData({ t: getAllTexts() }); this.loadData() },
+  onShow() { this.setData({ t: getAllTexts(), _theme: 'theme-' + (app.globalData.theme || 'orange') }); this.loadData() },
 
   loadData() {
     const checkedIds = new Set(app.globalData.checkoutItemIds || [])

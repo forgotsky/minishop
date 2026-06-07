@@ -1,4 +1,4 @@
-<view class="container">
+<view class="container {{_theme}}">
   <view class="flex-row" style="margin-bottom:20rpx">
     <view class="tab {{tab === 'mine' ? 'active' : ''}}" bindtap="setTab" data-tab="mine">{{t['coupon.myCoupons']}}</view>
     <view class="tab {{tab === 'available' ? 'active' : ''}}" bindtap="setTab" data-tab="available">{{t['coupon.getMore']}}</view>

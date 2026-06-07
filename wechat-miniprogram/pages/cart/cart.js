@@ -3,10 +3,10 @@ const { t, getAllTexts } = require('../../utils/i18n')
 const app = getApp()
 
 Page({
-  data: { items: [], total: 0, selectedTotal: 0, allChecked: false, t: {} },
+  data: { items: [], total: 0, selectedTotal: 0, allChecked: false, t: {}, _theme: '' },
 
   onShow() {
-    this.setData({ t: getAllTexts() })
+    this.setData({ t: getAllTexts(), _theme: 'theme-' + (app.globalData.theme || 'orange') })
     this.loadCart()
   },
 

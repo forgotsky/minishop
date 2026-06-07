@@ -1,4 +1,4 @@
-<view class="container" wx:if="{{product}}">
+<view class="container {{_theme}}" wx:if="{{product}}">
   <image class="detail-img" src="{{product.image_url}}" mode="aspectFill"/>
   <view class="card">
     <view class="price" style="font-size:44rpx">{{product.price}}</view>

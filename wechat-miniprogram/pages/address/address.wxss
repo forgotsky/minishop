@@ -1,1 +1,1 @@
-.remove-btn { color: #ff5500; font-size: 24rpx; padding: 10rpx; }
+.remove-btn { color: var(--color-primary); font-size: 24rpx; padding: 10rpx; }

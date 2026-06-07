@@ -2,10 +2,10 @@ const { api } = require('../../utils/api')
 const { t, getAllTexts } = require('../../utils/i18n')
 
 Page({
-  data: { addresses: [], t: {} },
+  data: { addresses: [], t: {}, _theme: '' },
 
   onShow() {
-    this.setData({ t: getAllTexts() })
+    this.setData({ t: getAllTexts(), _theme: 'theme-' + (getApp().globalData.theme || 'orange') })
     var self = this
     api.getAddresses().then(data => {
       self.setData({ addresses: data })

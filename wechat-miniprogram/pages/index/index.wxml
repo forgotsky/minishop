@@ -1,7 +1,8 @@
-<view class="container">
+<view class="container {{_theme}}">
   <view class="search-bar">
     <input placeholder="{{t['search.placeholder']}}" value="{{search}}" bindinput="onSearchInput" bindconfirm="onSearch" confirm-type="search"/>
     <button class="btn" size="mini" bindtap="onSearch">{{t['search.btn']}}</button>
+    <button class="btn-outline lang-btn" size="mini" bindtap="onSwitchTheme"><view class="theme-indicator"></view></button>
     <button class="btn-outline lang-btn" size="mini" bindtap="onSwitchLang">{{t['common.switchLang']}}</button>
   </view>
 
@@ -20,7 +21,7 @@
         <view class="price">{{item.price}}</view>
         <view class="flex-between mt-10">
           <text class="tag tag-gray">{{item.category}}</text>
-          <text style="font-size:22rpx;color:#999">{{item.sales_count}}{{t['index.sold']}}</text>
+          <text style="font-size:22rpx;color:var(--color-text-muted)">{{item.sales_count}}{{t['index.sold']}}</text>
         </view>
       </view>
     </view>

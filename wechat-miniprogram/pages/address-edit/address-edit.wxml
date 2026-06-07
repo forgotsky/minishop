@@ -1,4 +1,4 @@
-<view class="container">
+<view class="container {{_theme}}">
   <view class="card">
     <view class="form-item"><text class="label">{{t['addressEdit.fullName']}}</text><input value="{{full_name}}" data-field="full_name" bindinput="onInput" placeholder="{{t['addressEdit.namePlaceholder']}}"/></view>
     <view class="form-item"><text class="label">{{t['addressEdit.phone']}}</text><input value="{{phone}}" data-field="phone" bindinput="onInput" type="number" placeholder="{{t['addressEdit.phonePlaceholder']}}"/></view>

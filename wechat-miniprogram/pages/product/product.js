@@ -3,9 +3,9 @@ const { t, getAllTexts } = require('../../utils/i18n')
 const app = getApp()
 
 Page({
-  data: { product: null, t: {} },
+  data: { product: null, t: {}, _theme: '' },
   onLoad(options) {
-    this.setData({ t: getAllTexts() })
+    this.setData({ t: getAllTexts(), _theme: 'theme-' + (app.globalData.theme || 'orange') })
     api.getProduct(options.id).then(product => {
       product.image_url = imageUrl(product.image_url)
       this.setData({ product })
