@@ -10,3 +10,5 @@
 - [x] `api.js` 传 `Accept-Language` 头
 - [x] 后端 Product 本地化 (name_zh)
 - [x] 后端 品类名映射 (CATEGORY_ZH/EN)
+- [ ] 测试：验证所有页面中英切换正常
+- [ ] 测试：验证 TabBar/NavBar 标题随语言切换
