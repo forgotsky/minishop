@@ -17,3 +17,7 @@ k8s/secret.yaml
 # Legacy folder (old implementation)
 legacy/
 tooling/
+.ai/
+docs/stories/
+scripts/
+PENDING.md
