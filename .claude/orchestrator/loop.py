@@ -50,8 +50,17 @@ Backlog 中发现新 URS: `{urs_file}`
 """
         actions.append("  -> Planning workflow triggered (see planning-workflow.md)")
 
-    # ── 2. planning: check timeout ──
-    # (Placeholder — TODO: detect stuck planning sessions)
+    # ── 2. planning: check timeout (restart if stuck) ──
+    planning = scan_stage("planning")
+    for story_file in planning:
+        filepath = os.path.join(BOARD_DIR, "planning", story_file)
+        mtime = os.path.getmtime(filepath)
+        age_minutes = (time.time() - mtime) / 60
+        if age_minutes > 30:
+            actions.append(f"TIMEOUT: {story_file} stuck in planning {age_minutes:.0f}min -> 重启")
+            move_story(story_file, "backlog")  # Reset to trigger re-planning
+        else:
+            actions.append(f"PLANNING: {story_file} ({age_minutes:.0f}min elapsed)")
 
     # ── 3. ready: find next dispatchable ──
     next_up = find_next_dispatchable()
@@ -82,12 +91,26 @@ Backlog 中发现新 URS: `{urs_file}`
 
     # ── 5. blocked: check if human responded ──
     blocked = scan_stage("blocked")
+    notifications = []
     for story_file in blocked:
         filepath = os.path.join(BOARD_DIR, "blocked", story_file)
         mtime = os.path.getmtime(filepath)
         age_hours = (time.time() - mtime) / 3600
         if age_hours > 24:
             actions.append(f"REMINDER: {story_file} blocked for {age_hours:.0f}h — 需要人工关注")
+            notifications.append(f"[!!] {story_file} 等人 {age_hours:.0f} 小时")
+        elif age_hours > 1:
+            notifications.append(f"[ ] {story_file} 等人 {age_hours:.0f} 小时")
+
+    # Write notifications file (UserPromptSubmit Hook injects into conversation)
+    if notifications:
+        notify_dir = os.path.join(os.path.dirname(BOARD_DIR), "notifications")
+        os.makedirs(notify_dir, exist_ok=True)
+        notify_file = os.path.join(notify_dir, "PENDING.md")
+        with open(notify_file, "w", encoding="utf-8") as f:
+            f.write("---\nname: pending-human-checkpoints\ndescription: Stories waiting for human review\nmetadata:\n  type: project\n---\n\n")
+            for n in notifications:
+                f.write(f"- {n}\n")
 
     # ── 6. done: downstream unlock ──
     done = scan_stage("done")
