@@ -1,14 +1,19 @@
 #!/bin/bash
-# UserPromptSubmit Hook — 每次用户发消息前，注入未完成任务
-# 扫 .ai/tasks/ 下所有文件，找 - [ ] 项目
-# 写到 .ai/tasks/PENDING.md，Claude Code 以 memory 形式加载
+# UserPromptSubmit Hook — 每次用户发消息前，扫描脑力仓库的未完成任务
+# 脑力仓库: ../minishop-brain/.ai/tasks/
+# 写入 Claude Code memory 目录: .claude/memory/pending-tasks.md
 
-PENDING_FILE=".ai/tasks/PENDING.md"
+BRAIN_TASKS="../minishop-brain/.ai/tasks"
+MEMORY_DIR=".claude/memory"
+PENDING_FILE="$MEMORY_DIR/pending-tasks.md"
+
+# 确保 memory 目录存在
+mkdir -p "$MEMORY_DIR"
 
 cat > "$PENDING_FILE" << 'EOF'
 ---
 name: pending-tasks
-description: Active incomplete task items across all stories
+description: Active incomplete task items from minishop-brain
 metadata:
   type: project
 ---
@@ -16,7 +21,7 @@ metadata:
 EOF
 
 has_pending=false
-for task_file in .ai/tasks/SHOP-*.md; do
+for task_file in "$BRAIN_TASKS"/SHOP-*.md; do
   [ -f "$task_file" ] || continue
   story=$(basename "$task_file" .md)
   items=$(grep '^- \[ \]' "$task_file" 2>/dev/null)
@@ -34,6 +39,5 @@ if [ "$has_pending" = false ]; then
   echo "无未完成任务。" >> "$PENDING_FILE"
 fi
 
-# 统计
 total=$(grep -c '^- \[' "$PENDING_FILE" 2>/dev/null || echo 0)
-echo "[Hook] 已扫描任务文件，$total 个待办项写入 $PENDING_FILE" > /dev/stderr
+echo "[Hook] minishop-brain: $total 个待办项 → $PENDING_FILE" > /dev/stderr
